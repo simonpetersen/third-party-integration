@@ -16,4 +16,11 @@ class AuthorizationController {
         println(verifier)
         return "12345"
     }
+
+    // For testing purposes
+    @GetMapping("/login")
+    fun login(@RequestParam("code") authCode: String): String {
+        println("OAuth code = $authCode")
+        return "Login successful"
+    }
 }
