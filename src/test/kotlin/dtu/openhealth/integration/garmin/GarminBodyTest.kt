@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.garmin
 
+import dtu.openhealth.integration.data.garmin.BodyCompositionSummaryGarmin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
