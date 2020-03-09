@@ -14,10 +14,9 @@ class UserServiceImpl(@Autowired private val userRepository: UserRepository) : U
         private val logger = LogManager.getLogger()
     }
 
-    override fun getUser(id: String): User {
+    override fun getUser(id: String): User? {
         logger.info("Getting user with id: $id")
-        return userRepository.findById(id)
-                .orElseThrow()
+        return userRepository.findById(id).orElse(null)
     }
 
     override fun createUser(user: User) {

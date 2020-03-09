@@ -16,12 +16,35 @@ class UserServiceTest(@Autowired val userService: UserService) {
 
     @Test
     fun createUserTest() {
-        val newUser: User = User("121","123","321")
+        val newUser = User("121","123","321")
         userService.createUser(newUser)
         val foundUser = userService.getUser("121")
-        assertThat(newUser.userId).isEqualTo(foundUser.userId)
-        assertThat(newUser.token).isEqualTo(foundUser.token)
-        assertThat(newUser.refreshToken).isEqualTo(foundUser.refreshToken)
+        if(foundUser != null) {
+            assertThat(newUser.userId).isEqualTo(foundUser.userId)
+            assertThat(newUser.token).isEqualTo(foundUser.token)
+            assertThat(newUser.refreshToken).isEqualTo(foundUser.refreshToken)
+        }
+    }
+
+    @Test
+    fun updateUserTokensTest() {
+        val newUser = User("121","123","321")
+        userService.createUser(newUser)
+        userService.updateTokens(User("121","321","123"))
+        val foundUser = userService.getUser("121")
+        if(foundUser != null){
+            assertThat("321").isEqualTo(foundUser.token)
+            assertThat("123").isEqualTo(foundUser.refreshToken)
+        }
+    }
+
+    @Test
+    fun deleteUserTest() {
+        val newUser = User("121","123","321")
+        userService.createUser(newUser)
+        assertThat(userService.getUser("121")).isNotNull
+        userService.deleteUser(newUser)
+        assertThat(userService.getUser("121")).isNull()
     }
 
 
