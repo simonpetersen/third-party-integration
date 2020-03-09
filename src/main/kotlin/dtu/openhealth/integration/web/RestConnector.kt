@@ -10,7 +10,7 @@ import java.net.URL
 class RestConnector {
     // TODO: Maybe use a better framework for http with OAuth2
 
-    fun get(url: String, serializer: KSerializer<out ThirdPartyData>, token : String) : ThirdPartyData{
+    fun get(url: String, serializer: KSerializer<out ThirdPartyData>, token : String) : ThirdPartyData {
         val address = URL(url)
         val connection = address.openConnection() as HttpURLConnection
         val authorization = "Bearer $token"

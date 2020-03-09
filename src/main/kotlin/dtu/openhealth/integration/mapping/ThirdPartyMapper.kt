@@ -1,9 +1,9 @@
 package dtu.openhealth.integration.mapping
 
-import dtu.openhealth.integration.data.omh.OpenMHealthData
 import dtu.openhealth.integration.data.ThirdPartyData
+import org.openmhealth.schema.domain.omh.Measure
 
 // Interface implemented for each thirdParty.
 interface ThirdPartyMapper {
-    fun mapData(thirdPartyData: ThirdPartyData): OpenMHealthData
+    fun mapData(thirdPartyData: ThirdPartyData): List<Measure>
 }
