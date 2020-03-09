@@ -1,6 +1,5 @@
 package dtu.openhealth.integration.service.impl
 
-import dtu.openhealth.integration.data.omh.OpenMHealthData
 import dtu.openhealth.integration.model.User
 import dtu.openhealth.integration.model.repository.UserRepository
 import dtu.openhealth.integration.service.UserService
@@ -37,12 +36,12 @@ class UserServiceImpl(@Autowired private val userRepository: UserRepository) : U
         userRepository.delete(user)
     }
 
-    override fun getNewestData(id: String): OpenMHealthData {
+    override fun getNewestData(id: String): String {
         //TODO
-        return OpenMHealthData()
+        return ""
     }
 
-    override fun addNewData(data: OpenMHealthData?) {
+    override fun addNewData(data: String) {
         //TODO
     }
 
