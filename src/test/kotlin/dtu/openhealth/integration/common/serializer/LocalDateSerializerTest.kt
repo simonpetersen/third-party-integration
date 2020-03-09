@@ -7,10 +7,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class DateSerializerTest {
+class LocalDateSerializerTest {
 
     @Test
-    fun testDateSerializer() {
+    fun testLocalDateSerializer() {
         val caloriesJson = """{"dateTime":"2020-02-05","value":1122}"""
         val json = Json(JsonConfiguration.Stable)
         val expectedDate = LocalDate.of(2020, 2, 5)

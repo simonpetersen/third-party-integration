@@ -1,5 +1,7 @@
 package dtu.openhealth.integration.service
 
+import dtu.openhealth.integration.model.ThirdPartyNotification
+
 interface RestConnectorService {
-    fun retrieveDataForUser(userId: String, collectionType: String, date: String)
+    fun retrieveDataForUser(notification: ThirdPartyNotification)
 }

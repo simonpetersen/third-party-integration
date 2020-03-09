@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.controller
 
+import dtu.openhealth.integration.model.ThirdPartyNotification
 import dtu.openhealth.integration.request.FitbitNotification
 import dtu.openhealth.integration.service.RestConnectorService
 import dtu.openhealth.integration.service.impl.RestConnectorServiceImpl
@@ -15,10 +16,9 @@ import org.springframework.web.bind.annotation.RestController
 class EndpointController(private val restConnectorService: RestConnectorService) {
 
     @PostMapping("/notification")
-    fun notify(@RequestBody notification: FitbitNotification) : ResponseEntity<String> {
-        if (notification.ownerType == "user") {
-            restConnectorService.retrieveDataForUser(notification.ownerId, notification.collectionType, notification.date)
-        }
+    fun notify(@RequestBody notification: HashMap<String, String>) : ResponseEntity<String> {
+        val fitbitNotification = ThirdPartyNotification(notification, "collectionType", "ownerId")
+        restConnectorService.retrieveDataForUser(fitbitNotification)
 
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
