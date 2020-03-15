@@ -23,10 +23,10 @@ class RestConnectorServiceImpl : RestConnectorService {
     private val fitbitMapper = FitbitMapper() // Should be extracted to MappingService
 
     init {
-        //val endpoint = RestEndpoint(listOf("https://api.fitbit.com/1/user/[userId]/activities/calories/date/[date]/1d.json"), FitbitActivitiesCalories.serializer())
-        val endpoint = RestEndpoint(listOf("https://api.fitbit.com/1/user/[ownerId]/activities/date/[date].json"), FitbitActivitiesSummary.serializer())
+        //val endpoint = RestEndpoint("https://api.fitbit.com/1/user/[userId]/activities/calories/date/[date]/1d.json", FitbitActivitiesCalories.serializer())
+        val endpoint = RestEndpoint("https://api.fitbit.com/1/user/[ownerId]/activities/date/[date].json", FitbitActivitiesSummary.serializer())
         urlMap["activities"] = endpoint
-        userTokens["89NGPS"] = User("89NGPS", "abc", "123")
+        userTokens["89NGPS"] = User("89NGPS", "123", "123")
     }
 
     override fun retrieveDataForUser(notification: ThirdPartyNotification) {
@@ -44,22 +44,20 @@ class RestConnectorServiceImpl : RestConnectorService {
     }
 
     private fun addUrlParamsAndCallApi(endpoint: RestEndpoint, notification: ThirdPartyNotification, userToken: String) {
-        for (url in endpoint.urls) {
-            val regex = Regex("\\[(.*?)\\]")
-            val parameters = regex.findAll(url).map { it.groupValues[1] }.toList()
-            var modUrl = url
-            for (parameter in parameters) {
-                val parameterValue: String? = notification.parameters[parameter]
-                if (parameterValue != null) {
-                    modUrl = modUrl.replace("[$parameter]", parameterValue)
-                }
+        val regex = Regex("\\[(.*?)\\]")
+        var url = endpoint.url
+        val parameters = regex.findAll(url).map { it.groupValues[1] }.toList()
+        for (parameter in parameters) {
+            val parameterValue: Any? = notification.parameters[parameter]
+            if (parameterValue != null && parameterValue is String) {
+                url = url.replace("[$parameter]", parameterValue)
             }
-
-            val responseJson = httpConnector.get(modUrl, userToken)
-            val thirdPartyData = convertJsonToThirdPartyData(responseJson, endpoint.serializer)
-            val omhData = fitbitMapper.mapData(thirdPartyData)
-            println(omhData)
         }
+
+        val responseJson = httpConnector.get(url, userToken)
+        val thirdPartyData = convertJsonToThirdPartyData(responseJson, endpoint.serializer)
+        val omhData = fitbitMapper.mapData(thirdPartyData)
+        println(omhData)
     }
 
     private fun convertJsonToThirdPartyData(responseJson: String, serializer: KSerializer<out ThirdPartyData>) : ThirdPartyData {

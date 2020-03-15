@@ -1,6 +1,8 @@
 package dtu.openhealth.integration.data.fitbit
 
+import dtu.openhealth.integration.common.serialization.LocalDateSerializer
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
 
 @Serializable
 data class FitbitActivitiesSummary(
@@ -13,6 +15,7 @@ data class FitbitActivitiesSummary(
 data class FitbitActivity(
         val activityId : Long,
         val activityParentId: Long,
+        val activityParentName: String? = null,
         val calories: Long,
         val description: String,
         val distance: Double,
@@ -21,6 +24,7 @@ data class FitbitActivity(
         val isFavorite : Boolean,
         val logId: Long,
         val name: String,
+        @Serializable(with = LocalDateSerializer::class) val startDate: LocalDate? = null, // Time
         val startTime: String?, // Time
         val steps: Long
 )
@@ -49,7 +53,8 @@ data class FitbitActivitySummary(
         val floors: Long? = null,
         val elevation: Double? = null,
         val distances: List<FitbitActivityDistance>,
-        val heartRateZones: List<FitbitHeartRateZone>
+        val heartRateZones: List<FitbitHeartRateZone>? = null,
+        val restingHeartRate: Long? = null
 )
 
 @Serializable

@@ -31,6 +31,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.h2database:h2:1.3.148")
     implementation("com.google.guava:guava:23.0")
+    implementation("io.vertx:vertx-core:3.8.5")
+    implementation("io.vertx:vertx-lang-kotlin:3.8.5")
+    implementation("io.vertx:vertx-web:3.8.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }

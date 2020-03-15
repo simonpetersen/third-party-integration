@@ -1,11 +1,11 @@
 package dtu.openhealth.integration
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import dtu.openhealth.integration.verticle.MainVerticle
+import io.vertx.core.Vertx
 
-@SpringBootApplication
 class IntegrationApplication
 
-fun main(args: Array<String>) {
-    runApplication<IntegrationApplication>(*args)
+fun main() {
+    val vertx = Vertx.vertx()
+    vertx.deployVerticle(MainVerticle())
 }
