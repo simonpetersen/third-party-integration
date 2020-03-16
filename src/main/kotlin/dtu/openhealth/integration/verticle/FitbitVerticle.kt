@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.verticle
 
 import dtu.openhealth.integration.model.ThirdPartyNotification
-import dtu.openhealth.integration.service.impl.RestConnectorServiceImpl
+import dtu.openhealth.integration.service.RestConnectorService
 import io.vertx.core.AbstractVerticle
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -9,7 +9,7 @@ import io.vertx.ext.web.handler.BodyHandler
 
 class FitbitVerticle : AbstractVerticle() {
 
-    private val restConnectorService = RestConnectorServiceImpl()
+    private val restConnectorService = RestConnectorService()
 
     private fun handleNotification(routingContext : RoutingContext) {
         val jsonBody = routingContext.bodyAsJsonArray

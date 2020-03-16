@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.common.serializer
 
-import dtu.openhealth.integration.data.fitbit.FitbitCalories
+import dtu.openhealth.integration.fitbit.data.FitbitCalories
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.assertj.core.api.Assertions.assertThat

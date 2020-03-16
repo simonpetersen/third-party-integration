@@ -1,7 +1,8 @@
-package dtu.openhealth.integration.mapping
+package dtu.openhealth.integration.fitbit.mapping
 
 import dtu.openhealth.integration.data.*
-import dtu.openhealth.integration.data.fitbit.*
+import dtu.openhealth.integration.fitbit.data.*
+import dtu.openhealth.integration.mapping.ThirdPartyMapper
 import org.openmhealth.schema.domain.omh.*
 import java.lang.IllegalArgumentException
 import java.time.LocalDate

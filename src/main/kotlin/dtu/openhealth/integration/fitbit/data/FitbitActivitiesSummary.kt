@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.data.fitbit
+package dtu.openhealth.integration.fitbit.data
 
 import dtu.openhealth.integration.common.serialization.LocalDateSerializer
 import kotlinx.serialization.Serializable
