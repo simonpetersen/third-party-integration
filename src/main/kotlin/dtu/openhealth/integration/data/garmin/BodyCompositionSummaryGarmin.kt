@@ -1,9 +1,7 @@
 package dtu.openhealth.integration.data.garmin
 
-import java.util.*
-
 data class BodyCompositionSummaryGarmin(val userId: String,
-                                        val userAccessToken: UUID,
+                                        val userAccessToken: String,
                                         val summaryId: String,
                                         val measurementTimeInSeconds: Int,
                                         val measurementTimeOffsetInSeconds: Int,
