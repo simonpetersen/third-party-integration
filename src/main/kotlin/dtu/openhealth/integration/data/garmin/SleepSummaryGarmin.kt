@@ -17,7 +17,8 @@ data class SleepSummaryGarmin(
         val validation: String,
         val timeOffsetSleepRespiration: Map<String, Float>,
         val timeOffsetSleepSpo2: Map<String, Int>
-)
+): GarminData()
+
 
 data class TimeFrame(
         val startTimeInSeconds: Int,

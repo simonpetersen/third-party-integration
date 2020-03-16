@@ -10,4 +10,5 @@ open class PulseOXSummaryGarmin(
         val durationInSeconds: Int,
         val timeOffsetSpo2Values: Map<String, Int>,
         val onDemand: Boolean
-)
+): GarminData()
+

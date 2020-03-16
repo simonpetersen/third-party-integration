@@ -10,4 +10,5 @@ open class MoveIQSummaryGarmin(
         val durationInSeconds: Int,
         val activityType: String,
         val activitySubType: String
-)
+): GarminData()
+

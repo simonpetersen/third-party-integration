@@ -21,4 +21,5 @@ data class ThirdPartyDailySummaryGarmin(
         val maxHeartRateInBeatsPerMinute: Int,
         val timeOffsetHeartRateSamples: Map<String, Int>,
         val source: String
-)
+): GarminData()
+

@@ -7,4 +7,5 @@ open class RespirationSummaryGarmin(
         val startTimeInSeconds: Float,
         val startTimeOffsetInSeconds: Int,
         val timeOffsetEpochToBreaths: Map<String, Float>
-)
+): GarminData()
+

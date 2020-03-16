@@ -12,4 +12,5 @@ data class BodyCompositionSummaryGarmin(
         val bodyFatInPercent: Float,
         val bodyMassIndex: Float,
         val weightInGrams: Int
-)
+): GarminData()
+

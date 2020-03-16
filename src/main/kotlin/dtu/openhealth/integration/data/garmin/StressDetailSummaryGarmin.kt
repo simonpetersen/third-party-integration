@@ -10,4 +10,5 @@ data class StressDetailSummaryGarmin(
         val calendarDate: String, //Date
         val timeOffsetStressLevelValues: Map<String, Int>,
         val timeOffsetBodyBatteryDetails: Map<String, Int>
-)
+): GarminData()
+

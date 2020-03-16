@@ -7,4 +7,4 @@ data class UserMetricsSummaryGarmin(
         val calendarDate: String, //Date
         val vo2Max: Float,
         val fitnessAge: Int
-)
+): GarminData()

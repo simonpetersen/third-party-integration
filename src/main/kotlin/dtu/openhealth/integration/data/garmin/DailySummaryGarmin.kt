@@ -38,4 +38,5 @@ data class DailySummaryGarmin(
         val netKilocaloriesGoal: Int,
         val intensityDurationGoalInSeconds: Int,
         val floorsClimbedGoal: Int
-)
+): GarminData()
+

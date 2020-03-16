@@ -31,4 +31,4 @@ data class ActivitySummaryGarmin(
         val isParent: Boolean,
         val parentSummaryId: Int,
         val manual: Boolean
-)
+): GarminData()

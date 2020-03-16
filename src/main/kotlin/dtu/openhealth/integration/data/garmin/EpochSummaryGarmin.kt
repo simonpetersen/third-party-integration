@@ -16,4 +16,5 @@ data class EpochSummaryGarmin(
         val intensity: String,
         val meanMotionIntensity: Float,
         val maxMotionIntensity: Float
-)
+): GarminData()
+
