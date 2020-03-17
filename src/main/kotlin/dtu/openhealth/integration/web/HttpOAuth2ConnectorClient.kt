@@ -4,7 +4,7 @@ import dtu.openhealth.integration.common.exception.ThirdPartyConnectionException
 import java.net.HttpURLConnection
 import java.net.URL
 
-class HttpOAuth2Connector : HttpConnector {
+class HttpOAuth2ConnectorClient : HttpConnectorClient {
     // TODO: Maybe use a better framework for http with OAuth2
 
     override fun get(url: String, token : String) : String {
