@@ -1,5 +1,7 @@
 package dtu.openhealth.integration.data.garmin
 
+import org.openmhealth.schema.domain.omh.Measure
+
 data class UserMetricsSummaryGarmin(
         val userId: String,
         val userAccessToken: String,
@@ -7,4 +9,8 @@ data class UserMetricsSummaryGarmin(
         val calendarDate: String, //Date
         val vo2Max: Float,
         val fitnessAge: Int
-): GarminData()
+): GarminData() {
+    override fun mapToOMH(): List<Measure> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}

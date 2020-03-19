@@ -1,6 +1,11 @@
 package dtu.openhealth.integration.data.garmin
 
 import kotlinx.serialization.Serializable
+import org.openmhealth.schema.domain.omh.*
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 @Serializable
 data class BodyCompositionSummaryGarmin(
@@ -15,5 +20,9 @@ data class BodyCompositionSummaryGarmin(
         val bodyFatInPercent: Float? = null,
         val bodyMassIndex: Float? = null,
         val weightInGrams: Int? = null
-): GarminData()
+): GarminData() {
+    override fun mapToOMH(): List<Measure> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
 

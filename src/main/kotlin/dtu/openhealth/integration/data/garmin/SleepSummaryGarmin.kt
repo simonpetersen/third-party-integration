@@ -1,5 +1,7 @@
 package dtu.openhealth.integration.data.garmin
 
+import org.openmhealth.schema.domain.omh.Measure
+
 data class SleepSummaryGarmin(
         val userId: String,
         val userAccessToken: String,
@@ -17,7 +19,11 @@ data class SleepSummaryGarmin(
         val validation: String,
         val timeOffsetSleepRespiration: Map<String, Float>,
         val timeOffsetSleepSpo2: Map<String, Int>
-): GarminData()
+): GarminData() {
+    override fun mapToOMH(): List<Measure> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
 
 
 data class TimeFrame(

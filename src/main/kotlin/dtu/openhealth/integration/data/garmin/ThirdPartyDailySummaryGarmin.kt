@@ -1,5 +1,7 @@
 package dtu.openhealth.integration.data.garmin
 
+import org.openmhealth.schema.domain.omh.Measure
+
 data class ThirdPartyDailySummaryGarmin(
         val userId: String,
         val userAccessToken: String,
@@ -21,5 +23,9 @@ data class ThirdPartyDailySummaryGarmin(
         val maxHeartRateInBeatsPerMinute: Int,
         val timeOffsetHeartRateSamples: Map<String, Int>,
         val source: String
-): GarminData()
+): GarminData() {
+    override fun mapToOMH(): List<Measure> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
 

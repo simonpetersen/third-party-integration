@@ -1,5 +1,7 @@
 package dtu.openhealth.integration.data.garmin
 
+import org.openmhealth.schema.domain.omh.Measure
+
 open class MoveIQSummaryGarmin(
         val userId: String,
         val userAccessToken: String,
@@ -10,5 +12,9 @@ open class MoveIQSummaryGarmin(
         val durationInSeconds: Int,
         val activityType: String,
         val activitySubType: String
-): GarminData()
+): GarminData() {
+    override fun mapToOMH(): List<Measure> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
 

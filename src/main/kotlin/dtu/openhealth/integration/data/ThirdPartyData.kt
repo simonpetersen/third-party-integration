@@ -1,6 +1,9 @@
 package dtu.openhealth.integration.data
 
 import kotlinx.serialization.Serializable
+import org.openmhealth.schema.domain.omh.Measure
 
 @Serializable
-open class ThirdPartyData
+abstract class ThirdPartyData {
+    abstract fun mapToOMH(): List<Measure>
+}

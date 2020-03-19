@@ -4,4 +4,8 @@ import dtu.openhealth.integration.data.ThirdPartyData
 import kotlinx.serialization.Serializable
 
 @Serializable
-open class FitbitData : ThirdPartyData()
+abstract class FitbitData : ThirdPartyData() {
+    /*
+        Add Fitbit specific methods (if any)
+     */
+}

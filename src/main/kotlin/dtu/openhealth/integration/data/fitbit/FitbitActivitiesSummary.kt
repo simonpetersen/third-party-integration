@@ -2,6 +2,7 @@ package dtu.openhealth.integration.data.fitbit
 
 import dtu.openhealth.integration.common.serialization.LocalDateSerializer
 import kotlinx.serialization.Serializable
+import org.openmhealth.schema.domain.omh.Measure
 import java.time.LocalDate
 
 @Serializable
@@ -9,7 +10,11 @@ data class FitbitActivitiesSummary(
         val activities: List<FitbitActivity>,
         val goals: FitbitActivityGoals,
         val summary: FitbitActivitySummary
-) : FitbitData()
+) : FitbitData() {
+    override fun mapToOMH(): List<Measure> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
 
 @Serializable
 data class FitbitActivity(
