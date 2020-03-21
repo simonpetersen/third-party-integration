@@ -15,7 +15,7 @@ data class SleepSummaryGarmin(
         val lightSleepDurationInSeconds: Int,
         val remSleepInSeconds: Int,
         val awakeDurationInSeconds: Int,
-        val sleepLevelsMap: Map<String, List<TimeFrame>>,
+        val sleepLevelsMap: Map<String, List<SleepTimeFrame>>,
         val validation: String,
         val timeOffsetSleepRespiration: Map<String, Float>,
         val timeOffsetSleepSpo2: Map<String, Int>
@@ -26,7 +26,7 @@ data class SleepSummaryGarmin(
 }
 
 
-data class TimeFrame(
+data class SleepTimeFrame(
         val startTimeInSeconds: Int,
         val endTimeInSeconds: Int
 )

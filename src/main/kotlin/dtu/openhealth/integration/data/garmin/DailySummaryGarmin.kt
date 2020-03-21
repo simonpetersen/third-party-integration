@@ -2,7 +2,6 @@ package dtu.openhealth.integration.data.garmin
 
 import org.openmhealth.schema.domain.omh.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 data class DailySummaryGarmin(
         val userId: String? = null,
