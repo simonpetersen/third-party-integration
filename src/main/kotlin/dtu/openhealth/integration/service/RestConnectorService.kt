@@ -1,22 +1,16 @@
 package dtu.openhealth.integration.service
 
-import dtu.openhealth.integration.data.ThirdPartyData
-import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
-import dtu.openhealth.integration.fitbit.mapping.FitbitMapper
 import dtu.openhealth.integration.model.RestEndpoint
-import dtu.openhealth.integration.model.ThirdPartyNotification
 import dtu.openhealth.integration.model.User
-import dtu.openhealth.integration.web.HttpOAuth2ConnectorClient
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
+
 
 class RestConnectorService {
 
     private val urlMap = HashMap<String, RestEndpoint>()
     private val userTokens = HashMap<String, User>() // Temp mock DB with HashMaps
 
-    private val httpConnector = HttpOAuth2ConnectorClient()
+    /*
+    private val httpConnector = HttpOAuth2ConnectorClient(WebClient.create(Vertx.vertx()))
     private val fitbitMapper = FitbitMapper() // Should be extracted to MappingService
 
     init {
@@ -63,4 +57,6 @@ class RestConnectorService {
         println(thirdPartyData)
         return thirdPartyData
     }
+
+     */
 }

@@ -3,13 +3,12 @@ package dtu.openhealth.integration.service.mock
 import dtu.openhealth.integration.mapping.ThirdPartyMapper
 import dtu.openhealth.integration.model.User
 import dtu.openhealth.integration.service.HttpService
-import dtu.openhealth.integration.service.ThirdPartyPullingService
+import dtu.openhealth.integration.service.ThirdPartyPullService
 
-class MockPullingService(
-        mapper: ThirdPartyMapper,
+class MockPullService(
         httpService: HttpService,
         private val users: List<User>
-): ThirdPartyPullingService(mapper, httpService) {
+): ThirdPartyPullService(httpService) {
 
     override fun getUserList(): List<User> {
         return users

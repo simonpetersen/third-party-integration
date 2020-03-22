@@ -3,8 +3,7 @@ package dtu.openhealth.integration.service
 import dtu.openhealth.integration.mapping.ThirdPartyMapper
 import dtu.openhealth.integration.model.User
 
-abstract class ThirdPartyPullingService(
-        private val mapper: ThirdPartyMapper,
+abstract class ThirdPartyPullService(
         private val httpService: HttpService) {
 
     fun pullData() {
@@ -15,10 +14,9 @@ abstract class ThirdPartyPullingService(
     private fun callEndpointsForUser(user: User) {
         val urlParameters = getUserParameters(user)
         val thirdPartyData = httpService.callApiForUser(user, urlParameters)
-        for (data in thirdPartyData) {
-            val omhData = mapper.mapData(data)
-            println(omhData) // TODO: Put on Kafka stream.
-        }
+
+        // TODO: Put result on Kafka stream.
+        thirdPartyData.subscribe({ result -> println("Result = $result") }, { error -> println(error) })
     }
 
     abstract fun getUserList(): List<User>

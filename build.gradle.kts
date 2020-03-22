@@ -19,7 +19,6 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -34,11 +33,13 @@ dependencies {
     implementation("io.vertx:vertx-core:3.8.5")
     implementation("io.vertx:vertx-lang-kotlin:3.8.5")
     implementation("io.vertx:vertx-web:3.8.5")
+    implementation("io.vertx:vertx-web-client:3.8.5")
+    implementation("io.vertx:vertx-rx-java2:3.8.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
-    testImplementation("io.projectreactor:reactor-test")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+    testImplementation("io.vertx:vertx-junit5:3.8.5")
 }
 
 tasks.withType<Test> {
