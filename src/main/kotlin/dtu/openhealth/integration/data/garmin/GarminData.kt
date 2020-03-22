@@ -16,9 +16,9 @@ abstract class GarminData: ThirdPartyData() {
         Add garmin specific methods (if any)
      */
     protected fun getTimeInterval(startTime: Int?, offSet: Int?, durationInSeconds: Int?): TimeInterval {
-        val start = startTime?.plus(offSet!!)?.toLong();
         return TimeInterval.ofStartDateTimeAndDuration(
-                start?.let { Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toOffsetDateTime() },
+                startTime?.let { OffsetDateTime.of(Instant.ofEpochSecond(it.toLong())
+                        .atZone(ZoneOffset.UTC).toLocalDateTime(), ZoneOffset.ofTotalSeconds(offSet!!)) },
                 DurationUnitValue((DurationUnit.SECOND), durationInSeconds?.toBigDecimal()))
     }
 }
