@@ -1,9 +1,7 @@
 package dtu.openhealth.integration.data.garmin
 
-import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.*
 
-@Serializable
 data class BodyCompositionSummaryGarmin(
         val userId: String? = null,
         val userAccessToken: String? = null,

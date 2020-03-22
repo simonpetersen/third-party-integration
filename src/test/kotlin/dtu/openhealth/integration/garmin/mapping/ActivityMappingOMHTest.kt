@@ -44,7 +44,7 @@ class ActivityMappingOMHTest {
         assertThat(physicalActivity.caloriesBurned).isEqualTo(KcalUnitValue(KcalUnit.KILOCALORIE, caloriesBurned.toBigDecimal()))
         assertThat(physicalActivity.distance).isEqualTo(LengthUnitValue(LengthUnit.METER, distance.toBigDecimal()))
         assertThat(physicalActivity.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
-                .isEqualTo((startTime + startTimeOffset).toLong())
+                .isEqualTo((startTime - startTimeOffset).toLong())
     }
 
     @Test

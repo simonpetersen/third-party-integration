@@ -2,7 +2,7 @@ package dtu.openhealth.integration.data.garmin
 
 import org.openmhealth.schema.domain.omh.Measure
 
-open class PulseOXSummaryGarmin(
+data class PulseOXSummaryGarmin(
         val userId: String,
         val userAccessToken: String,
         val summaryId: String,

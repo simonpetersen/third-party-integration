@@ -2,7 +2,7 @@ package dtu.openhealth.integration.data.garmin
 
 import org.openmhealth.schema.domain.omh.Measure
 
-open class MoveIQSummaryGarmin(
+data class MoveIQSummaryGarmin(
         val userId: String,
         val userAccessToken: String,
         val summaryId: String,

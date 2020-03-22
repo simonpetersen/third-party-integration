@@ -1,11 +1,10 @@
 package dtu.openhealth.integration.data.garmin
 
 import org.openmhealth.schema.domain.omh.*
-import java.util.*
 
 data class DailySummaryGarmin(
         val userId: String? = null,
-        val userAccessToken: UUID? = null,
+        val userAccessToken: String? = null,
         val summaryId: String? = null,
         val calendarDate: String? = null,
         val startTimeInSeconds: Int? = null,
@@ -14,7 +13,7 @@ data class DailySummaryGarmin(
         val durationInSeconds: Int? = null,
         val steps: Int? = null,
         val distanceInMeters: Float? = null,
-        val activeTimeInSeconds: Int? = null,
+        val activesTimeInSeconds: Int? = null,
         val activeKilocalories: Int? = null,
         val bmrKilocalories: Int? = null,
         val consumedCalories: Int? = null,
@@ -41,7 +40,29 @@ data class DailySummaryGarmin(
         val floorsClimbedGoal: Int? = null
 ): GarminData() {
     override fun mapToOMH(): List<Measure> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val measures = mutableListOf<Measure>()
+
+        steps?.let {
+            measures.add(StepCount2.Builder(
+                    it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    .build())
+        }
+
+        bmrKilocalories?.let {
+            measures.add(CaloriesBurned2.Builder(
+                    KcalUnitValue(KcalUnit.KILOCALORIE, (it + activeKilocalories!!).toBigDecimal()),
+                    getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    .build())
+        }
+
+        averageHeartRateInBeatsPerMinute?.let {
+            measures.add(HeartRate.Builder(
+                    TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
+                    .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    .build())
+        }
+
+        return measures
     }
 }
 
