@@ -1,16 +1,19 @@
-package dtu.openhealth.integration.garmin
+package dtu.openhealth.integration.garmin.verticle
 
+import dtu.openhealth.integration.verticle.GarminVerticle
+import io.vertx.junit5.VertxExtension
+import io.vertx.junit5.VertxTestContext
+import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.client.WebClient
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpStatus
+import org.junit.jupiter.api.extension.ExtendWith
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GarminDailyTest(@Autowired val testRestTemplate: TestRestTemplate) {
+@ExtendWith(VertxExtension::class)
+class DailyEndpointTest {
 
-    val jsonString ="""
+    val validJsonString ="""
     {
         "dailies":
         [
@@ -63,9 +66,20 @@ class GarminDailyTest(@Autowired val testRestTemplate: TestRestTemplate) {
     }"""
 
     @Test
-    fun testDailyEndpoint() {
-        val result = testRestTemplate.postForEntity("/api/garmin/daily", jsonString, String::class.java)
-        Assertions.assertThat(result.statusCode).isEqualTo(HttpStatus.CREATED)
+    fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
+        vertx.deployVerticle(GarminVerticle(), testContext.succeeding { id ->
+            val client: WebClient = WebClient.create(vertx)
+            client.post(8082, "localhost", "/api/garmin/dailies")
+                    .putHeader("Content-Type","application/json")
+                    .rxSendBuffer(Buffer.buffer(validJsonString))
+                    .subscribe { response ->
+                        testContext.verify {
+                            Assertions.assertThat(response.statusCode()).isEqualTo(200)
+                            testContext.completeNow()
+                        }
+                    }
+        })
     }
+
 
 }
