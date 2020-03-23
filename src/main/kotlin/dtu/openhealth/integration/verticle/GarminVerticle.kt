@@ -41,6 +41,7 @@ class GarminVerticle: AbstractVerticle() {
                 }
             }
         }
+        routingContext.response().end()
     }
 
     private fun handleBodyConsumptionSummary(routingContext : RoutingContext) {
