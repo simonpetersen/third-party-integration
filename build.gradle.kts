@@ -35,10 +35,13 @@ dependencies {
     implementation("io.vertx:vertx-core:3.8.5")
     implementation("io.vertx:vertx-lang-kotlin:3.8.5")
     implementation("io.vertx:vertx-web:3.8.5")
+    implementation("io.vertx:vertx-web-client:3.8.5")
+    implementation("io.vertx:vertx-rx-java2:3.8.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("io.vertx:vertx-junit5:3.8.5")
 }
 
 tasks.withType<Test> {
