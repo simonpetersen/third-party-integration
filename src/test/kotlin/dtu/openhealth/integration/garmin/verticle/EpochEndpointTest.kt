@@ -11,39 +11,42 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(VertxExtension::class)
-class ActivityEndpointTest {
+class EpochEndpointTest {
 
-    val validJsonString ="""
+    private val validJsonString = """
     {
-        "activities":
+        "epochs":
         [
             {
                 "userId": "4aacafe82427c251df9c9592d0c06768", 
                 "userAccessToken": "8f57a6f1-26ba-4b05-a7cd-c6b525a4c7a2", 
-                "summaryId": "EXAMPLE_12345",
-                "activityType": "RUNNING",
-                "startTimeInSeconds": 1452470400, 
-                "startTimeOffsetInSeconds": 0,
-                "durationInSeconds": 11580, 
-                "averageSpeedInMetersPerSecond": 2.888999938964844, 
-                "distanceInMeters": 519818.125, 
-                "activeKilocalories": 448,
-                "deviceName": "Forerunner 910XT",
-                "averagePaceInMinutesPerKilometer": 0.5975272352046997 
+                "summaryId": "EXAMPLE_1234", 
+                "activityType": "SEDENTARY", 
+                "activeKilocalories": 0, 
+                "steps": 0, 
+                "distanceInMeters": 0.0, 
+                "durationInSeconds": 900, 
+                "activeTimeInSeconds": 600, 
+                "met": 1.0,
+                "intensity": "SEDENTARY",
+                "startTimeInSeconds": 1454418900,
+                "startTimeOffsetInSeconds": 3600
             },
             {
                 "userId": "4aacafe82427c251df9c9592d0c06768", 
                 "userAccessToken": "8f57a6f1-26ba-4b05-a7cd-c6b525a4c7a2", 
-                "summaryId": "EXAMPLE_12346", 
-                "activityType": "CYCLING", 
-                "startTimeInSeconds": 1452506094, 
-                "startTimeOffsetInSeconds": 0, 
-                "durationInSeconds": 1824, 
-                "averageSpeedInMetersPerSecond": 8.75, 
-                "distanceInMeters": 4322.357, 
-                "activeKilocalories": 360, 
-                "deviceName": "Forerunner 910XT"
-            } 
+                "summaryId": "EXAMPLE_5678", 
+                "activityType": "RUNNING", 
+                "activeKilocalories": 257, 
+                "steps": 427, 
+                "distanceInMeters": 222.07, 
+                "durationInSeconds": 900, 
+                "activeTimeInSeconds": 300, 
+                "met": 9.894117,
+                "intensity": "HIGHLY_ACTIVE", 
+                "startTimeInSeconds": 1454418900, 
+                "startTimeOffsetInSeconds": 3600
+            }
         ]
     }"""
 
@@ -52,8 +55,8 @@ class ActivityEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/activities")
-                    .putHeader("Content-Type","application/json")
+            client.post(8082, "localhost", "/api/garmin/epochs")
+                    .putHeader("Content-Type", "application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
@@ -63,5 +66,4 @@ class ActivityEndpointTest {
                     }
         })
     }
-
 }

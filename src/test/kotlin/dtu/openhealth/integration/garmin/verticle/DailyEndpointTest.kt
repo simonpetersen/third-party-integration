@@ -67,7 +67,7 @@ class DailyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(GarminVerticle(), testContext.succeeding { id ->
+        vertx.deployVerticle(GarminVerticle(), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(8082, "localhost", "/api/garmin/dailies")
                     .putHeader("Content-Type","application/json")

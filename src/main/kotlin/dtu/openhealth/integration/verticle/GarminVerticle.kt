@@ -22,7 +22,10 @@ class GarminVerticle: AbstractVerticle() {
         router.post("/api/garmin/activities").handler { handleActivitySummary(it) }
         router.post("/api/garmin/body").handler { handleBodyConsumptionSummary(it) }
         router.post("/api/garmin/dailies").handler { handleDailySummary(it) }
+        router.post("/api/garmin/epochs").handler { handleEpochSummary(it) }
         router.post("/api/garmin/respirations").handler { handleRespirationSummary(it) }
+        router.post("/api/garmin/sleep").handler { handleSleepSummary(it) }
+        router.post("/api/garmin/thirdparty").handler { handleThirdPartySummary(it) }
 
         vertx.createHttpServer().requestHandler(router).listen(8082)
     }
@@ -78,6 +81,22 @@ class GarminVerticle: AbstractVerticle() {
         routingContext.response().end()
     }
 
+    private fun handleEpochSummary(routingContext : RoutingContext) {
+        val epochsSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("epochs")
+        epochsSummaries.stream().forEach {
+            data -> if(data is JsonObject) {
+                try{
+                    data.mapTo(EpochSummaryGarmin::class.java).also {
+                        LOGGER.info("Saving data to Garmin: $it")
+                        garminDataService.saveDataToOMH(it)
+                    }
+                }catch (e: Exception){
+                    LOGGER.error(e.message)
+                }
+            }
+        }
+        routingContext.response().end()
+    }
 
     private fun handleRespirationSummary(routingContext : RoutingContext) {
         val respirationSummary = routingContext.bodyAsJson.getJsonArray("respirations")
@@ -85,6 +104,40 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(RespirationSummaryGarmin::class.java).also {
+                        LOGGER.info("Saving data to Garmin: $it")
+                        garminDataService.saveDataToOMH(it)
+                    }
+                }catch (e: Exception){
+                    LOGGER.error(e.message)
+                }
+            }
+        }
+        routingContext.response().end()
+    }
+
+    private fun handleSleepSummary(routingContext : RoutingContext) {
+        val sleepSummary = routingContext.bodyAsJson.getJsonArray("sleeps")
+        sleepSummary.stream().forEach {
+            data -> if(data is JsonObject) {
+                try{
+                    data.mapTo(SleepSummaryGarmin::class.java).also {
+                        LOGGER.info("Saving data to Garmin: $it")
+                        garminDataService.saveDataToOMH(it)
+                    }
+                }catch (e: Exception){
+                    LOGGER.error(e.message)
+                }
+            }
+        }
+        routingContext.response().end()
+    }
+
+    private fun handleThirdPartySummary(routingContext : RoutingContext) {
+        val thirdPartySummaries = routingContext.bodyAsJson.getJsonArray("thirdParty")
+        thirdPartySummaries.stream().forEach {
+            data -> if(data is JsonObject) {
+                try{
+                    data.mapTo(ThirdPartyDailySummaryGarmin::class.java).also {
                         LOGGER.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }

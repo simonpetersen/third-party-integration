@@ -44,20 +44,20 @@ data class DailySummaryGarmin(
 
         steps?.let {
             measures.add(StepCount2.Builder(
-                    it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                            it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
                     .build())
         }
 
         bmrKilocalories?.let {
             measures.add(CaloriesBurned2.Builder(
-                    KcalUnitValue(KcalUnit.KILOCALORIE, (it + activeKilocalories!!).toBigDecimal()),
+                            KcalUnitValue(KcalUnit.KILOCALORIE, (it + activeKilocalories!!).toBigDecimal()),
                     getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
                     .build())
         }
 
         averageHeartRateInBeatsPerMinute?.let {
             measures.add(HeartRate.Builder(
-                    TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
+                            TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
                     .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
                     .build())
         }

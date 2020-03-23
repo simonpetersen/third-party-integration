@@ -11,39 +11,44 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(VertxExtension::class)
-class ActivityEndpointTest {
+class ThirdPartyEndpointTest {
 
-    val validJsonString ="""
+    private val validJsonString = """
     {
-        "activities":
+        "thirdparty":
         [
             {
                 "userId": "4aacafe82427c251df9c9592d0c06768", 
                 "userAccessToken": "8f57a6f1-26ba-4b05-a7cd-c6b525a4c7a2", 
-                "summaryId": "EXAMPLE_12345",
-                "activityType": "RUNNING",
-                "startTimeInSeconds": 1452470400, 
-                "startTimeOffsetInSeconds": 0,
-                "durationInSeconds": 11580, 
-                "averageSpeedInMetersPerSecond": 2.888999938964844, 
-                "distanceInMeters": 519818.125, 
-                "activeKilocalories": 448,
-                "deviceName": "Forerunner 910XT",
-                "averagePaceInMinutesPerKilometer": 0.5975272352046997 
-            },
+                "summaryId": "EXAMPLE_67891", 
+                "activityType": "WALKING", 
+                "activeKilocalories": 1136, 
+                "bmrKilocalories": 1736, 
+                "steps": 11467, 
+                "distanceInMeters": 14001.0, 
+                "durationInSeconds": 86400, 
+                "activeTimeInSeconds": 4680,
+                "startTimeInSeconds": 1472688000, 
+                "startTimeOffsetInSeconds": 0, 
+                "floorsClimbed": 12,
+                "source": "FITBIT"
+            }, 
             {
                 "userId": "4aacafe82427c251df9c9592d0c06768", 
-                "userAccessToken": "8f57a6f1-26ba-4b05-a7cd-c6b525a4c7a2", 
-                "summaryId": "EXAMPLE_12346", 
-                "activityType": "CYCLING", 
-                "startTimeInSeconds": 1452506094, 
+                "userAccessToken": "8f57a6f1-26ba-4b05-a7cd-c6b525a4c7a2",    
+                "summaryId": "EXAMPLE_67892", 
+                "activityType": "WALKING", 
+                "activeKilocalories": 1708, 
+                "bmrKilocalories": 1200, 
+                "steps": 13986, 
+                "distanceInMeters": 17091.0, 
+                "durationInSeconds": 86400, 
+                "activeTimeInSeconds": 8340, 
+                "startTimeInSeconds": 1472774400, 
                 "startTimeOffsetInSeconds": 0, 
-                "durationInSeconds": 1824, 
-                "averageSpeedInMetersPerSecond": 8.75, 
-                "distanceInMeters": 4322.357, 
-                "activeKilocalories": 360, 
-                "deviceName": "Forerunner 910XT"
-            } 
+                "floorsClimbed": 42,
+                "source": "FITBIT" 
+            }
         ]
     }"""
 
@@ -52,7 +57,7 @@ class ActivityEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/activities")
+            client.post(8082, "localhost", "/api/garmin/thirdparty")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
@@ -63,5 +68,4 @@ class ActivityEndpointTest {
                     }
         })
     }
-
 }

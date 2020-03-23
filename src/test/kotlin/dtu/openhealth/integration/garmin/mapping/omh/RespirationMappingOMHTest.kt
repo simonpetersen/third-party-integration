@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.garmin.mapping
+package dtu.openhealth.integration.garmin.mapping.omh
 
 import dtu.openhealth.integration.data.garmin.RespirationSummaryGarmin
 import org.assertj.core.api.Assertions.assertThat
