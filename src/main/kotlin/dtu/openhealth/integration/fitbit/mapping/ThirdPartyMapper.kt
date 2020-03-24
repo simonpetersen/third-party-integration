@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.mapping
+package dtu.openhealth.integration.fitbit.mapping
 
 import dtu.openhealth.integration.data.ThirdPartyData
 import org.openmhealth.schema.domain.omh.Measure

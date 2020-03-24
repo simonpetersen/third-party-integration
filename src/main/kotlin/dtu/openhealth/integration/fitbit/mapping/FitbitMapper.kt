@@ -1,9 +1,10 @@
-package dtu.openhealth.integration.mapping
+package dtu.openhealth.integration.fitbit.mapping
 
 import dtu.openhealth.integration.data.*
 import dtu.openhealth.integration.data.fitbit.*
 import org.openmhealth.schema.domain.omh.*
 import java.lang.IllegalArgumentException
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -60,7 +61,7 @@ class FitbitMapper : ThirdPartyMapper {
 
     private fun mapActivity(activity: FitbitActivity) : Measure {
         val calories = KcalUnitValue(KcalUnit.KILOCALORIE, activity.calories)
-        val distance = LengthUnitValue(LengthUnit.KILOMETER, activity.distance)
+        val distance = LengthUnitValue(LengthUnit.KILOMETER, BigDecimal.ZERO)
 
         val builder = PhysicalActivity.Builder(activity.name)
                 .setCaloriesBurned(calories)

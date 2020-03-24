@@ -2,7 +2,7 @@ package dtu.openhealth.integration.service.impl
 
 import dtu.openhealth.integration.data.ThirdPartyData
 import dtu.openhealth.integration.data.fitbit.FitbitActivitiesSummary
-import dtu.openhealth.integration.mapping.FitbitMapper
+import dtu.openhealth.integration.fitbit.mapping.FitbitMapper
 import dtu.openhealth.integration.model.RestEndpoint
 import dtu.openhealth.integration.model.ThirdPartyNotification
 import dtu.openhealth.integration.model.User
