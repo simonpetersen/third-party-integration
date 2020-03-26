@@ -1,7 +1,9 @@
 package dtu.openhealth.integration.data.garmin
 
-import dtu.openhealth.integration.common.exception.NoMappingFoundException
+import org.openmhealth.schema.domain.omh.HeartRate
+import org.openmhealth.schema.domain.omh.HeartRateUnit
 import org.openmhealth.schema.domain.omh.Measure
+import org.openmhealth.schema.domain.omh.TypedUnitValue
 
 data class PulseOXSummaryGarmin(
         val userId: String? = null,
@@ -15,7 +17,16 @@ data class PulseOXSummaryGarmin(
         val onDemand: Boolean? = null
 ): GarminData() {
     override fun mapToOMH(): List<Measure> {
-        throw NoMappingFoundException("No mapping found for this type: ${this.javaClass}")
+        val measures = mutableListOf<Measure>()
+
+        timeOffsetSpo2Values?.let {
+            measures.add(HeartRate.Builder(
+                    TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, it.values.average()))
+                    .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds?.toInt(), startTimeOffsetInSeconds, durationInSeconds))
+                    .build())
+        }
+
+        return measures
     }
 }
 

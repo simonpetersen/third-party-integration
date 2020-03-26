@@ -57,7 +57,7 @@ data class DailySummaryGarmin(
 
         averageHeartRateInBeatsPerMinute?.let {
             measures.add(HeartRate.Builder(
-                            TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
+                            TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, it.toBigDecimal()))
                     .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
                     .build())
         }
