@@ -26,6 +26,7 @@ class GarminVerticle: AbstractVerticle() {
         router.post("/api/garmin/respirations").handler { handleRespirationSummary(it) }
         router.post("/api/garmin/sleep").handler { handleSleepSummary(it) }
         router.post("/api/garmin/thirdparty").handler { handleThirdPartySummary(it) }
+        router.post("/api/garmin/pulse").handler { handlePulseSummary(it) }
 
         vertx.createHttpServer().requestHandler(router).listen(8082)
     }
@@ -138,6 +139,24 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(ThirdPartyDailySummaryGarmin::class.java).also {
+                        LOGGER.info("Saving data to Garmin: $it")
+                        garminDataService.saveDataToOMH(it)
+                    }
+                }catch (e: Exception){
+                    LOGGER.error(e.message)
+                }
+            }
+        }
+        routingContext.response().end()
+    }
+
+
+    private fun handlePulseSummary(routingContext : RoutingContext) {
+        val pulseSummaries = routingContext.bodyAsJson.getJsonArray("pulseOX")
+        pulseSummaries.stream().forEach {
+            data -> if(data is JsonObject) {
+                try{
+                    data.mapTo(PulseOXSummaryGarmin::class.java).also {
                         LOGGER.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
