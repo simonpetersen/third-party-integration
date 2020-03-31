@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.garmin.mapping.omh
 
-import dtu.openhealth.integration.data.garmin.RespirationSummaryGarmin
+import dtu.openhealth.integration.garmin.garmin.RespirationSummaryGarmin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.RespiratoryRate

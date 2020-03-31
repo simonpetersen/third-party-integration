@@ -1,12 +1,9 @@
 package dtu.openhealth.integration.garmin.mapping.omh
 
-import dtu.openhealth.integration.common.exception.NoMappingFoundException
-import dtu.openhealth.integration.data.garmin.PulseOXSummaryGarmin
+import dtu.openhealth.integration.garmin.garmin.PulseOXSummaryGarmin
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.openmhealth.schema.domain.omh.HeartRate
-import org.openmhealth.schema.domain.omh.RespiratoryRate
 
 class PulseMappingOMHTest {
 

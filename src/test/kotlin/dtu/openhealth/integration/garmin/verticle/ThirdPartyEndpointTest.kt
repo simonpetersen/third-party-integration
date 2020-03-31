@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.garmin.verticle
 
-import dtu.openhealth.integration.verticle.GarminVerticle
+import dtu.openhealth.integration.garmin.GarminVerticle
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx

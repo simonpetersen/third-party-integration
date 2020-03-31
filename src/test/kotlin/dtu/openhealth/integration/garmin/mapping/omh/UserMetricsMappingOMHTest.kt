@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.garmin.mapping.omh
 
-import dtu.openhealth.integration.common.exception.NoMappingFoundException
-import dtu.openhealth.integration.data.garmin.UserMetricsSummaryGarmin
+import dtu.openhealth.integration.shared.util.exception.NoMappingFoundException
+import dtu.openhealth.integration.garmin.garmin.UserMetricsSummaryGarmin
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 

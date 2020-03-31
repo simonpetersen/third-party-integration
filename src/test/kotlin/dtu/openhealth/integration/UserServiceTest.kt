@@ -1,7 +1,7 @@
 package dtu.openhealth.integration
 
-import dtu.openhealth.integration.model.User
-import dtu.openhealth.integration.service.UserService
+import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.service.UserService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

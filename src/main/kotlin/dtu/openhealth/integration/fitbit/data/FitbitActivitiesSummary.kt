@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.fitbit.data
 
-import dtu.openhealth.integration.common.serialization.LocalDateSerializer
-import dtu.openhealth.integration.common.serialization.LocalTimeSerializer
+import dtu.openhealth.integration.shared.util.serialization.LocalDateSerializer
+import dtu.openhealth.integration.shared.util.serialization.LocalTimeSerializer
 import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.*
 import java.time.*

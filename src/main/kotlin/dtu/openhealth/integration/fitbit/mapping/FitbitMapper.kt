@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.fitbit.mapping
 
-import dtu.openhealth.integration.data.*
+import dtu.openhealth.integration.shared.data.*
 import dtu.openhealth.integration.fitbit.data.*
 import org.openmhealth.schema.domain.omh.*
 import java.lang.IllegalArgumentException

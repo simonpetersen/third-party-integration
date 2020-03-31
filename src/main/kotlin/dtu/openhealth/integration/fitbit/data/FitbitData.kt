@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.fitbit.data
 
-import dtu.openhealth.integration.data.ThirdPartyData
+import dtu.openhealth.integration.shared.data.ThirdPartyData
 import kotlinx.serialization.Serializable
 
 @Serializable

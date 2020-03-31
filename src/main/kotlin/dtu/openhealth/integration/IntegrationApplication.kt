@@ -1,16 +1,7 @@
 package dtu.openhealth.integration
 
-import dtu.openhealth.integration.fitbit.FitbitPullService
-import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
 import io.vertx.reactivex.core.Vertx
-import io.vertx.reactivex.ext.web.client.WebClient
-import dtu.openhealth.integration.model.RestEndpoint
-import dtu.openhealth.integration.service.ThirdPartyNotificationService
-import dtu.openhealth.integration.service.impl.HttpServiceImpl
-import dtu.openhealth.integration.service.impl.TestUserServiceImpl
-import dtu.openhealth.integration.verticle.MainVerticle
-import dtu.openhealth.integration.web.FitbitRestUrl
-import dtu.openhealth.integration.web.HttpOAuth2ConnectorClient
+import dtu.openhealth.integration.shared.verticle.MainVerticle
 
 
 class IntegrationApplication

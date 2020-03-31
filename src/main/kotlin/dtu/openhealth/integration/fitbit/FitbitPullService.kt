@@ -1,10 +1,10 @@
 package dtu.openhealth.integration.fitbit
 
-import dtu.openhealth.integration.model.RestEndpoint
-import dtu.openhealth.integration.model.User
-import dtu.openhealth.integration.service.HttpService
-import dtu.openhealth.integration.service.ThirdPartyPullService
-import dtu.openhealth.integration.service.UserService
+import dtu.openhealth.integration.shared.model.RestEndpoint
+import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.service.HttpService
+import dtu.openhealth.integration.shared.service.ThirdPartyPullService
+import dtu.openhealth.integration.shared.service.UserService
 import java.time.LocalDate
 
 class FitbitPullService(httpService: HttpService, endpointList: List<RestEndpoint>, private val userService: UserService)
