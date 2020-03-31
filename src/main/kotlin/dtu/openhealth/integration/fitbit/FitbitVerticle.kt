@@ -1,27 +1,24 @@
-package dtu.openhealth.integration.verticle
+package dtu.openhealth.integration.fitbit
 
 import dtu.openhealth.integration.model.ThirdPartyNotification
-import dtu.openhealth.integration.service.RestConnectorService
+import dtu.openhealth.integration.service.ThirdPartyNotificationService
 import io.vertx.core.AbstractVerticle
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
 
-class FitbitVerticle : AbstractVerticle() {
-
-    private val restConnectorService = RestConnectorService()
+class FitbitVerticle(private val notificationService: ThirdPartyNotificationService) : AbstractVerticle() {
 
     private fun handleNotification(routingContext : RoutingContext) {
         val jsonBody = routingContext.bodyAsJsonArray
-        for (notification in jsonBody.list) {
-            val fitbitNotification = ThirdPartyNotification(notification as Map<String, String>, "collectionType", "ownerId")
-            println(fitbitNotification)
-            //restConnectorService.retrieveDataForUser(fitbitNotification)
-        }
+        val notificationList = jsonBody.list
+                .map { ThirdPartyNotification(it as Map<String, String>, "collectionType", "ownerId") }
 
-        val response = routingContext.response()
-        response.statusCode = 204
-        response.end()
+        notificationService.getUpdatedData(notificationList)
+
+        routingContext.response()
+                .setStatusCode(204)
+                .end()
     }
 
     override fun start() {

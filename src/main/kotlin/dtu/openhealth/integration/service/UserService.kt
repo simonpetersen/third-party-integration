@@ -9,4 +9,5 @@ interface UserService {
     fun deleteUser(user: User)
     fun getNewestData(id: String): String
     fun addNewData(data: String)
+    fun getAllUsers() : List<User>
 }

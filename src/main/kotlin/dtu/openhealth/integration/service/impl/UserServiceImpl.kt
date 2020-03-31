@@ -44,4 +44,8 @@ class UserServiceImpl(@Autowired private val userRepository: UserRepository) : U
         //TODO
     }
 
+    override fun getAllUsers(): List<User> {
+        TODO("Not yet implemented")
+    }
+
 }

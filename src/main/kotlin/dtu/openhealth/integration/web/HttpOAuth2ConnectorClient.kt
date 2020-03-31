@@ -43,14 +43,14 @@ class HttpOAuth2ConnectorClient(private val webClient: WebClient, private val po
         }
     }
 
-    override fun get(endpoint: RestEndpoint, url: String, token: String): Single<ApiResponse> {
-        return webClient.get(port, endpoint.url.host, url)
+    override fun get(request: ApiRequest, token: String): Single<ApiResponse> {
+        return webClient.get(port, request.endpoint.url.host, request.url)
                 .ssl(true)
                 .bearerTokenAuthentication(token)
                 .expect(ResponsePredicate.SC_SUCCESS)
                 .`as`(BodyCodec.string())
                 .rxSend()
-                .map { ApiResponse(it.body(), endpoint.serializer) }
+                .map { ApiResponse(it.body(), request.endpoint.serializer, request.parameters) }
     }
 
     override fun post(url: String) {

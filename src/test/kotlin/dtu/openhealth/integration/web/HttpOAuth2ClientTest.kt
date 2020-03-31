@@ -23,12 +23,13 @@ class HttpOAuth2ClientTest {
     @Test
     fun testOAuth2Client(vertx: Vertx, tc: VertxTestContext) {
         val endpoint = RestEndpoint(TestRestUrl("localhost", "/"), ThirdPartyData.serializer())
+        val request = ApiRequest(endpoint, "/", emptyMap())
         val options = webClientOptionsOf(trustAll = true)
         val webClient = WebClient.create(vertx, options)
         val oauth2Client = HttpOAuth2ConnectorClient(webClient, port)
         initWebServer(vertx)
 
-        val responseSingle = oauth2Client.get(endpoint, "/", "testToken")
+        val responseSingle = oauth2Client.get(request, "testToken")
         responseSingle.subscribe(
                 { result -> tc.verify { assertEquals(result.responseJson, responseJson); }; tc.completeNow() },
                 { error -> tc.failNow(error) }
