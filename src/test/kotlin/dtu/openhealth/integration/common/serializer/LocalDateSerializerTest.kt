@@ -1,7 +1,5 @@
 package dtu.openhealth.integration.common.serializer
-
 import dtu.openhealth.integration.common.serialization.LocalDateSerializer
-import dtu.openhealth.integration.data.fitbit.FitbitCalories
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration

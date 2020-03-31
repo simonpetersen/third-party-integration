@@ -1,8 +1,8 @@
 package dtu.openhealth.integration.fitbit.mapping
 
-import dtu.openhealth.integration.data.fitbit.FitbitActivitiesSummary
-import dtu.openhealth.integration.data.fitbit.FitbitActivity
-import dtu.openhealth.integration.data.fitbit.FitbitActivitySummary
+import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
+import dtu.openhealth.integration.fitbit.data.FitbitActivity
+import dtu.openhealth.integration.fitbit.data.FitbitActivitySummary
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.*

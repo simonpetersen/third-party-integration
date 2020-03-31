@@ -15,7 +15,7 @@ import javax.persistence.Table
 @TypeDefs(
         TypeDef(name = "jsonb", typeClass = JsonBinaryType::class)
 )
-open class User(
+data class User(
         @Id open val userId: String = "",
         open val token: String = "",
         open val refreshToken: String = "",

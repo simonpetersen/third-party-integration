@@ -1,9 +1,9 @@
 package dtu.openhealth.integration.fitbit.mapping
 
-import dtu.openhealth.integration.data.fitbit.FitbitSleepLog
-import dtu.openhealth.integration.data.fitbit.FitbitSleepLogSummary
-import dtu.openhealth.integration.data.fitbit.FitbitSleepStages
-import dtu.openhealth.integration.data.fitbit.FitbitSleepSummary
+import dtu.openhealth.integration.fitbit.data.FitbitSleepLog
+import dtu.openhealth.integration.fitbit.data.FitbitSleepLogSummary
+import dtu.openhealth.integration.fitbit.data.FitbitSleepStages
+import dtu.openhealth.integration.fitbit.data.FitbitSleepSummary
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.*
