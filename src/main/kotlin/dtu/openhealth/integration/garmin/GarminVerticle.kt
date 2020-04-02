@@ -1,6 +1,7 @@
 package dtu.openhealth.integration.garmin
 
 import dtu.openhealth.integration.garmin.garmin.*
+import dtu.openhealth.integration.kafka.KafkaProducerService
 import dtu.openhealth.integration.shared.service.GarminDataService
 import dtu.openhealth.integration.shared.service.impl.GarminDataServiceImpl
 import io.vertx.core.AbstractVerticle
@@ -11,10 +12,10 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BodyHandler
 
-class GarminVerticle: AbstractVerticle() {
+class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerticle() {
 
     private val LOGGER = LoggerFactory.getLogger(GarminVerticle::class.java)
-    private val garminDataService: GarminDataService = GarminDataServiceImpl()
+    private val garminDataService: GarminDataService = GarminDataServiceImpl(kafkaProducerService)
 
     override fun start() {
         val router = Router.router(vertx)

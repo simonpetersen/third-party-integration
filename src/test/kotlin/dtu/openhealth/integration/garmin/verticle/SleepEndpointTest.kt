@@ -1,6 +1,7 @@
 package dtu.openhealth.integration.garmin.verticle
 
 import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.shared.service.mock.MockKafkaProducerService
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
@@ -99,7 +100,7 @@ class SleepEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(GarminVerticle(), testContext.succeeding {
+        vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(8082, "localhost", "/api/garmin/sleep")
                     .putHeader("Content-Type", "application/json")

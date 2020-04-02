@@ -13,7 +13,7 @@ data class DailySummaryGarmin(
         val durationInSeconds: Int? = null,
         val steps: Int? = null,
         val distanceInMeters: Float? = null,
-        val activesTimeInSeconds: Int? = null,
+        val activeTimeInSeconds: Int? = null,
         val activeKilocalories: Int? = null,
         val bmrKilocalories: Int? = null,
         val consumedCalories: Int? = null,

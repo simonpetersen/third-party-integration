@@ -3,6 +3,7 @@ package dtu.openhealth.integration.shared.verticle
 import dtu.openhealth.integration.fitbit.FitbitVerticle
 import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
 import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.kafka.impl.KafkaProducerServiceImpl
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.impl.HttpServiceImpl
 import dtu.openhealth.integration.shared.service.impl.TestUserServiceImpl
@@ -20,8 +21,11 @@ class MainVerticle : AbstractVerticle() {
         val endpointMap = mapOf(Pair("activities", listOf(RestEndpoint(activityUrl, FitbitActivitiesSummary.serializer()))))
         val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, TestUserServiceImpl())
 
+        // Setup Kafka Producer
+        val kafkaProducerService = KafkaProducerServiceImpl(vertx)
+
         // Deploy verticles
         vertx.deployVerticle(FitbitVerticle(notificationService))
-        vertx.deployVerticle(GarminVerticle())
+        vertx.deployVerticle(GarminVerticle(kafkaProducerService))
     }
 }
