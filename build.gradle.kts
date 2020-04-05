@@ -35,6 +35,7 @@ dependencies {
     implementation("io.vertx:vertx-web:3.8.5")
     implementation("io.vertx:vertx-web-client:3.8.5")
     implementation("io.vertx:vertx-rx-java2:3.8.5")
+    implementation("io.vertx:vertx-auth-oauth2:3.8.5")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
