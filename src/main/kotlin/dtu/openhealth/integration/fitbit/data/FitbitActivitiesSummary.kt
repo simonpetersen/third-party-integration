@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.fitbit.data
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.serialization.LocalDateSerializer
 import dtu.openhealth.integration.shared.util.serialization.LocalTimeSerializer
 import kotlinx.serialization.Serializable
@@ -12,9 +13,9 @@ data class FitbitActivitiesSummary(
         val goals: FitbitActivityGoals? = null,
         val summary: FitbitActivitySummary
 ) : FitbitData() {
-    override fun mapToOMH(): List<Measure> {
+    override fun mapToOMH(): List<OmhDTO> {
         val omhData = activities.map { it.mapToOMH() }.toMutableList()
-        omhData.addAll(summary.mapToOMH(LocalDate.now())) // Parse date of summary.
+        omhData.add(summary.mapToOMH(LocalDate.now())) // Parse date of summary.
 
         return omhData
     }
@@ -37,7 +38,7 @@ data class FitbitActivity(
         @Serializable(with = LocalTimeSerializer::class) val startTime: LocalTime? = null,
         val steps: Long
 ) {
-    fun mapToOMH(): Measure {
+    fun mapToOMH(): OmhDTO {
         val startDateTime = if (hasStartTime) LocalDateTime.of(startDate, startTime) else startDate.atStartOfDay()
         val timeInterval = TimeInterval.ofStartDateTimeAndDuration(
                 startDateTime.atOffset(ZoneOffset.UTC), DurationUnitValue(DurationUnit.MILLISECOND, duration))
@@ -49,7 +50,9 @@ data class FitbitActivity(
             activityBuilder.setDistance(LengthUnitValue(LengthUnit.KILOMETER, distance))
         }
 
-        return activityBuilder.build()
+        val physicalActivity = activityBuilder.build()
+
+        return OmhDTO(physicalActivity = physicalActivity)
     }
 }
 
@@ -80,28 +83,27 @@ data class FitbitActivitySummary(
         val heartRateZones: List<FitbitHeartRateZone>? = null,
         val restingHeartRate: Long? = null
 ) {
-    fun mapToOMH(date: LocalDate) : List<Measure> {
-        val omhData = mutableListOf<Measure>()
+    fun mapToOMH(date: LocalDate) : OmhDTO {
         val startDateTime = date.atStartOfDay().atOffset(ZoneOffset.UTC)
         val timeInterval = TimeInterval
                 .ofStartDateTimeAndDuration(startDateTime, DurationUnitValue(DurationUnit.DAY,1))
 
         // Calories burned
         val kcalBurned = KcalUnitValue(KcalUnit.KILOCALORIE, caloriesOut)
-        omhData.add(CaloriesBurned2.Builder(kcalBurned, timeInterval).build())
+        val caloriesBurned2 = CaloriesBurned2.Builder(kcalBurned, timeInterval).build()
 
         // Step count
-        omhData.add(StepCount2.Builder(steps, timeInterval).build())
+        val stepCount2 = StepCount2.Builder(steps, timeInterval).build()
 
         // Resting heartRate
+        var heartRate: HeartRate? = null
         if (restingHeartRate != null) {
-            val heartRate = HeartRate.Builder(TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, restingHeartRate))
+            heartRate = HeartRate.Builder(TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, restingHeartRate))
                     .setTemporalRelationshipToPhysicalActivity(TemporalRelationshipToPhysicalActivity.AT_REST)
                     .build()
-            omhData.add(heartRate)
         }
 
-        return omhData
+        return OmhDTO(caloriesBurned2 = caloriesBurned2, heartRate = heartRate, stepCount2 = stepCount2)
     }
 }
 

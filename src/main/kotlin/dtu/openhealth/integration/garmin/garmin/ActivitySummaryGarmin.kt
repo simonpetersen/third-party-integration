@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.garmin.garmin
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
 
 data class ActivitySummaryGarmin(
@@ -34,15 +35,15 @@ data class ActivitySummaryGarmin(
         val parentSummaryId: Int? = null,
         val manual: Boolean? = null
 ): GarminData() {
-    override fun mapToOMH(): List<Measure> {
-        val measures = mutableListOf<Measure>()
-        activityType?.let {
-            measures.add(PhysicalActivity.Builder(it)
+    override fun mapToOMH(): List<OmhDTO> {
+        val physicalActivity = activityType?.let {
+                PhysicalActivity.Builder(it)
                     .setDistance(LengthUnitValue(LengthUnit.METER, distanceInMeters?.toBigDecimal()))
                     .setCaloriesBurned(KcalUnitValue(KcalUnit.KILOCALORIE, activeKilocalories?.toBigDecimal()))
                     .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
-                    .build())
+                    .build()
         }
-        return measures
+
+        return listOf(OmhDTO(userId = userId, physicalActivity = physicalActivity))
     }
 }

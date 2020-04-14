@@ -1,14 +1,17 @@
-package dtu.openhealth.integration.kafka.impl
+package dtu.openhealth.integration.kafka.publisher.impl
 
-import dtu.openhealth.integration.kafka.KafkaProducerService
-import dtu.openhealth.integration.kafka.property.KafkaProducerProperties
+import dtu.openhealth.integration.kafka.publisher.KafkaProducerService
+import dtu.openhealth.integration.kafka.publisher.property.KafkaProducerProperties
 import dtu.openhealth.integration.shared.dto.OmhDTO
+import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.kafka.client.producer.KafkaProducer
 import io.vertx.reactivex.kafka.client.producer.KafkaProducerRecord
 import io.vertx.reactivex.core.Vertx
 import java.util.HashMap
 
 class KafkaProducerServiceImpl(vertx: Vertx) : KafkaProducerService {
+
+    private val LOGGER = LoggerFactory.getLogger(KafkaProducerServiceImpl::class.java)
 
     private var producer: KafkaProducer<String, OmhDTO>
     init {
@@ -20,6 +23,7 @@ class KafkaProducerServiceImpl(vertx: Vertx) : KafkaProducerService {
         producer = KafkaProducer.create(vertx, config)
     }
     override fun sendOmhData(omhDTO: OmhDTO) {
+        LOGGER.info("Send data to Kafka stream: $omhDTO")
         producer.send(KafkaProducerRecord.create(KafkaProducerProperties.TOPIC, omhDTO))
     }
 }

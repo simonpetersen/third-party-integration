@@ -1,13 +1,19 @@
+@file:UseSerializers(OffsetDateTimeSerializer::class)
+
 package dtu.openhealth.integration
 
+import dtu.openhealth.integration.kafka.consumer.KafkaConsumer
+import dtu.openhealth.integration.shared.util.serialization.OffsetDateTimeSerializer
 import io.vertx.reactivex.core.Vertx
 import dtu.openhealth.integration.shared.verticle.MainVerticle
+import kotlinx.serialization.UseSerializers
 
 
 class IntegrationApplication
 
 fun main() {
     val vertx = Vertx.vertx()
+    val kafkaConsumer = KafkaConsumer(vertx)
     vertx.deployVerticle(MainVerticle())
 
     /*val webClient = WebClient.create(vertx)

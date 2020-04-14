@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.garmin.garmin
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
 
 data class ThirdPartyDailySummaryGarmin(
@@ -24,30 +25,28 @@ data class ThirdPartyDailySummaryGarmin(
         val timeOffsetHeartRateSamples: Map<String, Int>? = null,
         val source: String? = null
 ): GarminData() {
-    override fun mapToOMH(): List<Measure> {
-        val measures = mutableListOf<Measure>()
-
-        steps?.let {
-            measures.add(StepCount2.Builder(
-                            it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
-                    .build())
+    override fun mapToOMH(): List<OmhDTO> {
+        val stepCount = steps?.let {
+            StepCount2.Builder(
+                    it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    .build()
         }
 
-        bmrKilocalories?.let {
-            measures.add(CaloriesBurned2.Builder(
-                            KcalUnitValue(KcalUnit.KILOCALORIE, (it + activeKilocalories!!).toBigDecimal()),
-                            getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
-                    .build())
+        val caloriesBurned = bmrKilocalories?.let {
+            CaloriesBurned2.Builder(
+                    KcalUnitValue(KcalUnit.KILOCALORIE, (it + activeKilocalories!!).toBigDecimal()),
+                    getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    .build()
         }
 
-        averageHeartRateInBeatsPerMinute?.let {
-            measures.add(HeartRate.Builder(
-                            TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
+        val heartRate = averageHeartRateInBeatsPerMinute?.let {
+            HeartRate.Builder(
+                    TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
                     .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
-                    .build())
+                    .build()
         }
 
-        return measures
+        return listOf(OmhDTO(userId = userId, stepCount2 = stepCount, caloriesBurned2 = caloriesBurned, heartRate = heartRate))
     }
 }
 

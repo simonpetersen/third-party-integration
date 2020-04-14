@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.garmin.garmin
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.Measure
 import org.openmhealth.schema.domain.omh.RespiratoryRate
 import org.openmhealth.schema.domain.omh.TypedUnitValue
@@ -14,17 +15,15 @@ data class RespirationSummaryGarmin(
         val startTimeOffsetInSeconds: Int? = null,
         val timeOffsetEpochToBreaths: Map<String, Float>? = null
 ): GarminData() {
-    override fun mapToOMH(): List<Measure> {
-        val measures = mutableListOf<Measure>()
-
-        timeOffsetEpochToBreaths?.let {
-            measures.add(RespiratoryRate.Builder(
+    override fun mapToOMH(): List<OmhDTO> {
+        val respiratoryRate = timeOffsetEpochToBreaths?.let {
+            RespiratoryRate.Builder(
                     TypedUnitValue((RespiratoryRate.RespirationUnit.BREATHS_PER_MINUTE), averageBreathsPrMinute(it)))
                     .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds?.toInt(), startTimeOffsetInSeconds, durationInSeconds))
-                    .build())
+                    .build()
         }
 
-        return measures
+        return listOf(OmhDTO(userId = userId, respiratoryRate = respiratoryRate))
     }
 
     private fun averageBreathsPrMinute(breaths: Map<String, Float>): BigDecimal {

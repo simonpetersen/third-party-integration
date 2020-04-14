@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.garmin
 
 import dtu.openhealth.integration.garmin.garmin.*
-import dtu.openhealth.integration.kafka.KafkaProducerService
+import dtu.openhealth.integration.kafka.publisher.KafkaProducerService
 import dtu.openhealth.integration.shared.service.GarminDataService
 import dtu.openhealth.integration.shared.service.impl.GarminDataServiceImpl
 import io.vertx.core.AbstractVerticle

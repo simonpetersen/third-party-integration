@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.garmin.garmin
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
 
 data class BodyCompositionSummaryGarmin(
@@ -15,22 +16,22 @@ data class BodyCompositionSummaryGarmin(
         val bodyMassIndex: Float? = null,
         val weightInGrams: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): List<Measure> {
-        val measures = mutableListOf<Measure>()
-        weightInGrams?.let {
-            measures.add(BodyWeight.Builder(MassUnitValue(MassUnit.GRAM, it.toBigDecimal())).build())
+    override fun mapToOMH(): List<OmhDTO> {
+        val bodyWeight = weightInGrams?.let {
+            BodyWeight.Builder(MassUnitValue(MassUnit.GRAM, it.toBigDecimal())).build()
         }
-        bodyMassIndex?.let {
-            measures.add(BodyMassIndex1.Builder(
-                    TypedUnitValue(BodyMassIndexUnit1.KILOGRAMS_PER_SQUARE_METER, it.toBigDecimal()))
-                    .build())
+
+        val bodyMassIndex = bodyMassIndex?.let {
+            BodyMassIndex1.Builder(
+                    TypedUnitValue(BodyMassIndexUnit1.KILOGRAMS_PER_SQUARE_METER, it.toBigDecimal())).build()
         }
-        bodyFatInPercent?.let {
-            measures.add(BodyFatPercentage.Builder(
-                    TypedUnitValue(PercentUnit.PERCENT, it.toBigDecimal()))
-                    .build())
+
+        val bodyFatPercentage = bodyFatInPercent?.let {
+            BodyFatPercentage.Builder(TypedUnitValue(PercentUnit.PERCENT, it.toBigDecimal())).build()
         }
-        return measures
+
+        return listOf(OmhDTO(userId = userId, bodyWeight = bodyWeight,
+                bodyMassIndex1 = bodyMassIndex, bodyFatPercentage = bodyFatPercentage))
     }
 }
 

@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.garmin.garmin
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.exception.NoMappingFoundException
 import org.openmhealth.schema.domain.omh.Measure
 
@@ -11,7 +12,7 @@ data class UserMetricsSummaryGarmin(
         val vo2Max: Float? = null,
         val fitnessAge: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): List<Measure> {
+    override fun mapToOMH(): List<OmhDTO> {
         throw NoMappingFoundException("No mapping found for this type: ${this.javaClass}")
     }
 }

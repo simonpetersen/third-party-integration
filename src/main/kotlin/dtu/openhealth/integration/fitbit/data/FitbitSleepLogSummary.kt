@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.fitbit.data
 
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.serialization.LocalDateSerializer
 import dtu.openhealth.integration.shared.util.serialization.LocalDateTimeSerializer
 import kotlinx.serialization.Serializable
@@ -11,7 +12,7 @@ data class FitbitSleepLogSummary(
         val sleep : List<FitbitSleepLog>,
         val summary : FitbitSleepSummary
 ) : FitbitData(){
-    override fun mapToOMH(): List<Measure> {
+    override fun mapToOMH(): List<OmhDTO> {
         val sleepData = sleep.flatMap { it.mapToOMH() }.toMutableList()
         sleepData.addAll(summary.mapToOMH(LocalDate.now())) // TODO: Parse date in a smarter way.
 
@@ -40,7 +41,7 @@ data class FitbitSleepLog(
         @Serializable(with = LocalDateTimeSerializer::class) val startTime: LocalDateTime,
         val timeInBed: Long
 ) {
-    fun mapToOMH(): List<Measure> {
+    fun mapToOMH(): List<OmhDTO> {
         val timeInterval = TimeInterval.ofStartDateTimeAndEndDateTime(
                 startTime.atOffset(ZoneOffset.UTC), endTime.atOffset(ZoneOffset.UTC))
         val effectiveTimeFrame = TimeFrame(timeInterval)
@@ -53,7 +54,7 @@ data class FitbitSleepLog(
                 .setLatencyToArising(DurationUnitValue(DurationUnit.MINUTE, minutesAfterWakeup))
                 .build()
 
-        return listOf(sleepEpisode)
+        return listOf(OmhDTO(sleepEpisode = sleepEpisode))
     }
 }
 
@@ -70,14 +71,14 @@ data class FitbitSleepSummary(
         val totalSleepRecords: Long,
         val totalTimeInBed: Long
 ) {
-    fun mapToOMH(sleepDate: LocalDate): List<Measure> {
+    fun mapToOMH(sleepDate: LocalDate): List<OmhDTO> {
         val duration = DurationUnitValue(DurationUnit.MINUTE, totalMinutesAsleep)
         val timeIntervalDuration = DurationUnitValue(DurationUnit.DAY, 1)
         val startDateTime = sleepDate.atStartOfDay().atOffset(ZoneOffset.UTC)
         val timeFrame = TimeInterval.ofStartDateTimeAndDuration(startDateTime, timeIntervalDuration)
         val sleepDuration = SleepDuration2.Builder(duration, timeFrame).build()
 
-        return listOf(sleepDuration)
+        return listOf(OmhDTO(sleepDuration2 = sleepDuration))
     }
 }
 

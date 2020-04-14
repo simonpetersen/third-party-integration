@@ -1,6 +1,7 @@
 package dtu.openhealth.integration.garmin.garmin
 
 import dtu.openhealth.integration.shared.data.ThirdPartyData
+import dtu.openhealth.integration.shared.util.serialization.OffsetDateTimeSerializer
 import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.DurationUnit
 import org.openmhealth.schema.domain.omh.DurationUnitValue

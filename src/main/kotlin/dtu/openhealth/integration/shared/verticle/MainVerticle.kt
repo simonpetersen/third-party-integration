@@ -3,7 +3,7 @@ package dtu.openhealth.integration.shared.verticle
 import dtu.openhealth.integration.fitbit.FitbitVerticle
 import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
 import dtu.openhealth.integration.garmin.GarminVerticle
-import dtu.openhealth.integration.kafka.impl.KafkaProducerServiceImpl
+import dtu.openhealth.integration.kafka.publisher.impl.KafkaProducerServiceImpl
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.impl.HttpServiceImpl
 import dtu.openhealth.integration.shared.service.impl.TestUserServiceImpl
