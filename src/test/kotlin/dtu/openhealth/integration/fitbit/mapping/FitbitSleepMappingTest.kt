@@ -4,6 +4,7 @@ import dtu.openhealth.integration.fitbit.data.FitbitSleepLog
 import dtu.openhealth.integration.fitbit.data.FitbitSleepLogSummary
 import dtu.openhealth.integration.fitbit.data.FitbitSleepStages
 import dtu.openhealth.integration.fitbit.data.FitbitSleepSummary
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.*
@@ -30,7 +31,7 @@ class FitbitSleepMappingTest {
         validateSleepDuration(omhData, sleepSummary)
     }
 
-    private fun validateSleepEpisodes(omhData: List<Measure>, sleepLog: FitbitSleepLog) {
+    private fun validateSleepEpisodes(omhData: List<OmhDTO>, sleepLog: FitbitSleepLog) {
         val sleepEpisodeList = omhData.filterIsInstance<SleepEpisode>()
         val expectedElements = 1
         assertThat(sleepEpisodeList.size).isEqualTo(expectedElements)

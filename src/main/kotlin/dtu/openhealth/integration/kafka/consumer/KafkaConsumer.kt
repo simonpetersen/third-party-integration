@@ -1,18 +1,11 @@
 package dtu.openhealth.integration.kafka.consumer
 
-import dtu.openhealth.integration.garmin.garmin.ActivitySummaryGarmin
 import dtu.openhealth.integration.kafka.consumer.property.KafkaConsumerProperties
-import dtu.openhealth.integration.kafka.publisher.impl.KafkaProducerServiceImpl
 import dtu.openhealth.integration.shared.dto.OmhDTO
-import io.vertx.core.buffer.Buffer
-import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
-import io.vertx.core.parsetools.JsonParser
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.parseMap
 import java.util.HashMap
 
 class KafkaConsumer(vertx: Vertx) {
