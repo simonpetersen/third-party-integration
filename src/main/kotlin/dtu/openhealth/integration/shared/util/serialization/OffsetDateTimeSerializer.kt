@@ -1,25 +1,33 @@
 package dtu.openhealth.integration.shared.util.serialization
 
+import com.fasterxml.jackson.core.JsonGenerator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
 import io.vertx.core.logging.LoggerFactory
-import kotlinx.serialization.*
-import kotlinx.serialization.internal.SerialClassDescImpl
+import java.io.IOException
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
-@Serializer(forClass = OffsetDateTime::class)
-class OffsetDateTimeSerializer: KSerializer<OffsetDateTime> {
+class JacksonSerializer: JsonSerializer<OffsetDateTime>() {
 
-    private val LOGGER = LoggerFactory.getLogger(OffsetDateTimeSerializer::class.java)
+    private val LOGGER = LoggerFactory.getLogger(JacksonSerializer::class.java)
 
-    override val descriptor: SerialDescriptor = SerialClassDescImpl("java.time.OffsetDateTime$")
-
-    override fun serialize(encoder: Encoder, obj: OffsetDateTime) {
-        LOGGER.info("Serializing offsetDateTime")
-        encoder.encodeString(obj.toString())
+    override fun serialize(value: OffsetDateTime, gen: JsonGenerator, serializers: SerializerProvider?) {
+        LOGGER.info("Serialize $value")
+        gen.writeString(value.toString())
     }
+}
 
-    override fun deserialize(decoder: Decoder): OffsetDateTime {
-        val offset = OffsetDateTime.parse(decoder.decodeString())
-        LOGGER.info("$offset")
-        return offset
+class JacksonDeserializer: JsonDeserializer<OffsetDateTime>() {
+
+    private val LOGGER = LoggerFactory.getLogger(JacksonDeserializer::class.java)
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): OffsetDateTime {
+        LOGGER.info("Deserialize ${p.valueAsString}")
+        return OffsetDateTime.parse(p.valueAsString)
     }
 }

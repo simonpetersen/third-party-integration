@@ -1,6 +1,7 @@
 package dtu.openhealth.integration.garmin.mapping
 
 import dtu.openhealth.integration.garmin.garmin.GarminData
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.Measure
@@ -19,7 +20,7 @@ class GarminDataTest: GarminData() {
         assertThat(timeInterval.startDateTime.offset.totalSeconds).isEqualTo(offset)
     }
 
-    override fun mapToOMH(): List<Measure> {
+    override fun mapToOMH(): OmhDTO {
         TODO("Not yet implemented")
     }
 

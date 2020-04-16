@@ -24,19 +24,18 @@ class RespirationMappingOMHTest {
             "780" to breathList[9],
             "840" to breathList[10])
 
-    val respirationData = RespirationSummaryGarmin("4aacafe82427c251df9c9592d0c06768",
+    private val respirationData = RespirationSummaryGarmin("4aacafe82427c251df9c9592d0c06768",
             "8f57a6f1-26ba-4b05-a7cd-c6b525a4c7a2", "EXAMPLE_678901", startTime, duration,
             startTimeOffset, breathsMap)
 
     @Test
     fun testMapping() {
-        val measures = respirationData.mapToOMH()
-        assertThat(measures[0]).isInstanceOf(RespiratoryRate::class.java)
+        val omhDTO = respirationData.mapToOMH()
 
-        val respiratoryRate: RespiratoryRate = measures[0] as RespiratoryRate
-
-        assertThat(respiratoryRate.respiratoryRate.value).isEqualTo(breathList.average().toBigDecimal())
-        assertThat(respiratoryRate.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        val respiratoryRate = omhDTO.respiratoryRate
+        assertThat(respiratoryRate).isNotNull
+        assertThat(respiratoryRate?.respiratoryRate?.value).isEqualTo(breathList.average().toBigDecimal())
+        assertThat(respiratoryRate?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime.toInt() - startTimeOffset).toLong())
     }
 

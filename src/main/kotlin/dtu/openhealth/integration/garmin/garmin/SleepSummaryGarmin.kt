@@ -3,7 +3,6 @@ package dtu.openhealth.integration.garmin.garmin
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.DurationUnit
 import org.openmhealth.schema.domain.omh.DurationUnitValue
-import org.openmhealth.schema.domain.omh.Measure
 import org.openmhealth.schema.domain.omh.SleepDuration2
 
 data class SleepSummaryGarmin(
@@ -24,7 +23,7 @@ data class SleepSummaryGarmin(
         val timeOffsetSleepRespiration: Map<String, Float>? = null,
         val timeOffsetSleepSpo2: Map<String, Int>? = null
 ): GarminData() {
-    override fun mapToOMH(): List<OmhDTO> {
+    override fun mapToOMH(): OmhDTO {
         val sleepDuration = durationInSeconds?.let {
             SleepDuration2.Builder(
                     DurationUnitValue(DurationUnit.SECOND, (it-awakeDurationInSeconds!!).toBigDecimal()),
@@ -32,7 +31,7 @@ data class SleepSummaryGarmin(
                     .build()
         }
 
-        return listOf(OmhDTO(userId = userId, sleepDuration2 = sleepDuration))
+        return OmhDTO(userId = userId, sleepDuration2 = sleepDuration)
     }
 }
 

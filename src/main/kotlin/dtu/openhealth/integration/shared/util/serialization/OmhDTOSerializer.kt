@@ -18,8 +18,6 @@ class OmhDTOSerializer : Serializer<Any?> {
         val mapper = ObjectMapper()
         val module = SimpleModule()
         module.addSerializer(OffsetDateTime::class.java, JacksonSerializer())
-        mapper.registerModule(ParameterNamesModule())
-        mapper.registerModule(Jdk8Module())
         mapper.registerModule(JavaTimeModule())
         mapper.registerModule(module)
         var retVal: ByteArray? = null

@@ -3,6 +3,7 @@ package dtu.openhealth.integration.fitbit.mapping
 import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
 import dtu.openhealth.integration.fitbit.data.FitbitActivity
 import dtu.openhealth.integration.fitbit.data.FitbitActivitySummary
+import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.*
@@ -17,87 +18,68 @@ class FitbitActivityMappingTest {
     @Test
     fun testFitbitActivitySummaryMapping_NoActivity() {
         val activitySummary = prepareActivitySummary()
-        val expectedOmhElements = 3
         val fitbitSummary = FitbitActivitiesSummary(emptyList(), summary = activitySummary)
-        val omhData = fitbitSummary.mapToOMH()
+        val omhDTO = fitbitSummary.mapToOMH()
 
-        assertThat(omhData.size).isEqualTo(expectedOmhElements)
-
-        validateHeartRate(omhData, activitySummary)
-        validateCalories(omhData, activitySummary)
-        validateStepCount(omhData, activitySummary)
+        validateHeartRate(omhDTO, activitySummary)
+        validateCalories(omhDTO, activitySummary)
+        validateStepCount(omhDTO, activitySummary)
     }
 
     @Test
     fun testFitbitActivitySummaryMapping_RunningActivity() {
         val activitySummary = prepareActivitySummary()
         val activity = prepareActivity()
-        val expectedOmhElements = 4
 
         val fitbitSummary = FitbitActivitiesSummary(listOf(activity), summary = activitySummary)
-        val omhData = fitbitSummary.mapToOMH()
+        val omhDTO = fitbitSummary.mapToOMH()
 
-        assertThat(omhData.size).isEqualTo(expectedOmhElements)
-
-        validateHeartRate(omhData, activitySummary)
-        validateCalories(omhData, activitySummary)
-        validateStepCount(omhData, activitySummary)
-        validateActivity(omhData, activity)
+        validateHeartRate(omhDTO, activitySummary)
+        validateCalories(omhDTO, activitySummary)
+        validateStepCount(omhDTO, activitySummary)
+        validateActivity(omhDTO, activity)
     }
 
     @Test
     fun testFitbitActivityMapping_WithDistance() {
         val activity = prepareActivityWithDistance()
-        val omhData = activity.mapToOMH()
-
-        assertThat(omhData).isNotNull
-
-        validateActivityWithDistance(listOf(omhData), activity)
+        val physicalActivity = activity.mapToOMH()
+        assertThat(physicalActivity).isNotNull
+        validateActivityWithDistance(physicalActivity, activity)
     }
 
-    private fun validateHeartRate(omhData: List<Measure>, summary: FitbitActivitySummary) {
-        val heartRateList = omhData.filterIsInstance<HeartRate>()
-        val expectedElements = 1
-        assertThat(heartRateList.size).isEqualTo(expectedElements)
-
-        val heartRate = heartRateList[0]
-        assertThat(heartRate.heartRate?.value?.longValueExact()).isEqualTo(summary.restingHeartRate)
-        assertThat(heartRate.temporalRelationshipToPhysicalActivity).isEqualTo(TemporalRelationshipToPhysicalActivity.AT_REST)
+    private fun validateHeartRate(omhDTO: OmhDTO, summary: FitbitActivitySummary) {
+        val heartRate = omhDTO.heartRate
+        assertThat(heartRate).isNotNull
+        assertThat(heartRate?.heartRate?.value?.longValueExact()).isEqualTo(summary.restingHeartRate)
+        assertThat(heartRate?.temporalRelationshipToPhysicalActivity).isEqualTo(TemporalRelationshipToPhysicalActivity.AT_REST)
     }
 
-    private fun validateStepCount(omhData: List<Measure>, summary: FitbitActivitySummary) {
-        val stepCountList = omhData.filterIsInstance<StepCount2>()
-        val expectedElements = 1
-        assertThat(stepCountList.size).isEqualTo(expectedElements)
-
-        val stepCount = stepCountList[0]
-        assertThat(stepCount.stepCount.longValueExact()).isEqualTo(summary.steps)
+    private fun validateStepCount(omhDTO: OmhDTO, summary: FitbitActivitySummary) {
+        val stepCount = omhDTO.stepCount2
+        assertThat(stepCount).isNotNull
+        assertThat(stepCount?.stepCount?.longValueExact()).isEqualTo(summary.steps)
     }
 
-    private fun validateCalories(omhData: List<Measure>, summary: FitbitActivitySummary) {
-        val caloriesList = omhData.filterIsInstance<CaloriesBurned2>()
+    private fun validateCalories(omhDTO: OmhDTO, summary: FitbitActivitySummary) {
+        val caloriesList = omhDTO.caloriesBurned2
         val expectedElements = 1
-        assertThat(caloriesList.size).isEqualTo(expectedElements)
+        assertThat(caloriesList?.size).isEqualTo(expectedElements)
 
-        val caloriesBurned = caloriesList[0]
-        assertThat(caloriesBurned.kcalBurned.value.longValueExact()).isEqualTo(summary.caloriesOut)
+        val caloriesBurned = caloriesList?.get(0)
+        assertThat(caloriesBurned?.kcalBurned?.value?.longValueExact()).isEqualTo(summary.caloriesOut)
     }
 
-    private fun validateActivity(omhData: List<Measure>, activity: FitbitActivity) {
-        val activitiesList = omhData.filterIsInstance<PhysicalActivity>()
+    private fun validateActivity(omhDTO: OmhDTO, activity: FitbitActivity) {
+        val activitiesList = omhDTO.physicalActivities
         val expectedElements = 1
-        assertThat(activitiesList.size).isEqualTo(expectedElements)
+        assertThat(activitiesList?.size).isEqualTo(expectedElements)
 
-        val physicalActivity = activitiesList[0]
-        validatePhysicalActivity(physicalActivity, activity)
+        val physicalActivity = activitiesList?.get(0)
+        validatePhysicalActivity(physicalActivity!!, activity)
     }
 
-    private fun validateActivityWithDistance(omhData: List<Measure>, activity: FitbitActivity) {
-        val activitiesList = omhData.filterIsInstance<PhysicalActivity>()
-        val expectedElements = 1
-        assertThat(activitiesList.size).isEqualTo(expectedElements)
-
-        val physicalActivity = activitiesList[0]
+    private fun validateActivityWithDistance(physicalActivity: PhysicalActivity, activity: FitbitActivity) {
         assertThat(physicalActivity.distance).isNotNull
         assertThat(physicalActivity.distance?.value).isEqualTo(BigDecimal.valueOf(activity.distance!!))
         validatePhysicalActivity(physicalActivity, activity)

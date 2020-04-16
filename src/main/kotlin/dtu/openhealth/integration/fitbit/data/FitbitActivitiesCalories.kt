@@ -14,8 +14,8 @@ import java.time.ZoneOffset
 data class FitbitActivitiesCalories(
         @SerialName("activities-calories") val calories: List<FitbitCalories>
 ) : FitbitData() {
-    override fun mapToOMH(): List<OmhDTO>  {
-        return calories.map { it.mapToOMH() }
+    override fun mapToOMH(): OmhDTO  {
+        return OmhDTO(caloriesBurned2 = calories.map { it.mapToOMH() })
     }
 }
 
@@ -24,12 +24,11 @@ data class FitbitCalories(
         @Serializable(with = LocalDateSerializer::class) val dateTime: LocalDate,
         val value: Long
 ) {
-    fun mapToOMH(): OmhDTO {
+    fun mapToOMH(): CaloriesBurned2 {
         val startDateTime = OffsetDateTime.of(dateTime, LocalTime.MIDNIGHT, ZoneOffset.UTC)
         val timeInterval = TimeInterval
                 .ofStartDateTimeAndDuration(startDateTime, DurationUnitValue(DurationUnit.DAY,1))
-        val caloriesBurned2 = CaloriesBurned2
+        return CaloriesBurned2
                 .Builder(KcalUnitValue(KcalUnit.KILOCALORIE, value), timeInterval).build()
-        return OmhDTO(caloriesBurned2 = caloriesBurned2)
     }
 }

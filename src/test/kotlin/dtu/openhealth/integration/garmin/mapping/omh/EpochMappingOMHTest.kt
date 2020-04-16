@@ -23,23 +23,21 @@ class EpochMappingOMHTest {
 
     @Test
     fun testEpochMappingOMH() {
-        val measures = epochSummary.mapToOMH()
+        val omhDTO = epochSummary.mapToOMH()
 
-        assertThat(measures.size).isEqualTo(2)
-
-        assertThat(measures[0]).isInstanceOf(StepCount2::class.java)
-        val stepCount = measures[0] as StepCount2
-        assertThat(stepCount.stepCount).isEqualTo(steps.toBigDecimal())
-        assertThat(stepCount.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        val stepCount = omhDTO.stepCount2
+        assertThat(stepCount).isNotNull
+        assertThat(stepCount?.stepCount).isEqualTo(steps.toBigDecimal())
+        assertThat(stepCount?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime - startTimeOffset).toLong())
 
-        assertThat(measures[1]).isInstanceOf(PhysicalActivity::class.java)
-        val physicalActivity = measures[1] as PhysicalActivity
-        assertThat(physicalActivity.activityName).isEqualTo(activityName)
-        assertThat(physicalActivity.caloriesBurned).isEqualTo(KcalUnitValue(KcalUnit.KILOCALORIE, caloriesBurned.toBigDecimal()))
-        assertThat(physicalActivity.distance).isEqualTo(LengthUnitValue(LengthUnit.METER, distance.toBigDecimal()))
-        assertThat(physicalActivity.reportedActivityIntensity.name).isEqualTo("LIGHT")
-        assertThat(physicalActivity.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        assertThat(omhDTO.physicalActivities?.size).isEqualTo(1)
+        val physicalActivity = omhDTO.physicalActivities?.get(0)
+        assertThat(physicalActivity?.activityName).isEqualTo(activityName)
+        assertThat(physicalActivity?.caloriesBurned).isEqualTo(KcalUnitValue(KcalUnit.KILOCALORIE, caloriesBurned.toBigDecimal()))
+        assertThat(physicalActivity?.distance).isEqualTo(LengthUnitValue(LengthUnit.METER, distance.toBigDecimal()))
+        assertThat(physicalActivity?.reportedActivityIntensity?.name).isEqualTo("LIGHT")
+        assertThat(physicalActivity?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime - startTimeOffset).toLong())
     }
 

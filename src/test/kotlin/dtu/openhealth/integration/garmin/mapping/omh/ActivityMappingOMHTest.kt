@@ -33,24 +33,19 @@ class ActivityMappingOMHTest {
 
     @Test
     fun testMappingToOMH() {
-        val measures = activitySummaryDataAllFields.mapToOMH()
+        val omhDTO = activitySummaryDataAllFields.mapToOMH()
 
-        assertThat(measures.size).isEqualTo(1)
-        assertThat(measures[0]).isInstanceOf(PhysicalActivity::class.java)
+        val physicalActivities = omhDTO.physicalActivities
 
-        val physicalActivity: PhysicalActivity = measures[0] as PhysicalActivity
+        assertThat(physicalActivities?.size).isEqualTo(1)
 
-        assertThat(physicalActivity.activityName).isEqualTo(activityName)
-        assertThat(physicalActivity.caloriesBurned).isEqualTo(KcalUnitValue(KcalUnit.KILOCALORIE, caloriesBurned.toBigDecimal()))
-        assertThat(physicalActivity.distance).isEqualTo(LengthUnitValue(LengthUnit.METER, distance.toBigDecimal()))
-        assertThat(physicalActivity.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        val physicalActivity = physicalActivities?.get(0)
+
+        assertThat(physicalActivity?.activityName).isEqualTo(activityName)
+        assertThat(physicalActivity?.caloriesBurned).isEqualTo(KcalUnitValue(KcalUnit.KILOCALORIE, caloriesBurned.toBigDecimal()))
+        assertThat(physicalActivity?.distance).isEqualTo(LengthUnitValue(LengthUnit.METER, distance.toBigDecimal()))
+        assertThat(physicalActivity?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime - startTimeOffset).toLong())
-    }
-
-    @Test
-    fun testWithNoMeasures() {
-        val measures = activitySummaryNoActivityName.mapToOMH()
-        assertThat(measures.size).isEqualTo(0)
     }
 
 

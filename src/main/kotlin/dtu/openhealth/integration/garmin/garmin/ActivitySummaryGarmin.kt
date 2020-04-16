@@ -2,11 +2,12 @@ package dtu.openhealth.integration.garmin.garmin
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
+import java.lang.RuntimeException
 
 data class ActivitySummaryGarmin(
-        val userId: String? = null,
-        val userAccessToken: String? = null,
-        val summaryId: String? = null,
+        val userId: String,
+        val userAccessToken: String,
+        val summaryId: String,
         val startTimeInSeconds: Int? = null,
         val startTimeOffsetInSeconds: Int? = null,
         val activityType: String? = null,
@@ -35,7 +36,7 @@ data class ActivitySummaryGarmin(
         val parentSummaryId: Int? = null,
         val manual: Boolean? = null
 ): GarminData() {
-    override fun mapToOMH(): List<OmhDTO> {
+    override fun mapToOMH(): OmhDTO {
         val physicalActivity = activityType?.let {
                 PhysicalActivity.Builder(it)
                     .setDistance(LengthUnitValue(LengthUnit.METER, distanceInMeters?.toBigDecimal()))
@@ -44,6 +45,6 @@ data class ActivitySummaryGarmin(
                     .build()
         }
 
-        return listOf(OmhDTO(userId = userId, physicalActivity = physicalActivity))
+        return OmhDTO(userId = userId, physicalActivities = listOf(physicalActivity!!))
     }
 }

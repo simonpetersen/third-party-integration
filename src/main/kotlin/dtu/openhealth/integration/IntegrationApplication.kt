@@ -1,19 +1,8 @@
 package dtu.openhealth.integration
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import dtu.openhealth.integration.kafka.consumer.KafkaConsumer
-import dtu.openhealth.integration.shared.util.serialization.JacksonDeserializer
-import dtu.openhealth.integration.shared.util.serialization.JacksonSerializer
-import dtu.openhealth.integration.shared.util.serialization.OffsetDateTimeSerializer
 import dtu.openhealth.integration.shared.verticle.MainVerticle
 import io.vertx.reactivex.core.Vertx
-import kotlinx.serialization.UseSerializers
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.ChronoField
 
 
 class IntegrationApplication

@@ -14,8 +14,6 @@ class OmhDTODeserializer: Deserializer<Any?> {
         val mapper = ObjectMapper()
         val module = SimpleModule()
         module.addDeserializer(OffsetDateTime::class.java, JacksonDeserializer())
-        mapper.registerModule(ParameterNamesModule())
-        mapper.registerModule(Jdk8Module())
         mapper.registerModule(JavaTimeModule())
         mapper.registerModule(module)
         var omhDTO: OmhDTO? = null

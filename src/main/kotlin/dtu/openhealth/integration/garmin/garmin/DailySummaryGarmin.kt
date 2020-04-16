@@ -1,10 +1,7 @@
 package dtu.openhealth.integration.garmin.garmin
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
-import dtu.openhealth.integration.shared.util.serialization.OffsetDateTimeSerializer
-import kotlinx.serialization.Serializer
 import org.openmhealth.schema.domain.omh.*
-import java.sql.Time
 
 data class DailySummaryGarmin(
     val userId: String? = null,
@@ -43,7 +40,7 @@ data class DailySummaryGarmin(
     val intensityDurationGoalInSeconds: Int? = null,
     val floorsClimbedGoal: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): List<OmhDTO> {
+    override fun mapToOMH(): OmhDTO {
         val steps = steps?.let {
             StepCount2.Builder(
                     it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
@@ -63,7 +60,7 @@ data class DailySummaryGarmin(
                     .build()
         }
 
-        return listOf(OmhDTO(userId = userId, stepCount2 = steps, caloriesBurned2 = calories, heartRate = heartRate))
+        return OmhDTO(userId = userId, stepCount2 = steps, caloriesBurned2 = listOf(calories!!), heartRate = heartRate)
     }
 }
 

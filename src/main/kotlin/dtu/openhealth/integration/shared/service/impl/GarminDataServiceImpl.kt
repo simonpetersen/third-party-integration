@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class GarminDataServiceImpl(private val kafkaProducerService: KafkaProducerService) : GarminDataService {
+
     private val LOGGER = LoggerFactory.getLogger(GarminDataServiceImpl::class.java)
+
     override fun saveDataToOMH(thirdPartyData: ThirdPartyData) {
-        val omhDTOList = thirdPartyData.mapToOMH()
-        omhDTOList.forEach {
-            LOGGER.info("Sending data to kafka producer: $it")
-            kafkaProducerService.sendOmhData(it)
-        }
+        val omhDTO = thirdPartyData.mapToOMH()
+        LOGGER.info("Sending data to kafka producer: $omhDTO")
+        kafkaProducerService.sendOmhData(omhDTO)
     }
 }

@@ -25,7 +25,7 @@ data class ThirdPartyDailySummaryGarmin(
         val timeOffsetHeartRateSamples: Map<String, Int>? = null,
         val source: String? = null
 ): GarminData() {
-    override fun mapToOMH(): List<OmhDTO> {
+    override fun mapToOMH(): OmhDTO {
         val stepCount = steps?.let {
             StepCount2.Builder(
                     it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
@@ -46,7 +46,7 @@ data class ThirdPartyDailySummaryGarmin(
                     .build()
         }
 
-        return listOf(OmhDTO(userId = userId, stepCount2 = stepCount, caloriesBurned2 = caloriesBurned, heartRate = heartRate))
+        return OmhDTO(userId = userId, stepCount2 = stepCount, caloriesBurned2 = listOf(caloriesBurned!!), heartRate = heartRate)
     }
 }
 

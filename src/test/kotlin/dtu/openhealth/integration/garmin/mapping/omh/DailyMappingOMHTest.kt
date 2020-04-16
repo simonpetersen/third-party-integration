@@ -28,25 +28,24 @@ class DailyMappingOMHTest {
 
     @Test
     fun testAllDataFields() {
-        val measures = dailySummaryGarminAllData.mapToOMH()
-        assertThat(measures.size).isEqualTo(3)
+        val omhDTO = dailySummaryGarminAllData.mapToOMH()
 
-        assertThat(measures[0]).isInstanceOf(StepCount2::class.java)
-        val stepCount = measures[0] as StepCount2
-        assertThat(stepCount.stepCount).isEqualTo(steps.toBigDecimal())
-        assertThat(stepCount.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        val stepCount = omhDTO.stepCount2
+        assertThat(stepCount).isNotNull
+        assertThat(stepCount?.stepCount).isEqualTo(steps.toBigDecimal())
+        assertThat(stepCount?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime - startTimeOffset).toLong())
 
-        assertThat(measures[1]).isInstanceOf(CaloriesBurned2::class.java)
-        val calories = measures[1] as CaloriesBurned2
-        assertThat(calories.kcalBurned.value).isEqualTo((caloriesActivity+caloriesBMR).toBigDecimal())
-        assertThat(calories.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        assertThat(omhDTO.caloriesBurned2?.size).isEqualTo(1)
+        val calories = omhDTO.caloriesBurned2?.get(0)
+        assertThat(calories?.kcalBurned?.value).isEqualTo((caloriesActivity+caloriesBMR).toBigDecimal())
+        assertThat(calories?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime - startTimeOffset).toLong())
 
-        assertThat(measures[2]).isInstanceOf(HeartRate::class.java)
-        val heartRate = measures[2] as HeartRate
-        assertThat(heartRate.heartRate.value).isEqualTo(averageHeathBeats.toBigDecimal())
-        assertThat(heartRate.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        val heartRate = omhDTO.heartRate
+        assertThat(heartRate).isNotNull
+        assertThat(heartRate?.heartRate?.value).isEqualTo(averageHeathBeats.toBigDecimal())
+        assertThat(heartRate?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime - startTimeOffset).toLong())
     }
 

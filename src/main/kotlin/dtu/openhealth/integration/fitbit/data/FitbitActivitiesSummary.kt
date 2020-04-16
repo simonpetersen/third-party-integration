@@ -13,11 +13,13 @@ data class FitbitActivitiesSummary(
         val goals: FitbitActivityGoals? = null,
         val summary: FitbitActivitySummary
 ) : FitbitData() {
-    override fun mapToOMH(): List<OmhDTO> {
-        val omhData = activities.map { it.mapToOMH() }.toMutableList()
-        omhData.add(summary.mapToOMH(LocalDate.now())) // Parse date of summary.
+    override fun mapToOMH(): OmhDTO {
+        val omhDTO = summary.mapToOMH(LocalDate.now()) // Parse date of summary.
 
-        return omhData
+        val activityList = activities.map { it.mapToOMH() }.toMutableList()
+        omhDTO.physicalActivities = activityList
+
+        return omhDTO
     }
 }
 
@@ -38,7 +40,7 @@ data class FitbitActivity(
         @Serializable(with = LocalTimeSerializer::class) val startTime: LocalTime? = null,
         val steps: Long
 ) {
-    fun mapToOMH(): OmhDTO {
+    fun mapToOMH(): PhysicalActivity {
         val startDateTime = if (hasStartTime) LocalDateTime.of(startDate, startTime) else startDate.atStartOfDay()
         val timeInterval = TimeInterval.ofStartDateTimeAndDuration(
                 startDateTime.atOffset(ZoneOffset.UTC), DurationUnitValue(DurationUnit.MILLISECOND, duration))
@@ -50,9 +52,7 @@ data class FitbitActivity(
             activityBuilder.setDistance(LengthUnitValue(LengthUnit.KILOMETER, distance))
         }
 
-        val physicalActivity = activityBuilder.build()
-
-        return OmhDTO(physicalActivity = physicalActivity)
+        return activityBuilder.build()
     }
 }
 
@@ -103,7 +103,7 @@ data class FitbitActivitySummary(
                     .build()
         }
 
-        return OmhDTO(caloriesBurned2 = caloriesBurned2, heartRate = heartRate, stepCount2 = stepCount2)
+        return OmhDTO(caloriesBurned2 = listOf(caloriesBurned2), heartRate = heartRate, stepCount2 = stepCount2)
     }
 }
 

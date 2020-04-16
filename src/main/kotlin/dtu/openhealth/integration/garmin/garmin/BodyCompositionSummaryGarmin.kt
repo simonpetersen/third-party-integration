@@ -16,7 +16,7 @@ data class BodyCompositionSummaryGarmin(
         val bodyMassIndex: Float? = null,
         val weightInGrams: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): List<OmhDTO> {
+    override fun mapToOMH(): OmhDTO {
         val bodyWeight = weightInGrams?.let {
             BodyWeight.Builder(MassUnitValue(MassUnit.GRAM, it.toBigDecimal())).build()
         }
@@ -30,8 +30,8 @@ data class BodyCompositionSummaryGarmin(
             BodyFatPercentage.Builder(TypedUnitValue(PercentUnit.PERCENT, it.toBigDecimal())).build()
         }
 
-        return listOf(OmhDTO(userId = userId, bodyWeight = bodyWeight,
-                bodyMassIndex1 = bodyMassIndex, bodyFatPercentage = bodyFatPercentage))
+        return OmhDTO(userId = userId, bodyWeight = bodyWeight,
+                bodyMassIndex1 = bodyMassIndex, bodyFatPercentage = bodyFatPercentage)
     }
 }
 

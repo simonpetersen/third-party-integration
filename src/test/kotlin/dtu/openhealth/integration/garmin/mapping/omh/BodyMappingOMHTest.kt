@@ -29,36 +29,39 @@ class BodyMappingOMHTest {
 
     @Test
     fun testMappingToOMH() {
-        val measures = bodySummaryDataAllFields.mapToOMH()
-        assertThat(measures.size).isEqualTo(3)
+        val omhDTO = bodySummaryDataAllFields.mapToOMH()
 
-        assertThat(measures[0]).isInstanceOf(BodyWeight::class.java)
-        val bodyWeight = measures[0] as BodyWeight
-        assertThat(bodyWeight.bodyWeight).isEqualTo(MassUnitValue(MassUnit.GRAM, weight.toBigDecimal()))
+        assertThat(omhDTO.bodyWeight).isNotNull
+        val bodyWeight = omhDTO.bodyWeight
+        assertThat(bodyWeight?.bodyWeight).isEqualTo(MassUnitValue(MassUnit.GRAM, weight.toBigDecimal()))
 
-        assertThat(measures[1]).isInstanceOf(BodyMassIndex1::class.java)
-        val bodyMassIndex = measures[1] as BodyMassIndex1
-        assertThat(bodyMassIndex.bodyMassIndex).isEqualTo(TypedUnitValue(BodyMassIndexUnit1.KILOGRAMS_PER_SQUARE_METER, bmi.toBigDecimal()))
+        assertThat(omhDTO.bodyMassIndex1).isNotNull
+        val bodyMassIndex = omhDTO.bodyMassIndex1
+        assertThat(bodyMassIndex?.bodyMassIndex).isEqualTo(TypedUnitValue(BodyMassIndexUnit1.KILOGRAMS_PER_SQUARE_METER, bmi.toBigDecimal()))
 
-        assertThat(measures[2]).isInstanceOf(BodyFatPercentage::class.java)
-        val bodyFatPercentage = measures[2] as BodyFatPercentage
-        assertThat(bodyFatPercentage.bodyFatPercentage).isEqualTo(TypedUnitValue(PercentUnit.PERCENT, bodyFat.toBigDecimal()))
+        assertThat(omhDTO.bodyFatPercentage).isNotNull
+        val bodyFatPercentage = omhDTO.bodyFatPercentage
+        assertThat(bodyFatPercentage?.bodyFatPercentage).isEqualTo(TypedUnitValue(PercentUnit.PERCENT, bodyFat.toBigDecimal()))
     }
 
     @Test
     fun testNonNullMapping() {
-        val measures = bodySummaryData.mapToOMH()
-        assertThat(measures.size).isEqualTo(1)
-        assertThat(measures[0]).isInstanceOf(BodyWeight::class.java)
+        val omhDTO = bodySummaryData.mapToOMH()
 
-        val bodyWeight = measures[0] as BodyWeight
-        assertThat(bodyWeight.bodyWeight).isEqualTo(MassUnitValue(MassUnit.GRAM, weight.toBigDecimal()))
+        assertThat(omhDTO.bodyWeight).isNotNull
+        val bodyWeight = omhDTO.bodyWeight
+        assertThat(bodyWeight?.bodyWeight).isEqualTo(MassUnitValue(MassUnit.GRAM, weight.toBigDecimal()))
+
+        assertThat(omhDTO.bodyMassIndex1).isNull()
+        assertThat(omhDTO.bodyFatPercentage).isNull()
     }
 
     @Test
     fun emptyList() {
-        val measures = bodySummaryDataNoOMH.mapToOMH()
-        assertThat(measures.size).isEqualTo(0)
+        val omhDTO = bodySummaryDataNoOMH.mapToOMH()
+        assertThat(omhDTO.bodyWeight).isNull()
+        assertThat(omhDTO.bodyMassIndex1).isNull()
+        assertThat(omhDTO.bodyFatPercentage).isNull()
     }
 
 }

@@ -21,7 +21,7 @@ data class EpochSummaryGarmin(
     val meanMotionIntensity: Float? = null,
     val maxMotionIntensity: Float? = null
 ): GarminData() {
-    override fun mapToOMH(): List<OmhDTO> {
+    override fun mapToOMH(): OmhDTO {
 
         val steps = steps?.let {
             StepCount2.Builder(
@@ -38,7 +38,7 @@ data class EpochSummaryGarmin(
                     .build()
         }
 
-        return listOf(OmhDTO(userId = userId, stepCount2 = steps, physicalActivity = activity))
+        return OmhDTO(userId = userId, stepCount2 = steps, physicalActivities = listOf(activity!!))
     }
 
     private fun getActivityName(activityType: String?): PhysicalActivity.SelfReportedIntensity {

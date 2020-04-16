@@ -2,6 +2,7 @@ package dtu.openhealth.integration.garmin.mapping.omh
 
 import dtu.openhealth.integration.garmin.garmin.PulseOXSummaryGarmin
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.HeartRate
 
@@ -30,13 +31,12 @@ class PulseMappingOMHTest {
 
     @Test
     fun testMappingToOMH() {
-        val measures = pulseSummary.mapToOMH()
+        val omhDTO = pulseSummary.mapToOMH()
 
-        Assertions.assertThat(measures[0]).isInstanceOf(HeartRate::class.java)
-        val heartRate = measures[0] as HeartRate
-
-        Assertions.assertThat(heartRate.heartRate.value).isEqualTo(breathList.average().toBigDecimal())
-        Assertions.assertThat(heartRate.effectiveTimeFrame.timeInterval.startDateTime.toEpochSecond())
+        val heartRate = omhDTO.heartRate
+        assertThat(heartRate).isNotNull
+        assertThat(heartRate?.heartRate?.value).isEqualTo(breathList.average().toBigDecimal())
+        assertThat(heartRate?.effectiveTimeFrame?.timeInterval?.startDateTime?.toEpochSecond())
                 .isEqualTo((startTime.toInt() - startTimeOffset).toLong())
     }
 

@@ -24,43 +24,40 @@ class FitbitSleepMappingTest {
                 totalSleepRecords = 1,
                 totalTimeInBed = 507)
         val fitbitSleepLogSummary = FitbitSleepLogSummary(listOf(sleepLog), sleepSummary)
-        val omhData = fitbitSleepLogSummary.mapToOMH()
+        val omhDTO = fitbitSleepLogSummary.mapToOMH()
 
-        assertThat(omhData.size).isEqualTo(expectedOmhElements)
-        validateSleepEpisodes(omhData, sleepLog)
-        validateSleepDuration(omhData, sleepSummary)
+        //assertThat(omhDTO.size).isEqualTo(expectedOmhElements)
+        validateSleepEpisodes(omhDTO, sleepLog)
+        validateSleepDuration(omhDTO, sleepSummary)
     }
 
-    private fun validateSleepEpisodes(omhData: List<OmhDTO>, sleepLog: FitbitSleepLog) {
-        val sleepEpisodeList = omhData.filterIsInstance<SleepEpisode>()
+    private fun validateSleepEpisodes(omhDTO: OmhDTO, sleepLog: FitbitSleepLog) {
+        val sleepEpisodeList = omhDTO.sleepEpisodes
         val expectedElements = 1
-        assertThat(sleepEpisodeList.size).isEqualTo(expectedElements)
+        assertThat(sleepEpisodeList?.size).isEqualTo(expectedElements)
 
-        val sleepEpisode = sleepEpisodeList[0]
-        val episodeTimeFrame = sleepEpisode.effectiveTimeFrame
-        assertThat(episodeTimeFrame.timeInterval?.startDateTime).isEqualTo(sleepLog.startTime.atOffset(ZoneOffset.UTC))
-        assertThat(episodeTimeFrame.timeInterval?.endDateTime).isEqualTo(sleepLog.endTime.atOffset(ZoneOffset.UTC))
-        assertThat(sleepEpisode.mainSleep).isEqualTo(sleepLog.isMainSleep)
-        assertThat(sleepEpisode.numberOfAwakenings).isEqualTo(sleepLog.awakeningsCount)
-        assertThat(sleepEpisode.latencyToSleepOnset?.value?.longValueExact()).isEqualTo(sleepLog.minutesToFallAsleep)
-        assertThat(sleepEpisode.totalSleepTime?.value?.longValueExact()).isEqualTo(sleepLog.minutesAsleep)
-        assertThat(sleepEpisode.sleepMaintenanceEfficiencyPercentage?.value?.longValueExact()).isEqualTo(sleepLog.efficiency)
-        assertThat(sleepEpisode.latencyToArising?.value?.longValueExact()).isEqualTo(sleepLog.minutesAfterWakeup)
+        val sleepEpisode = sleepEpisodeList?.get(0)
+        val episodeTimeFrame = sleepEpisode?.effectiveTimeFrame
+        assertThat(episodeTimeFrame?.timeInterval?.startDateTime).isEqualTo(sleepLog.startTime.atOffset(ZoneOffset.UTC))
+        assertThat(episodeTimeFrame?.timeInterval?.endDateTime).isEqualTo(sleepLog.endTime.atOffset(ZoneOffset.UTC))
+        assertThat(sleepEpisode?.mainSleep).isEqualTo(sleepLog.isMainSleep)
+        assertThat(sleepEpisode?.numberOfAwakenings).isEqualTo(sleepLog.awakeningsCount)
+        assertThat(sleepEpisode?.latencyToSleepOnset?.value?.longValueExact()).isEqualTo(sleepLog.minutesToFallAsleep)
+        assertThat(sleepEpisode?.totalSleepTime?.value?.longValueExact()).isEqualTo(sleepLog.minutesAsleep)
+        assertThat(sleepEpisode?.sleepMaintenanceEfficiencyPercentage?.value?.longValueExact()).isEqualTo(sleepLog.efficiency)
+        assertThat(sleepEpisode?.latencyToArising?.value?.longValueExact()).isEqualTo(sleepLog.minutesAfterWakeup)
     }
 
-    private fun validateSleepDuration(omhData: List<Measure>, sleepSummary: FitbitSleepSummary) {
-        val sleepDurationList = omhData.filterIsInstance<SleepDuration2>()
-        val expectedElements = 1
-        assertThat(sleepDurationList.size).isEqualTo(expectedElements)
+    private fun validateSleepDuration(omhDTO: OmhDTO, sleepSummary: FitbitSleepSummary) {
+        val sleepDuration = omhDTO.sleepDuration2
 
-        val sleepDuration = sleepDurationList[0]
-        assertThat(sleepDuration.sleepDuration?.typedUnit).isEqualTo(DurationUnit.MINUTE)
-        assertThat(sleepDuration.sleepDuration?.value?.longValueExact()).isEqualTo(sleepSummary.totalMinutesAsleep)
+        assertThat(sleepDuration?.sleepDuration?.typedUnit).isEqualTo(DurationUnit.MINUTE)
+        assertThat(sleepDuration?.sleepDuration?.value?.longValueExact()).isEqualTo(sleepSummary.totalMinutesAsleep)
 
-        val durationInterval = sleepDuration.effectiveTimeFrame
+        val durationInterval = sleepDuration?.effectiveTimeFrame
 //        assertThat(durationInterval.timeInterval?.startDateTime).isEqualTo(OffsetDateTime.now())
-        assertThat(durationInterval.timeInterval?.duration?.typedUnit).isEqualTo(DurationUnit.DAY)
-        assertThat(durationInterval.timeInterval?.duration?.value?.intValueExact()).isEqualTo(1)
+        assertThat(durationInterval?.timeInterval?.duration?.typedUnit).isEqualTo(DurationUnit.DAY)
+        assertThat(durationInterval?.timeInterval?.duration?.value?.intValueExact()).isEqualTo(1)
     }
 
     private fun prepareSleepLog() : FitbitSleepLog {

@@ -135,7 +135,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleThirdPartySummary(routingContext : RoutingContext) {
-        val thirdPartySummaries = routingContext.bodyAsJson.getJsonArray("thirdParty")
+        val thirdPartySummaries = routingContext.bodyAsJson.getJsonArray("thirdparty")
         thirdPartySummaries.stream().forEach {
             data -> if(data is JsonObject) {
                 try{

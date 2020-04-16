@@ -40,8 +40,8 @@ class HttpOAuth2ClientTest {
         val options = httpServerOptionsOf(
                 ssl = true,
                 pemKeyCertOptions = pemKeyCertOptionsOf(
-                        certPath = "src/test/kotlin/dtu/openhealth/integration/web/server-cert.pem",
-                        keyPath = "src/test/kotlin/dtu/openhealth/integration/web/server-key.pem"
+                        certPath = "src/test/kotlin/dtu/openhealth/integration/shared/web/server-cert.pem",
+                        keyPath = "src/test/kotlin/dtu/openhealth/integration/shared/web/server-key.pem"
                 ))
 
         vertx.createHttpServer(options)
