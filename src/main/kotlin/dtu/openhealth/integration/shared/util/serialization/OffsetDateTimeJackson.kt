@@ -17,7 +17,7 @@ class JacksonSerializer: JsonSerializer<OffsetDateTime>() {
     private val LOGGER = LoggerFactory.getLogger(JacksonSerializer::class.java)
 
     override fun serialize(value: OffsetDateTime, gen: JsonGenerator, serializers: SerializerProvider?) {
-        LOGGER.info("Serialize")
+        LOGGER.info("Serialize $value")
         gen.writeString(value.toString())
     }
 }
@@ -27,7 +27,7 @@ class JacksonDeserializer: JsonDeserializer<OffsetDateTime>() {
     private val LOGGER = LoggerFactory.getLogger(JacksonDeserializer::class.java)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): OffsetDateTime {
-        LOGGER.info("Deserialize")
+        LOGGER.info("Deserialize ${p.valueAsString}")
         return OffsetDateTime.parse(p.valueAsString)
     }
 }

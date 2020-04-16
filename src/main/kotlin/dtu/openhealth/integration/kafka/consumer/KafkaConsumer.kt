@@ -43,6 +43,6 @@ class KafkaConsumer(vertx: Vertx) {
     }
     
     private fun consumeOmhData(omhDTO: OmhDTO) {
-        LOGGER.info(omhDTO)
+        LOGGER.info("OmhDTO: $omhDTO")
     }
 }
