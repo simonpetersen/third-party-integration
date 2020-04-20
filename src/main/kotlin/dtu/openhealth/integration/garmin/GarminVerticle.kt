@@ -33,6 +33,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleActivitySummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting activity summary data for Garmin")
         val activitySummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("activities")
         activitySummaries.stream().forEach {
             data -> if(data is JsonObject) {
@@ -50,6 +51,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleBodyConsumptionSummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting body consumption data for Garmin")
         val bodyCompositionSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("body")
         bodyCompositionSummaries.stream().forEach {
             data -> if(data is JsonObject) {
@@ -67,6 +69,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleDailySummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting daily summary data for Garmin")
         val dailySummaries = routingContext.bodyAsJson.getJsonArray("dailies")
         dailySummaries.stream().forEach {
             data -> if(data is JsonObject) {
@@ -84,6 +87,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleEpochSummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting epoch summary data for Garmin")
         val epochsSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("epochs")
         epochsSummaries.stream().forEach {
             data -> if(data is JsonObject) {
@@ -101,6 +105,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleRespirationSummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting respiration summary data for Garmin")
         val respirationSummary = routingContext.bodyAsJson.getJsonArray("respirations")
         respirationSummary.stream().forEach {
             data -> if(data is JsonObject) {
@@ -118,6 +123,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleSleepSummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting sleep summary data for Garmin")
         val sleepSummary = routingContext.bodyAsJson.getJsonArray("sleeps")
         sleepSummary.stream().forEach {
             data -> if(data is JsonObject) {
@@ -135,6 +141,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     }
 
     private fun handleThirdPartySummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting third party summary data for Garmin")
         val thirdPartySummaries = routingContext.bodyAsJson.getJsonArray("thirdparty")
         thirdPartySummaries.stream().forEach {
             data -> if(data is JsonObject) {
@@ -153,6 +160,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
 
 
     private fun handlePulseSummary(routingContext : RoutingContext) {
+        LOGGER.info("Posting pulse summary data for Garmin")
         val pulseSummaries = routingContext.bodyAsJson.getJsonArray("pulseOX")
         pulseSummaries.stream().forEach {
             data -> if(data is JsonObject) {
