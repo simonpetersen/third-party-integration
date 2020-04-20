@@ -21,8 +21,10 @@ class KafkaConsumer(vertx: Vertx) {
         config["group.id"] = KafkaConsumerProperties.GROUP_ID
         config["auto.offset.reset"] = KafkaConsumerProperties.AUTO_OFFSET_RESET
         config["enable.auto.commit"] = KafkaConsumerProperties.ENABLE_AUTO_COMMIT
-        consumer = KafkaConsumer.create<Any, Any>(vertx, config)
-        
+        consumer = KafkaConsumer.create(vertx, config)
+    }
+
+    fun consume() {
         consumer.handler { record ->
             LOGGER.info("Getting data from Kafka stream $record")
             consumeOmhData(getOmhData(record))

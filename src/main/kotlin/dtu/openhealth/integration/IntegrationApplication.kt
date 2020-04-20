@@ -9,7 +9,7 @@ class IntegrationApplication
 
 fun main() {
     val vertx = Vertx.vertx()
-    val kafkaConsumer = KafkaConsumer(vertx)
+    KafkaConsumer(vertx).consume()
     vertx.deployVerticle(MainVerticle())
 
     /*val webClient = WebClient.create(vertx)
