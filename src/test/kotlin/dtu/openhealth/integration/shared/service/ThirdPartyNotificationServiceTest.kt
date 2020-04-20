@@ -8,6 +8,7 @@ import dtu.openhealth.integration.shared.model.User
 import dtu.openhealth.integration.shared.service.impl.ThirdPartyNotificationServiceImpl
 import dtu.openhealth.integration.shared.service.mock.MockRestUrl
 import io.reactivex.Single
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 
 class ThirdPartyNotificationServiceTest {
@@ -16,7 +17,7 @@ class ThirdPartyNotificationServiceTest {
     private val DATA_TYPE = "data"
 
     @Test
-    fun testNotification() {
+    fun testNotification() = runBlocking {
         val testUrl1 = "/data/activities"
         val testUrl2 = "/data/sleep"
         val endpoint1 = RestEndpoint(MockRestUrl(testUrl1), ThirdPartyData.serializer())
@@ -29,8 +30,8 @@ class ThirdPartyNotificationServiceTest {
 
         // Mock
         val httpService: HttpService = mock()
-        val userService: UserService = mock()
-        whenever(userService.getUser(USER_ID)).thenReturn(user)
+        val userService: UserDataService = mock()
+        whenever(userService.getUserById(USER_ID)).thenReturn(user)
         whenever(httpService.callApiForUser(any(), any(), any())).thenReturn(Single.just(emptyList()))
         val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, userService)
 

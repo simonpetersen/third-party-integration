@@ -1,5 +1,8 @@
 package dtu.openhealth.integration.shared.web.auth
 
+import com.nhaarman.mockitokotlin2.mock
+import dtu.openhealth.integration.shared.service.UserDataService
+import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
 import io.vertx.junit5.Checkpoint
 import io.vertx.junit5.VertxExtension
@@ -13,10 +16,7 @@ import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.client.WebClient
 import io.vertx.reactivex.ext.web.handler.BodyHandler
-import org.aspectj.lang.annotation.Before
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -38,17 +38,17 @@ class OAuth2RouterTest {
 
     @Test
     fun testOAuth2RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
-        initWebServer(vertx, tc)
+        prepareWebServerAndRunTest(vertx, tc) { vx, vxTc -> oauth2RouterRedirect(vx, vxTc)}
+    }
 
+    private fun oauth2RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
         val client = WebClient.create(vertx)
         client.get(8080, "localhost", "/auth/$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
-                        tc.verify {
-                            val response = ar.result()
-                            assertThat(response.statusCode()).isEqualTo(200)
-                            assertThat(response.body().toString()).isEqualTo(redirectBody)
-                        }
+                        val response = ar.result()
+                        assertThat(response.statusCode()).isEqualTo(200)
+                        assertThat(response.body().toString()).isEqualTo(redirectBody)
                         tc.completeNow()
                     }
                     else {
@@ -59,8 +59,10 @@ class OAuth2RouterTest {
 
     @Test
     fun testOAuth2RouterCallback(vertx: Vertx, tc: VertxTestContext) {
-        initWebServer(vertx, tc)
+        prepareWebServerAndRunTest(vertx, tc) { vx, vxTc -> oauth2RouterCallback(vx, vxTc) }
+    }
 
+    private fun oauth2RouterCallback(vertx: Vertx, tc: VertxTestContext) {
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
         client.get(8080, "localhost", "/login?code=$authCode")
@@ -79,12 +81,13 @@ class OAuth2RouterTest {
                 }
     }
 
-    private fun initWebServer(vertx: Vertx, tc: VertxTestContext) {
+    private fun prepareWebServerAndRunTest(vertx: Vertx, tc: VertxTestContext,
+                                           testFunction: (Vertx, VertxTestContext) -> Unit) {
         val tokenPostCheckpoint = tc.checkpoint()
-        val serverStartedCheckpoint = tc.checkpoint()
         val oauth2 = OAuth2Auth.create(vertx, oauth2Options)
-        val parameters = OAuth2Parameters("activity", "http://localhost:8080/login")
-        val authenticationRouter = OAuth2Router(vertx,oauth2,parameters).getRouter()
+        val parameters = OAuth2RouterParameters(redirectUri, "", "activity")
+        val userDataService : UserDataService = mock()
+        val authenticationRouter = OAuth2Router(vertx,oauth2,parameters, userDataService).getRouter()
 
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
@@ -93,14 +96,9 @@ class OAuth2RouterTest {
         router.mountSubRouter("/", authenticationRouter)
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(8080) {
-                    if (it.succeeded()) {
-                        serverStartedCheckpoint.flag()
-                    }
-                    else {
-                        tc.failNow(it.cause())
-                    }
-                }
+                .listen(8080, tc.succeeding {
+                    testFunction(vertx, tc)
+                })
     }
 
     private fun authorizeHandler(routingContext: RoutingContext) {

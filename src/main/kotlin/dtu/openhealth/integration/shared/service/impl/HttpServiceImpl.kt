@@ -11,7 +11,7 @@ import io.reactivex.Single
 class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService {
 
     override fun callApiForUser(endpoints: List<RestEndpoint>, user: User, urlParameters: Map<String,String>) : Single<List<ApiResponse>> {
-        val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, user.token) }.toList()
+        val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, user.token ?: "") }.toList()
 
         return Single.zip(singles) { combineSingles(it) }
     }

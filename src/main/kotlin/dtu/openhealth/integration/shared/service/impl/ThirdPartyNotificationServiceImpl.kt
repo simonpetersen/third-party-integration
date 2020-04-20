@@ -4,27 +4,38 @@ import dtu.openhealth.integration.shared.data.ThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.model.User
-import dtu.openhealth.integration.shared.service.HttpService
-import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
-import dtu.openhealth.integration.shared.service.UserService
+import dtu.openhealth.integration.shared.service.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import java.time.LocalDateTime
 
 
 class ThirdPartyNotificationServiceImpl(
         private val httpService: HttpService,
         private val endpointMap: Map<String, List<RestEndpoint>>,
-        private val userService: UserService) : ThirdPartyNotificationService {
+        private val userService: UserDataService,
+        private val tokenRefreshService: TokenRefreshService
+) : ThirdPartyNotificationService {
 
-    override fun getUpdatedData(notificationList: List<ThirdPartyNotification>) {
+    override suspend fun getUpdatedData(notificationList: List<ThirdPartyNotification>) {
         for (notification in notificationList) {
-            val userId = notification.parameters[notification.userParam]
+            val extUserId = notification.parameters[notification.userParam]
             val dataType = notification.parameters[notification.dataTypeParam]
-            if (userId != null && dataType != null) {
-                val user = userService.getUser(userId)
-                if (user != null) {
-                    callApi(user, dataType, notification.parameters)
-                }
+            if (extUserId != null && dataType != null) {
+                getUserAndCallApi(extUserId, dataType, notification.parameters)
+            }
+        }
+    }
+
+    private suspend fun getUserAndCallApi(extUserId: String, dataType: String, parameters: Map<String, String>) {
+        val user = userService.getUserByExtId(extUserId)
+        if (user != null) {
+            if (tokenIsExpired(user.expireDateTime)) {
+                val updatedUser = tokenRefreshService.refreshToken(user)
+                callApi(updatedUser, dataType, parameters)
+            }
+            else {
+                callApi(user, dataType, parameters)
             }
         }
     }
@@ -49,6 +60,15 @@ class ThirdPartyNotificationServiceImpl(
             println(e)
             null
         }
+    }
+
+    private fun tokenIsExpired(expireDateTime: LocalDateTime?): Boolean {
+        if (expireDateTime == null) {
+            return false
+        }
+
+        val now = LocalDateTime.now().minusSeconds(5)
+        return expireDateTime.isAfter(now)
     }
 
 }

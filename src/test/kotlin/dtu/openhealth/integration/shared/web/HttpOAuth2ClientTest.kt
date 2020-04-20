@@ -9,6 +9,9 @@ import io.vertx.kotlin.core.net.pemKeyCertOptionsOf
 import io.vertx.kotlin.ext.web.client.webClientOptionsOf
 import io.vertx.reactivex.ext.web.client.WebClient
 import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.core.http.HttpServerRequest
+import io.vertx.reactivex.ext.web.RoutingContext
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -19,33 +22,40 @@ class HttpOAuth2ClientTest {
 
     private val responseJson = "{}"
     private val port = 8443
+    private val testToken = "hjkhfakelfbqjkwbf"
 
     @Test
     fun testOAuth2Client(vertx: Vertx, tc: VertxTestContext) {
         val endpoint = RestEndpoint(TestRestUrl("localhost", "/"), ThirdPartyData.serializer())
         val request = ApiRequest(endpoint, "/", emptyMap())
-        val options = webClientOptionsOf(trustAll = true)
-        val webClient = WebClient.create(vertx, options)
-        val oauth2Client = HttpOAuth2ConnectorClient(webClient, port)
-        initWebServer(vertx)
-
-        val responseSingle = oauth2Client.get(request, "testToken")
-        responseSingle.subscribe(
-                { result -> tc.verify { assertEquals(result.responseJson, responseJson); }; tc.completeNow() },
-                { error -> tc.failNow(error) }
-        )
-    }
-
-    private fun initWebServer(vertx: Vertx) {
         val options = httpServerOptionsOf(
                 ssl = true,
                 pemKeyCertOptions = pemKeyCertOptionsOf(
-                        certPath = "src/test/kotlin/dtu/openhealth/integration/web/server-cert.pem",
-                        keyPath = "src/test/kotlin/dtu/openhealth/integration/web/server-key.pem"
+                        certPath = "src/test/kotlin/dtu/openhealth/integration/shared/web/server-cert.pem",
+                        keyPath = "src/test/kotlin/dtu/openhealth/integration/shared/web/server-key.pem"
                 ))
 
         vertx.createHttpServer(options)
-                .requestHandler { it.response().end(responseJson) }
-                .listen(port)
+                .requestHandler { handleRequest(it) }
+                .listen(port, tc.succeeding {
+                    val clientOptions = webClientOptionsOf(trustAll = true)
+                    val webClient = WebClient.create(vertx, clientOptions)
+                    val oauth2Client = HttpOAuth2ConnectorClient(webClient, port)
+
+                    val responseSingle = oauth2Client.get(request, testToken)
+                    responseSingle.subscribe(
+                            { result ->
+                                tc.verify { assertThat(result.responseJson).isEqualTo(responseJson) }
+                                tc.completeNow() },
+                            { error -> tc.failNow(error) }
+                    )
+                })
+    }
+
+    private fun handleRequest(serverRequest: HttpServerRequest) {
+        val authHeader = serverRequest.getHeader("Authorization")
+        val expectedAuthHeader = "Bearer $testToken"
+        assertThat(authHeader).isEqualTo(expectedAuthHeader)
+        serverRequest.response().end(responseJson)
     }
 }

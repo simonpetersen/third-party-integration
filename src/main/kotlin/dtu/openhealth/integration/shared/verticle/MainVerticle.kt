@@ -7,6 +7,7 @@ import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.impl.HttpServiceImpl
 import dtu.openhealth.integration.shared.service.impl.TestUserServiceImpl
 import dtu.openhealth.integration.shared.service.impl.ThirdPartyNotificationServiceImpl
+import dtu.openhealth.integration.shared.service.impl.VertxUserServiceImpl
 import dtu.openhealth.integration.shared.web.FitbitRestUrl
 import dtu.openhealth.integration.shared.web.HttpOAuth2ConnectorClient
 import io.vertx.reactivex.core.AbstractVerticle
@@ -16,9 +17,9 @@ class MainVerticle : AbstractVerticle() {
 
     override fun start() {
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx)))
-        val activityUrl = FitbitRestUrl("/1/user/[userId]/activities/date/[date].json")
+        val activityUrl = FitbitRestUrl("/1/user/[ownerId]/activities/date/[date].json")
         val endpointMap = mapOf(Pair("activities", listOf(RestEndpoint(activityUrl, FitbitActivitiesSummary.serializer()))))
-        val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, TestUserServiceImpl())
+        val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, VertxUserServiceImpl(vertx.delegate))
 
         // Deploy verticles
         vertx.deployVerticle(FitbitVerticle(notificationService))
