@@ -1,5 +1,6 @@
 package dtu.openhealth.integration.shared.util.serialization
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
@@ -14,6 +15,7 @@ class OmhDTODeserializer: Deserializer<Any?> {
         val mapper = ObjectMapper()
         val module = SimpleModule()
         module.addDeserializer(OffsetDateTime::class.java, JacksonDeserializer())
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
         mapper.registerModule(JavaTimeModule())
         mapper.registerModule(module)
         var omhDTO: OmhDTO? = null
