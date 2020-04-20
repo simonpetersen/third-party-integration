@@ -30,12 +30,15 @@ dependencies {
     implementation("com.vladmihalcea:hibernate-types-52:2.9.5")
     implementation("com.h2database:h2:1.3.148")
     implementation("com.google.guava:guava:23.0")
+    implementation("com.github.scribejava:scribejava-core:6.9.0")
     implementation("io.vertx:vertx-core:3.8.5")
     implementation("io.vertx:vertx-lang-kotlin:3.8.5")
     implementation("io.vertx:vertx-web:3.8.5")
     implementation("io.vertx:vertx-web-client:3.8.5")
     implementation("io.vertx:vertx-rx-java2:3.8.5")
     implementation("io.vertx:vertx-auth-oauth2:3.8.5")
+    implementation("io.vertx:vertx-pg-client:3.9.0")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines:3.9.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }

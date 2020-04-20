@@ -27,7 +27,7 @@ class UserServiceImpl(@Autowired private val userRepository: UserRepository) : U
     override fun updateTokens(user: User) {
         logger.info("Updating tokens for user with id: ${user.userId} with values, " +
                 "refresh: ${user.refreshToken} and token: ${user.token}")
-        userRepository.updateTokens(user.token, user.refreshToken, user.userId)
+        //userRepository.updateTokens(user.token, user.refreshToken, user.userId)
     }
 
     override fun deleteUser(user: User) {
