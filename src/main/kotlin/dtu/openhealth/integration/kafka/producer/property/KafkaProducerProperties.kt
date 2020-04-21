@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.kafka.publisher.property
+package dtu.openhealth.integration.kafka.producer.property
 
 object KafkaProducerProperties {
     const val BOOTSTRAP_SERVERS = "localhost:9092"

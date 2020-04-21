@@ -1,7 +1,7 @@
-package dtu.openhealth.integration.kafka.publisher.impl
+package dtu.openhealth.integration.kafka.producer.impl
 
-import dtu.openhealth.integration.kafka.publisher.KafkaProducerService
-import dtu.openhealth.integration.kafka.publisher.property.KafkaProducerProperties
+import dtu.openhealth.integration.kafka.producer.KafkaProducerService
+import dtu.openhealth.integration.kafka.producer.property.KafkaProducerProperties
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.kafka.client.producer.KafkaProducer

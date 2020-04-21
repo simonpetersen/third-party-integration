@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.kafka.publisher
+package dtu.openhealth.integration.kafka.producer
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 
