@@ -12,7 +12,7 @@ class KafkaConsumer(vertx: Vertx) {
 
     private val LOGGER = LoggerFactory.getLogger(KafkaConsumer::class.java)
     
-    private var consumer: KafkaConsumer<Any, Any>
+    private var consumer: KafkaConsumer<String, OmhDTO>
     init {
         val config: MutableMap<String, String> = HashMap()
         config["bootstrap.servers"] = KafkaConsumerProperties.BOOTSTRAP_SERVERS
@@ -27,7 +27,7 @@ class KafkaConsumer(vertx: Vertx) {
     fun consume() {
         consumer.handler { record ->
             LOGGER.info("Getting data from Kafka stream $record")
-            consumeOmhData(getOmhData(record))
+            consumeOmhData(record.value())
         }
         
         consumer.subscribe(KafkaConsumerProperties.TOPIC) { ar ->
@@ -38,13 +38,8 @@ class KafkaConsumer(vertx: Vertx) {
             }
         }
     }
-    
-    private fun getOmhData(kafkaConsumerRecord: KafkaConsumerRecord<Any, Any>): OmhDTO {
-        LOGGER.info("Key: ${kafkaConsumerRecord.key()} & Value: ${kafkaConsumerRecord.value()}")
-        return kafkaConsumerRecord.value() as OmhDTO
-    }
-    
+
     private fun consumeOmhData(omhDTO: OmhDTO) {
-        LOGGER.info("OmhDTO: $omhDTO")
+        LOGGER.info("Consume OmhDTO: $omhDTO")
     }
 }
