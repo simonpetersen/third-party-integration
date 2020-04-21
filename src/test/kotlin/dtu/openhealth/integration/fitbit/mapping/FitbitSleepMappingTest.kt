@@ -16,7 +16,6 @@ class FitbitSleepMappingTest {
 
     @Test
     fun testFitbitSleepMapping() {
-        val expectedOmhElements = 2
         val sleepLog = prepareSleepLog()
         val sleepSummary = FitbitSleepSummary(
                 FitbitSleepStages(deep = 88, light = 266, rem = 92, wake = 61),
@@ -26,7 +25,6 @@ class FitbitSleepMappingTest {
         val fitbitSleepLogSummary = FitbitSleepLogSummary(listOf(sleepLog), sleepSummary)
         val omhDTO = fitbitSleepLogSummary.mapToOMH()
 
-        //assertThat(omhDTO.size).isEqualTo(expectedOmhElements)
         validateSleepEpisodes(omhDTO, sleepLog)
         validateSleepDuration(omhDTO, sleepSummary)
     }
