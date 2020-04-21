@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger
 class ConsumerMockTest {
 
     @Test
-    @Throws(Exception::class)
     fun testConsume(vertx: Vertx, testContext: VertxTestContext) {
 
         val omhDTO = OmhDTO(userId = "userIdOfUser")
@@ -49,7 +48,6 @@ class ConsumerMockTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testBatch(vertx: Vertx, testContext: VertxTestContext) {
         val omhDTO = OmhDTO(userId = "userIdOfUser")
         val stringKey = "omh-dto"
