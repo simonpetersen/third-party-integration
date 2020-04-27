@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
 class UserServiceTest(@Autowired val userService: UserService) {
-
+    /*
     @Test
     fun createUserTest() {
         val newUser = User("121","123","321")
@@ -45,6 +45,8 @@ class UserServiceTest(@Autowired val userService: UserService) {
         userService.deleteUser(newUser)
         assertThat(userService.getUser("121")).isNull()
     }
+
+     */
 
 
 }
