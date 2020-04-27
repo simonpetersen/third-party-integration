@@ -13,7 +13,7 @@ import io.vertx.ext.web.handler.BodyHandler
 
 class GarminVerticle: AbstractVerticle() {
 
-    private val LOGGER = LoggerFactory.getLogger(GarminVerticle::class.java)
+    private val logger = LoggerFactory.getLogger(GarminVerticle::class.java)
     private val garminDataService: GarminDataService = GarminDataServiceImpl()
 
     override fun start() {
@@ -37,11 +37,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(ActivitySummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -54,11 +54,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(BodyCompositionSummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -71,11 +71,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(DailySummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -88,11 +88,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(EpochSummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -105,11 +105,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(RespirationSummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -122,11 +122,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(SleepSummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -139,11 +139,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(ThirdPartyDailySummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }
@@ -157,11 +157,11 @@ class GarminVerticle: AbstractVerticle() {
             data -> if(data is JsonObject) {
                 try{
                     data.mapTo(PulseOXSummaryGarmin::class.java).also {
-                        LOGGER.info("Saving data to Garmin: $it")
+                        logger.info("Saving data to Garmin: $it")
                         garminDataService.saveDataToOMH(it)
                     }
                 }catch (e: Exception){
-                    LOGGER.error(e.message)
+                    logger.error(e)
                 }
             }
         }

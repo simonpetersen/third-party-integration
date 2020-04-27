@@ -1,6 +1,7 @@
 package dtu.openhealth.integration.shared.web.auth
 
 import com.nhaarman.mockitokotlin2.mock
+import dtu.openhealth.integration.fitbit.FitbitOAuth2Router
 import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
@@ -21,7 +22,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(VertxExtension::class)
-class OAuth2RouterTest {
+class FitbitOAuth2RouterTest {
 
     private val userId = "test_user_2"
     private val redirectUri = "http://localhost:8080/login"
@@ -87,7 +88,7 @@ class OAuth2RouterTest {
         val oauth2 = OAuth2Auth.create(vertx, oauth2Options)
         val parameters = OAuth2RouterParameters(redirectUri, "", "activity")
         val userDataService : UserDataService = mock()
-        val authenticationRouter = OAuth2Router(vertx,oauth2,parameters, userDataService).getRouter()
+        val authenticationRouter = FitbitOAuth2Router(vertx,oauth2,parameters,userDataService).getRouter()
 
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())

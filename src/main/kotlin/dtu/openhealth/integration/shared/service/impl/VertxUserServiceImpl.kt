@@ -5,9 +5,14 @@ import dtu.openhealth.integration.shared.service.BaseDataService
 import dtu.openhealth.integration.shared.service.UserDataService
 import io.vertx.kotlin.coroutines.await
 import io.vertx.core.Vertx
+import io.vertx.core.logging.LoggerFactory
+import io.vertx.kotlin.core.json.array
+import io.vertx.kotlin.core.json.json
 import io.vertx.sqlclient.Row
 
 class VertxUserServiceImpl(vertx: Vertx) : BaseDataService(vertx), UserDataService {
+    private val logger = LoggerFactory.getLogger(VertxUserServiceImpl::class.java)
+
     override suspend fun getUserById(id: String): User? {
         val sql = "SELECT * FROM USERS WHERE USERID = '$id'"
         val resultSet = executeQuery(sql).await()
@@ -20,8 +25,8 @@ class VertxUserServiceImpl(vertx: Vertx) : BaseDataService(vertx), UserDataServi
     }
 
     override suspend fun getUserByExtId(extId: String): User? {
-        val sql = "SELECT * FROM USERS WHERE EXTUSERID = '$extId'"
-        val resultSet = executeQuery(sql).await()
+        val query = "SELECT * FROM USERS WHERE EXTUSERID = '$extId'"
+        val resultSet = executeQuery(query).await()
 
         if (!resultSet.iterator().hasNext()) {
             return null
@@ -30,15 +35,22 @@ class VertxUserServiceImpl(vertx: Vertx) : BaseDataService(vertx), UserDataServi
         return getUserFromRow(resultSet.iterator().next())
     }
 
-    override suspend fun createUser(user: User) {
-        val sql = "INSERT INTO USERS (USERID, EXTUSERID, AUTHTOKEN, REFRESHTOKEN, TOKENEXPIRETIME) " +
+    override fun createUser(user: User) {
+        val query = "INSERT INTO USERS (USERID, EXTUSERID, AUTHTOKEN, REFRESHTOKEN, TOKENEXPIRETIME) " +
                 "VALUES ('${user.userId}', '${user.extUserId}', '${user.token}', '${user.refreshToken}', '${user.expireDateTime}')"
 
-        executeQuery(sql).await()
+        executeQuery(query).onComplete {
+            ar -> if (ar.failed()) { logger.error(ar.cause()) }
+        }
     }
 
     override suspend fun updateTokens(user: User) {
-        TODO("Not yet implemented")
+        val query = "UPDATE USERS SET AUTHTOKEN = '${user.token}', " +
+                "REFRESHTOKEN = '${user.refreshToken}', " +
+                "TOKENEXPIRETIME = '${user.expireDateTime}' " +
+                "WHERE EXTUSERID = '${user.extUserId}' AND USERID = '${user.userId}'"
+
+        executeQuery(query).await()
     }
 
     private fun getUserFromRow(row: Row): User {

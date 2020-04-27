@@ -5,6 +5,7 @@ import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.model.User
 import dtu.openhealth.integration.shared.service.*
+import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
@@ -17,12 +18,18 @@ class ThirdPartyNotificationServiceImpl(
         private val tokenRefreshService: TokenRefreshService
 ) : ThirdPartyNotificationService {
 
+    private val logger = LoggerFactory.getLogger(ThirdPartyNotificationServiceImpl::class.java)
+
     override suspend fun getUpdatedData(notificationList: List<ThirdPartyNotification>) {
         for (notification in notificationList) {
             val extUserId = notification.parameters[notification.userParam]
             val dataType = notification.parameters[notification.dataTypeParam]
             if (extUserId != null && dataType != null) {
                 getUserAndCallApi(extUserId, dataType, notification.parameters)
+            }
+            else {
+                val errorMsg = "${notification.userParam} or ${notification.dataTypeParam} not found in ${notification.parameters}."
+                logger.error(errorMsg)
             }
         }
     }
@@ -47,8 +54,10 @@ class ThirdPartyNotificationServiceImpl(
 
             // TODO: Put result on Kafka stream.
             apiResponseList.subscribe(
-                    { result -> println("Result = $result") },
-                    { error -> println(error) }
+                    { result ->
+                        println("Result = $result")
+                    },
+                    { error -> logger.error(error) }
             )
         }
     }
@@ -57,7 +66,7 @@ class ThirdPartyNotificationServiceImpl(
         return try {
             json.parse(serializer, responseJson)
         } catch (e: Exception) {
-            println(e)
+            logger.error(e)
             null
         }
     }
@@ -68,7 +77,7 @@ class ThirdPartyNotificationServiceImpl(
         }
 
         val now = LocalDateTime.now().minusSeconds(5)
-        return expireDateTime.isAfter(now)
+        return expireDateTime.isBefore(now)
     }
 
 }

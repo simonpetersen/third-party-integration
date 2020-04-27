@@ -1,5 +1,7 @@
 package dtu.openhealth.integration.shared.web.auth
 
+import com.nhaarman.mockitokotlin2.mock
+import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
 import io.vertx.junit5.Checkpoint
 import io.vertx.junit5.VertxExtension
@@ -85,7 +87,8 @@ class OAuth1RouterTest {
                 "bM4bfF9fgmcfutToV17VEDFjQGVECGmIftaUZ3",
                 OAuth1TestApi.instance())
         val map = mutableMapOf(Pair(userId, requestTokenSecret))
-        val authenticationRouter = OAuth1Router(vertx,parameters, map).getRouter()
+        val userDataService: UserDataService = mock()
+        val authenticationRouter = OAuth1Router(vertx,parameters, userDataService, map).getRouter()
 
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())

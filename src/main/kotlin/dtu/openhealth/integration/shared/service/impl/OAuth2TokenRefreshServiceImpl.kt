@@ -43,14 +43,15 @@ class OAuth2TokenRefreshServiceImpl(private val webClient: WebClient,
         return saveRefreshedToken(response.body(), user.userId)
     }
 
-    private suspend fun saveRefreshedToken(json: JsonObject, userId: String): User {
-        val accessToken = json.getString("access_token")
-        val refreshToken = json.getString("refresh_token")
-        val expiresIn = json.getLong("expires_in")
+    private suspend fun saveRefreshedToken(jsonBody: JsonObject, userId: String): User {
+        val accessToken = jsonBody.getString("access_token")
+        val refreshToken = jsonBody.getString("refresh_token")
+        val expiresIn = jsonBody.getLong("expires_in")
+        val extUserId = jsonBody.getString("user_id")
 
         val expireDateTime = LocalDateTime.now().plusSeconds(expiresIn)
 
-        val updatedUser = User(userId, token = accessToken, refreshToken = refreshToken, expireDateTime = expireDateTime)
+        val updatedUser = User(userId, extUserId, accessToken, refreshToken, expireDateTime)
         userDataService.updateTokens(updatedUser)
         return updatedUser
     }

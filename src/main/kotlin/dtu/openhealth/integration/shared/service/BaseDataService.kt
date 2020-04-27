@@ -6,6 +6,7 @@ import io.vertx.kotlin.pgclient.pgConnectOptionsOf
 import io.vertx.kotlin.sqlclient.poolOptionsOf
 import io.vertx.pgclient.PgPool
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonArray
 import io.vertx.sqlclient.Row
 import io.vertx.sqlclient.RowSet
 
@@ -19,9 +20,9 @@ abstract class BaseDataService(vertx: Vertx) {
 
     private val client : PgPool = PgPool.pool(vertx, connectOptions, poolOptions)
 
-    protected fun executeQuery(sql : String) : Future<RowSet<Row>> {
+    protected fun executeQuery(query : String) : Future<RowSet<Row>> {
         val promise = Promise.promise<RowSet<Row>>()
-        client.query(sql).execute { ar ->
+        client.query(query).execute { ar ->
             if (ar.succeeded()) {
                 promise.complete(ar.result())
             } else {
