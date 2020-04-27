@@ -7,8 +7,11 @@ import dtu.openhealth.integration.shared.web.ApiRequest
 import dtu.openhealth.integration.shared.web.ApiResponse
 import dtu.openhealth.integration.shared.web.HttpConnectorClient
 import io.reactivex.Single
+import io.vertx.core.logging.LoggerFactory
 
 class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService {
+
+    private val logger = LoggerFactory.getLogger(HttpServiceImpl::class.java)
 
     override fun callApiForUser(endpoints: List<RestEndpoint>, user: User, urlParameters: Map<String,String>) : Single<List<ApiResponse>> {
         val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, user.token) }.toList()
@@ -28,9 +31,13 @@ class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService
         val parameters = regex.findAll(url).map { it.groupValues[1] }.toList()
         for (parameter in parameters) {
             val parameterValue: String? = urlParameters[parameter]
-            if (parameterValue != null) { // TODO: Handle missing parameter.
+            if (parameterValue != null) {
                 url = url.replace("[$parameter]", parameterValue)
                 apiParameters[parameter] = parameterValue
+            }
+            else {
+                val errorMsg = "Parameter $parameter not found in $urlParameters"
+                logger.error(errorMsg)
             }
         }
 

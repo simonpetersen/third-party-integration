@@ -8,34 +8,65 @@ import dtu.openhealth.integration.shared.model.User
 import dtu.openhealth.integration.shared.service.impl.ThirdPartyNotificationServiceImpl
 import dtu.openhealth.integration.shared.service.mock.MockRestUrl
 import io.reactivex.Single
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class ThirdPartyNotificationServiceTest {
 
-    private val USER_ID = "testUser"
-    private val DATA_TYPE = "data"
+    private val userId = "testUser"
+    private val extUserId = "dhsflkfs2"
+    private val dataType = "data"
+    private val accessToken = "token123"
 
     @Test
-    fun testNotification() {
+    fun testNotification() = runBlockingTest {
+        val tokenExpireDateTime = LocalDateTime.now().plusHours(2)
+        val tokenRefreshInvocation = 0
+        runTest(tokenRefreshInvocation, tokenExpireDateTime)
+    }
+
+    @Test
+    fun testNotificationWithExpiredToken() = runBlockingTest {
+        val tokenExpireDateTime = LocalDateTime.now().minusHours(1)
+        val tokenRefreshInvocation = 1
+        runTest(tokenRefreshInvocation, tokenExpireDateTime)
+    }
+
+    private suspend fun runTest(tokenRefreshInvocation: Int, tokenExpireDateTime: LocalDateTime) {
+        val endpointMap = getEndpointMap()
+        val parameters = mapOf(Pair("dataType", dataType), Pair("userId", extUserId))
+        val notification = ThirdPartyNotification(parameters, "dataType", "userId")
+        val user = User(userId, extUserId, accessToken, expireDateTime = tokenExpireDateTime)
+
+        // Mock
+        val httpService: HttpService = mock()
+        val userService: UserDataService = mock()
+        val tokenRefreshService: TokenRefreshService = mock()
+        val expireDateTime = LocalDateTime.now().plusHours(8)
+        val refreshedUser = User(userId, extUserId, accessToken, expireDateTime = expireDateTime)
+        whenever(tokenRefreshService.refreshToken(user)).thenReturn(refreshedUser)
+        whenever(userService.getUserByExtId(extUserId)).thenReturn(user)
+        whenever(httpService.callApiForUser(any(), any(), any())).thenReturn(Single.just(emptyList()))
+
+        // Call notificationService
+        val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, userService, tokenRefreshService)
+        notificationService.getUpdatedData(listOf(notification))
+
+        // Verify
+        val expectedEndpointList = endpointMap[dataType] ?: emptyList()
+        val expectedUser = if (tokenRefreshInvocation == 0) user else refreshedUser
+        verify(httpService).callApiForUser(eq(expectedEndpointList), eq(expectedUser), eq(parameters))
+        verify(tokenRefreshService, times(tokenRefreshInvocation)).refreshToken(any())
+    }
+
+
+    private fun getEndpointMap() : Map<String, List<RestEndpoint>> {
         val testUrl1 = "/data/activities"
         val testUrl2 = "/data/sleep"
         val endpoint1 = RestEndpoint(MockRestUrl(testUrl1), ThirdPartyData.serializer())
         val endpoint2 = RestEndpoint(MockRestUrl(testUrl2), ThirdPartyData.serializer())
         val endpointList = listOf(endpoint1, endpoint2)
-        val endpointMap = mapOf(Pair(DATA_TYPE, endpointList))
-        val user = User(USER_ID, "123", "testToken")
-        val parameters = mapOf(Pair("dataType", DATA_TYPE), Pair("userId", USER_ID))
-        val notification = ThirdPartyNotification(parameters, "dataType", "userId")
-
-        // Mock
-        val httpService: HttpService = mock()
-        val userService: UserService = mock()
-        whenever(userService.getUser(USER_ID)).thenReturn(user)
-        whenever(httpService.callApiForUser(any(), any(), any())).thenReturn(Single.just(emptyList()))
-        val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, userService)
-
-        notificationService.getUpdatedData(listOf(notification))
-
-        verify(httpService).callApiForUser(eq(endpointList), eq(user), eq(parameters))
+        return mapOf(Pair(dataType, endpointList))
     }
 }

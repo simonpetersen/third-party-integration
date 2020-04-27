@@ -16,7 +16,7 @@ class TestUserServiceImpl : UserService {
     }
 
     override fun updateTokens(user: User) {
-        TODO("Not yet implemented")
+        println("New token for ${user.userId} = ${user.token} ${user.refreshToken}")
     }
 
     override fun deleteUser(user: User) {

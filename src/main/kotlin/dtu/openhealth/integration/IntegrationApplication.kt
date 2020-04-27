@@ -1,30 +1,17 @@
 package dtu.openhealth.integration
 
 import dtu.openhealth.integration.kafka.consumer.KafkaConsumer
-import dtu.openhealth.integration.shared.verticle.MainVerticle
+
 import io.vertx.reactivex.core.Vertx
+import dtu.openhealth.integration.shared.verticle.MainVerticle
 
 
 class IntegrationApplication
 
 fun main() {
+    System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory")
+
     val vertx = Vertx.vertx()
     KafkaConsumer(vertx).consume()
     vertx.deployVerticle(MainVerticle())
-
-    /*val webClient = WebClient.create(vertx)
-    // BaseUrl = https://api.fitbit.com
-    val activityUrl = FitbitRestUrl("/1/user/[userId]/activities/date/[date].json")
-
-    val endpoints = listOf(RestEndpoint(activityUrl, FitbitActivitiesSummary.serializer()),
-        RestEndpoint(activityUrl, FitbitActivitiesSummary.serializer()))
-    val httpClient = HttpOAuth2ConnectorClient(webClient)
-    val httpService = HttpServiceImpl(httpClient)
-
-    //val endpointMap = mapOf(Pair("activities", endpoints))
-    //val notificationService = ThirdPartyNotificationService(httpService, endpointMap, TestUserServiceImpl())
-    val pullingService = FitbitPullService(httpService, endpoints, TestUserServiceImpl())
-    pullingService.pullData()
-
-     */
 }

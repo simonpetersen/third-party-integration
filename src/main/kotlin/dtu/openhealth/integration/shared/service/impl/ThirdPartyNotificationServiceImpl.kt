@@ -4,27 +4,45 @@ import dtu.openhealth.integration.shared.data.ThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.model.User
-import dtu.openhealth.integration.shared.service.HttpService
-import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
-import dtu.openhealth.integration.shared.service.UserService
+import dtu.openhealth.integration.shared.service.*
+import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import java.time.LocalDateTime
 
 
 class ThirdPartyNotificationServiceImpl(
         private val httpService: HttpService,
         private val endpointMap: Map<String, List<RestEndpoint>>,
-        private val userService: UserService) : ThirdPartyNotificationService {
+        private val userService: UserDataService,
+        private val tokenRefreshService: TokenRefreshService
+) : ThirdPartyNotificationService {
 
-    override fun getUpdatedData(notificationList: List<ThirdPartyNotification>) {
+    private val logger = LoggerFactory.getLogger(ThirdPartyNotificationServiceImpl::class.java)
+
+    override suspend fun getUpdatedData(notificationList: List<ThirdPartyNotification>) {
         for (notification in notificationList) {
-            val userId = notification.parameters[notification.userParam]
+            val extUserId = notification.parameters[notification.userParam]
             val dataType = notification.parameters[notification.dataTypeParam]
-            if (userId != null && dataType != null) {
-                val user = userService.getUser(userId)
-                if (user != null) {
-                    callApi(user, dataType, notification.parameters)
-                }
+            if (extUserId != null && dataType != null) {
+                getUserAndCallApi(extUserId, dataType, notification.parameters)
+            }
+            else {
+                val errorMsg = "${notification.userParam} or ${notification.dataTypeParam} not found in ${notification.parameters}."
+                logger.error(errorMsg)
+            }
+        }
+    }
+
+    private suspend fun getUserAndCallApi(extUserId: String, dataType: String, parameters: Map<String, String>) {
+        val user = userService.getUserByExtId(extUserId)
+        if (user != null) {
+            if (tokenIsExpired(user.expireDateTime)) {
+                val updatedUser = tokenRefreshService.refreshToken(user)
+                callApi(updatedUser, dataType, parameters)
+            }
+            else {
+                callApi(user, dataType, parameters)
             }
         }
     }
@@ -36,8 +54,10 @@ class ThirdPartyNotificationServiceImpl(
 
             // TODO: Put result on Kafka stream.
             apiResponseList.subscribe(
-                    { result -> println("Result = $result") },
-                    { error -> println(error) }
+                    { result ->
+                        println("Result = $result")
+                    },
+                    { error -> logger.error(error) }
             )
         }
     }
@@ -46,9 +66,18 @@ class ThirdPartyNotificationServiceImpl(
         return try {
             json.parse(serializer, responseJson)
         } catch (e: Exception) {
-            println(e)
+            logger.error(e)
             null
         }
+    }
+
+    private fun tokenIsExpired(expireDateTime: LocalDateTime?): Boolean {
+        if (expireDateTime == null) {
+            return false
+        }
+
+        val now = LocalDateTime.now().minusSeconds(5)
+        return expireDateTime.isBefore(now)
     }
 
 }
