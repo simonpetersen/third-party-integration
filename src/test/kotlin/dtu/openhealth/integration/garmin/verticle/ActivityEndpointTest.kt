@@ -1,6 +1,5 @@
 package dtu.openhealth.integration.garmin.verticle
 
-import com.nhaarman.mockitokotlin2.verify
 import dtu.openhealth.integration.garmin.GarminVerticle
 import dtu.openhealth.integration.shared.service.mock.MockKafkaProducerService
 import io.vertx.junit5.VertxExtension
@@ -8,8 +7,6 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.client.WebClient
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -56,15 +53,13 @@ class ActivityEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/activities")
+            client.post(8080, "localhost", "/api/garmin/activities")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            GlobalScope.launch {
-                                assertThat(response.statusCode()).isEqualTo(200)
-                                testContext.completeNow()
-                            }
+                            assertThat(response.statusCode()).isEqualTo(200)
+                            testContext.completeNow()
                         }
                     }
         })

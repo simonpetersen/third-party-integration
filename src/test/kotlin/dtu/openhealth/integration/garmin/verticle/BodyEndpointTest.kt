@@ -66,10 +66,8 @@ class BodyEndpointTest {
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            GlobalScope.launch {
-                                assertThat(response.statusCode()).isEqualTo(200)
-                                testContext.completeNow()
-                            }
+                            assertThat(response.statusCode()).isEqualTo(200)
+                            testContext.completeNow()
                         }
                     }
             })
@@ -84,10 +82,8 @@ class BodyEndpointTest {
                     .rxSendBuffer(Buffer.buffer(invalidJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            GlobalScope.launch {
-                                assertThat(response.statusCode()).isEqualTo(500)
-                                testContext.completeNow()
-                            }
+                            assertThat(response.statusCode()).isEqualTo(500)
+                            testContext.completeNow()
                         }
                     }
         })
