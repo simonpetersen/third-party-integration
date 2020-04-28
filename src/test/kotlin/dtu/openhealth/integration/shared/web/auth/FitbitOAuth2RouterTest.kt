@@ -60,7 +60,10 @@ class FitbitOAuth2RouterTest {
 
     @Test
     fun testOAuth2RouterCallback(vertx: Vertx, tc: VertxTestContext) {
-        prepareWebServerAndRunTest(vertx, tc) { vx, vxTc -> oauth2RouterCallback(vx, vxTc) }
+        prepareWebServerAndRunTest(vertx, tc) {
+            vx, vxTc -> oauth2RouterCallback(vx, vxTc)
+            vxTc.completeNow()
+        }
     }
 
     private fun oauth2RouterCallback(vertx: Vertx, tc: VertxTestContext) {
