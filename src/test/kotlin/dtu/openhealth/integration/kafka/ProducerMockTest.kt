@@ -44,10 +44,12 @@ class ProducerMockTest {
 
         assertThat(producer.writeQueueFull()).isTrue()
 
-        if (testContext.failed()) {
-            mock.errorNext(RuntimeException())
-        } else {
-            mock.completeNext()
+        for (i in 0 until 100) {
+            if (testContext.failed()) {
+                mock.errorNext(RuntimeException())
+            } else {
+                mock.completeNext()
+            }
         }
 
         assertThat(producer.writeQueueFull()).isFalse()
