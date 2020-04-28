@@ -35,8 +35,8 @@ class ConsumerMockTest {
                 assertThat(partition).isEqualTo(record.partition())
                 assertThat(stringKey).isEqualTo(record.key())
                 assertThat(omhDTO).isEqualTo(record.value())
-                testContext.completeNow()
             }
+            testContext.completeNow()
         }
         consumer.subscribe(Collections.singleton(topic)) {
             mock.schedulePollTask {

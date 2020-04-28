@@ -81,8 +81,8 @@ class BodyEndpointTest {
                     .subscribe { response ->
                         testContext.verify {
                             assertThat(response.statusCode()).isEqualTo(500)
-                            testContext.completeNow()
                         }
+                        testContext.completeNow()
                     }
         })
     }

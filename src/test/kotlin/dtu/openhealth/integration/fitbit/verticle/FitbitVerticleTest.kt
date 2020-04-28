@@ -49,9 +49,9 @@ class FitbitVerticleTest {
                             GlobalScope.launch {
                                 verify(notificationService).getUpdatedData(expectedNotificationList)
                                 assertThat(response.statusCode()).isEqualTo(204)
-                                testContext.completeNow()
                             }
                         }
+                        testContext.completeNow()
                     }
         })
     }

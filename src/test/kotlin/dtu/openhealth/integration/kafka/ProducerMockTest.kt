@@ -39,8 +39,8 @@ class ProducerMockTest {
             testContext.verify {
                 assertThat(Context.isOnVertxThread()).isTrue()
                 assertThat(Context.isOnEventLoopThread()).isTrue()
-                testContext.completeNow()
             }
+            testContext.completeNow()
         }
 
         for (i in 0 until sent / 2) {
