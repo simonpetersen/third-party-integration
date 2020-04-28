@@ -56,7 +56,7 @@ class OAuth2TokenRefreshTest {
         router.post("/oauth2/token").handler { oauth2TokenRefresh(it, testContext, refreshCalledCheckpoint) }
         vertx.createHttpServer(options)
                 .requestHandler(router)
-                .listen(8080, testContext.succeeding {
+                .listen(8083, testContext.succeeding {
                     // Web Server started
                     refreshToken(vertx, testContext, finalCheckpoint)
                 })
@@ -70,7 +70,7 @@ class OAuth2TokenRefreshTest {
                 "/oauth2/token/",
                 clientId,
                 clientSecret,
-                8080
+                8083
         )
 
         val user = User(userId, extUserId,"someToken", oldRefreshToken, oldExpireDateTime)
