@@ -72,15 +72,13 @@ class RespirationsEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/respirations")
+            client.post(8084, "localhost", "/api/garmin/respirations")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            GlobalScope.launch {
-                                assertThat(response.statusCode()).isEqualTo(200)
-                                testContext.completeNow()
-                            }
+                            assertThat(response.statusCode()).isEqualTo(200)
+                            testContext.completeNow()
                         }
                     }
         })

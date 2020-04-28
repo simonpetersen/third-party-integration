@@ -7,8 +7,6 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.client.WebClient
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -72,15 +70,13 @@ class DailyEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8080, "localhost", "/api/garmin/dailies")
+            client.post(8084, "localhost", "/api/garmin/dailies")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            GlobalScope.launch {
-                                assertThat(response.statusCode()).isEqualTo(200)
-                                testContext.completeNow()
-                            }
+                            assertThat(response.statusCode()).isEqualTo(200)
+                            testContext.completeNow()
                         }
                     }
         })

@@ -7,8 +7,6 @@ import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.client.WebClient
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -61,7 +59,7 @@ class BodyEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/body")
+            client.post(8084, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
@@ -77,7 +75,7 @@ class BodyEndpointTest {
     fun testInvalidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/body")
+            client.post(8084, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(invalidJsonString))
                     .subscribe { response ->
