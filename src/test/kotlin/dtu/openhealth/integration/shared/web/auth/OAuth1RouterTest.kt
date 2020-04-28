@@ -36,7 +36,7 @@ class OAuth1RouterTest {
         initWebServer(vertx, tc, requestTokenCheckpoint, oauthConfirmToken,null)
 
         val client = WebClient.create(vertx)
-        client.get(8080, "localhost", "/auth/$userId")
+        client.get(8083, "localhost", "/auth/$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
                         tc.verify {
@@ -60,7 +60,7 @@ class OAuth1RouterTest {
         val requestUri = "/callback/$userId?oauth_token=$requestToken&oauth_verifier=$oauthVerifier"
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
-        client.get(8080, "localhost", requestUri)
+        client.get(8083, "localhost", requestUri)
                 .send { ar ->
                     if (ar.succeeded()) {
                         tc.verify {
@@ -98,7 +98,7 @@ class OAuth1RouterTest {
         router.mountSubRouter("/", authenticationRouter)
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(8080) {
+                .listen(8083) {
                     if (it.succeeded()) {
                         serverStartedCheckpoint.flag()
                     }

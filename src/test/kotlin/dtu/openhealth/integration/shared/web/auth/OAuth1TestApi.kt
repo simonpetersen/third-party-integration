@@ -14,14 +14,14 @@ class OAuth1TestApi : DefaultApi10a() {
     }
 
     override fun getRequestTokenEndpoint(): String {
-        return "http://localhost:8080/oauth-service/request_token"
+        return "http://localhost:8083/oauth-service/request_token"
     }
 
     override fun getAuthorizationBaseUrl(): String {
-        return "http://localhost:8080/oauthConfirm"
+        return "http://localhost:8083/oauthConfirm"
     }
 
     override fun getAccessTokenEndpoint(): String {
-        return "http://localhost:8080/oauth-service/access_token"
+        return "http://localhost:8083/oauth-service/access_token"
     }
 }

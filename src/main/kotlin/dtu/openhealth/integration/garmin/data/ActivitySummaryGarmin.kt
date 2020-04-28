@@ -4,9 +4,9 @@ import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
 
 data class ActivitySummaryGarmin(
-        val userId: String,
-        val userAccessToken: String,
-        val summaryId: String,
+        val userId: String? = null,
+        val userAccessToken: String? = null,
+        val summaryId: String? = null,
         val startTimeInSeconds: Int? = null,
         val startTimeOffsetInSeconds: Int? = null,
         val activityType: String? = null,

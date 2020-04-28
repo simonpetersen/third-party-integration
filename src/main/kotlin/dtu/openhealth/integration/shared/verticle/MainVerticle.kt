@@ -12,7 +12,7 @@ import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.ext.web.client.WebClient
 
-class MainVerticle : AbstractVerticle() {
+class  MainVerticle : AbstractVerticle() {
 
     override fun start() {
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx)))
