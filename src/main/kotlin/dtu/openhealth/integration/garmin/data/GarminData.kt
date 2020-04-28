@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.garmin.garmin
+package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.data.ThirdPartyData
 import kotlinx.serialization.Serializable

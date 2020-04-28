@@ -1,11 +1,8 @@
 package dtu.openhealth.integration.garmin.mapping.omh
 
-import dtu.openhealth.integration.garmin.garmin.DailySummaryGarmin
+import dtu.openhealth.integration.garmin.data.DailySummaryGarmin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.openmhealth.schema.domain.omh.CaloriesBurned2
-import org.openmhealth.schema.domain.omh.HeartRate
-import org.openmhealth.schema.domain.omh.StepCount2
 
 class DailyMappingOMHTest {
 

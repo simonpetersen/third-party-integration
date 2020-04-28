@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.garmin.garmin
+package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*

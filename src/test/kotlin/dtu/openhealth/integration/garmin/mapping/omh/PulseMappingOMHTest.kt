@@ -1,10 +1,8 @@
 package dtu.openhealth.integration.garmin.mapping.omh
 
-import dtu.openhealth.integration.garmin.garmin.PulseOXSummaryGarmin
-import org.assertj.core.api.Assertions
+import dtu.openhealth.integration.garmin.data.PulseOXSummaryGarmin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.openmhealth.schema.domain.omh.HeartRate
 
 class PulseMappingOMHTest {
 

@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.garmin
 
-import dtu.openhealth.integration.garmin.garmin.*
+import dtu.openhealth.integration.garmin.data.*
 import dtu.openhealth.integration.kafka.producer.KafkaProducerService
 import dtu.openhealth.integration.shared.service.GarminDataService
 import dtu.openhealth.integration.shared.service.impl.GarminDataServiceImpl
