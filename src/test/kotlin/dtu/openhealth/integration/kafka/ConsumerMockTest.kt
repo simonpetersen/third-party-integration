@@ -13,7 +13,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -54,7 +53,7 @@ class ConsumerMockTest {
         val stringKey = "omh-dto"
         val topic = "omh-data"
         val partition = 0
-        val maxNumberOfMessageToSend = 50
+        val maxNumberOfMessageToSend = 10
         val mock = MockConsumer<String, OmhDTO>(OffsetResetStrategy.EARLIEST)
         val consumer: KafkaReadStream<String, OmhDTO> = KafkaReadStream.create(vertx.delegate, mock)
         val count = AtomicInteger()

@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.lang.RuntimeException
-import java.util.concurrent.TimeUnit
 
 
 @ExtendWith(VertxExtension::class)
@@ -41,22 +40,13 @@ class ProducerMockTest {
                 assertThat(Context.isOnVertxThread()).isTrue()
                 assertThat(Context.isOnEventLoopThread()).isTrue()
             }
-            testContext.completeNow()
         }
 
-        for (i in 0 until sent / 2) {
-            if (testContext.failed()) {
-                mock.errorNext(RuntimeException())
-            } else {
-                mock.completeNext()
-            }
-        }
-        if (testContext.failed()) {
-            mock.errorNext(RuntimeException())
-        } else {
-            mock.completeNext()
-        }
+        assertThat(producer.writeQueueFull()).isTrue()
+        mock.completeNext()
+
         assertThat(producer.writeQueueFull()).isFalse()
+        testContext.completeNow()
     }
 
 }
