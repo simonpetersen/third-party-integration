@@ -10,6 +10,7 @@ import io.vertx.reactivex.ext.web.client.WebClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.concurrent.TimeUnit
 
 @ExtendWith(VertxExtension::class)
 class ThirdPartyEndpointTest {
@@ -64,8 +65,9 @@ class ThirdPartyEndpointTest {
                     .subscribe { response ->
                         testContext.verify {
                             assertThat(response.statusCode()).isEqualTo(200)
+                            testContext.completeNow()
                         }
-                        testContext.completeNow()
+                        testContext.awaitCompletion(2000, TimeUnit.SECONDS)
                     }
         })
     }

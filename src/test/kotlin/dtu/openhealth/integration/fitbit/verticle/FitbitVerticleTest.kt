@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.concurrent.TimeUnit
 
 @ExtendWith(VertxExtension::class)
 class FitbitVerticleTest {
@@ -49,9 +50,10 @@ class FitbitVerticleTest {
                             GlobalScope.launch {
                                 verify(notificationService).getUpdatedData(expectedNotificationList)
                                 assertThat(response.statusCode()).isEqualTo(204)
+                                testContext.completeNow()
                             }
                         }
-                        testContext.completeNow()
+                        testContext.awaitCompletion(2000, TimeUnit.SECONDS)
                     }
         })
     }

@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 
@@ -37,6 +38,7 @@ class ConsumerMockTest {
                 assertThat(omhDTO).isEqualTo(record.value())
             }
             testContext.completeNow()
+            testContext.awaitCompletion(2000, TimeUnit.SECONDS)
         }
         consumer.subscribe(Collections.singleton(topic)) {
             mock.schedulePollTask {
@@ -70,6 +72,7 @@ class ConsumerMockTest {
                     testContext.completeNow()
                 }
             }
+            testContext.awaitCompletion(2000, TimeUnit.SECONDS)
         }
         consumer.subscribe(Collections.singleton(topic)) {
             mock.schedulePollTask {
