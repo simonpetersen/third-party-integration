@@ -7,7 +7,9 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.client.WebClient
-import org.assertj.core.api.Assertions
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -61,8 +63,10 @@ class EpochEndpointTest {
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            Assertions.assertThat(response.statusCode()).isEqualTo(200)
-                            testContext.completeNow()
+                            GlobalScope.launch {
+                                assertThat(response.statusCode()).isEqualTo(200)
+                                testContext.completeNow()
+                            }
                         }
                     }
         })

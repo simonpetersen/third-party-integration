@@ -7,6 +7,8 @@ import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.client.WebClient
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -64,8 +66,10 @@ class BodyEndpointTest {
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            assertThat(response.statusCode()).isEqualTo(200)
-                            testContext.completeNow()
+                            GlobalScope.launch {
+                                assertThat(response.statusCode()).isEqualTo(200)
+                                testContext.completeNow()
+                            }
                         }
                     }
             })
@@ -80,8 +84,10 @@ class BodyEndpointTest {
                     .rxSendBuffer(Buffer.buffer(invalidJsonString))
                     .subscribe { response ->
                         testContext.verify {
-                            assertThat(response.statusCode()).isEqualTo(500)
-                            testContext.completeNow()
+                            GlobalScope.launch {
+                                assertThat(response.statusCode()).isEqualTo(500)
+                                testContext.completeNow()
+                            }
                         }
                     }
         })
