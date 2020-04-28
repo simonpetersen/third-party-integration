@@ -42,7 +42,6 @@ class ProducerMockTest {
                 assertThat(Context.isOnEventLoopThread()).isTrue()
             }
             testContext.completeNow()
-            testContext.awaitCompletion(2000, TimeUnit.SECONDS)
         }
 
         for (i in 0 until sent / 2) {

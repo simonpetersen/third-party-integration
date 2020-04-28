@@ -38,7 +38,6 @@ class ConsumerMockTest {
                 assertThat(omhDTO).isEqualTo(record.value())
             }
             testContext.completeNow()
-            testContext.awaitCompletion(2000, TimeUnit.SECONDS)
         }
         consumer.subscribe(Collections.singleton(topic)) {
             mock.schedulePollTask {

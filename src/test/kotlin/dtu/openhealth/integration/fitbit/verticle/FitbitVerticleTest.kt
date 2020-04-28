@@ -53,7 +53,6 @@ class FitbitVerticleTest {
                                 testContext.completeNow()
                             }
                         }
-                        testContext.awaitCompletion(2000, TimeUnit.SECONDS)
                     }
         })
     }

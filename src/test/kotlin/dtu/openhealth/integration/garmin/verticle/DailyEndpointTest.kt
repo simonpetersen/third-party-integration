@@ -79,7 +79,6 @@ class DailyEndpointTest {
                             assertThat(response.statusCode()).isEqualTo(200)
                             testContext.completeNow()
                         }
-                        testContext.awaitCompletion(2000, TimeUnit.SECONDS)
                     }
         })
     }

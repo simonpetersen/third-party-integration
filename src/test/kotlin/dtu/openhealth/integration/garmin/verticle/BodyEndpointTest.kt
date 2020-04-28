@@ -85,7 +85,6 @@ class BodyEndpointTest {
                             assertThat(response.statusCode()).isEqualTo(500)
                             testContext.completeNow()
                         }
-                        testContext.awaitCompletion(2000, TimeUnit.SECONDS)
                     }
         })
     }
