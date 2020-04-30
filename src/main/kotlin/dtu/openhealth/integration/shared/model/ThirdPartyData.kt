@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.shared.data
+package dtu.openhealth.integration.shared.model
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import kotlinx.serialization.Serializable

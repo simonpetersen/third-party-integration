@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.shared.service
 
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 
 interface TokenRefreshService {
-    suspend fun refreshToken(user: User): User
+    suspend fun refreshToken(userToken: UserToken): UserToken
 }

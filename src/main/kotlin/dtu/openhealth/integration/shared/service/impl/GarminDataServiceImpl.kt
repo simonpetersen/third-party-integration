@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.shared.service.impl
 
 import dtu.openhealth.integration.kafka.producer.KafkaProducerService
-import dtu.openhealth.integration.shared.data.ThirdPartyData
+import dtu.openhealth.integration.shared.model.ThirdPartyData
 import dtu.openhealth.integration.shared.service.GarminDataService
 import io.vertx.core.logging.LoggerFactory
 import org.springframework.stereotype.Service

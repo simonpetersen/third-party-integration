@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.shared.service.impl
 
 import dtu.openhealth.integration.shared.model.RestEndpoint
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.HttpService
 import dtu.openhealth.integration.shared.web.ApiRequest
 import dtu.openhealth.integration.shared.web.ApiResponse
@@ -13,8 +13,8 @@ class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService
 
     private val logger = LoggerFactory.getLogger(HttpServiceImpl::class.java)
 
-    override fun callApiForUser(endpoints: List<RestEndpoint>, user: User, urlParameters: Map<String,String>) : Single<List<ApiResponse>> {
-        val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, user.token) }.toList()
+    override fun callApiForUser(endpoints: List<RestEndpoint>, userToken: UserToken, urlParameters: Map<String,String>) : Single<List<ApiResponse>> {
+        val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, userToken) }.toList()
 
         return Single.zip(singles) { combineSingles(it) }
     }
@@ -24,7 +24,7 @@ class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService
         return values.filterIsInstance<ApiResponse>()
     }
 
-    private fun addUrlParamsAndCallApi(endpoint: RestEndpoint, urlParameters: Map<String, String>, userToken: String): Single<ApiResponse> {
+    private fun addUrlParamsAndCallApi(endpoint: RestEndpoint, urlParameters: Map<String, String>, userToken: UserToken): Single<ApiResponse> {
         val regex = Regex("\\[(.*?)\\]")
         val apiParameters = mutableMapOf<String,String>()
         var url = endpoint.url.uri
