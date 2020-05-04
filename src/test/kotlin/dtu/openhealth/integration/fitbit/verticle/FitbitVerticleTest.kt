@@ -42,7 +42,7 @@ class FitbitVerticleTest {
 
         vertx.deployVerticle(FitbitVerticle(notificationService), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8080, "localhost", "/fitbit/notification")
+            client.post(8180, "localhost", "/fitbit/notification")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->

@@ -60,7 +60,7 @@ class BodyEndpointTest {
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8084, "localhost", "/api/garmin/body")
+            client.post(8184, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe { response ->
@@ -77,7 +77,7 @@ class BodyEndpointTest {
     fun testInvalidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8084, "localhost", "/api/garmin/body")
+            client.post(8184, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(invalidJsonString))
                     .subscribe { response ->

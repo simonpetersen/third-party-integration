@@ -48,11 +48,11 @@ class FitbitVerticle(private val notificationService: ThirdPartyNotificationServ
                 clientID = clientId,
                 clientSecret = clientSecret,
                 tokenPath = "https://api.fitbit.com/oauth2/token"))
-        val parameters = OAuth2RouterParameters("http://localhost:8080/login", "", "activity nutrition heartrate profile settings sleep weight")
+        val parameters = OAuth2RouterParameters("http://localhost:8180/login", "", "activity nutrition heartrate profile settings sleep weight")
         val userDataService = VertxUserServiceImpl(vertx.delegate)
         val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userDataService).getRouter()
         router.mountSubRouter("/", authRouter)
 
-        vertx.createHttpServer().requestHandler(router).listen(8080)
+        vertx.createHttpServer().requestHandler(router).listen(8180)
     }
 }

@@ -25,17 +25,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 class FitbitOAuth2RouterTest {
 
     private val userId = "test_user_2"
-    private val redirectUri = "http://localhost:8083/login"
+    private val redirectUri = "http://localhost:8183/login"
     private val redirectBody = "Redirect to localhost/oauth2"
     private val authCode = "abcd12345"
     private val accessToken = "access_token_$authCode"
     private val refreshToken = "refresh_token_$authCode"
     private val oauth2Options = oAuth2ClientOptionsOf(
-            authorizationPath = "http://localhost:8083/oauth2",
+            authorizationPath = "http://localhost:8183/oauth2",
             flow = OAuth2FlowType.AUTH_CODE,
             clientID = "ID_123",
             clientSecret = "SECRET_456",
-            tokenPath = "http://localhost:8083/oauth2/token")
+            tokenPath = "http://localhost:8183/oauth2/token")
 
     @Test
     fun testOAuth2RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
@@ -44,7 +44,7 @@ class FitbitOAuth2RouterTest {
 
     private fun oauth2RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
         val client = WebClient.create(vertx)
-        client.get(8083, "localhost", "/auth/$userId")
+        client.get(8183, "localhost", "/auth/$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
                         val response = ar.result()
@@ -69,7 +69,7 @@ class FitbitOAuth2RouterTest {
     private fun oauth2RouterCallback(vertx: Vertx, tc: VertxTestContext) {
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
-        client.get(8083, "localhost", "/login?code=$authCode")
+        client.get(8183, "localhost", "/login?code=$authCode")
                 .send { ar ->
                     if (ar.succeeded()) {
                         tc.verify {
@@ -100,7 +100,7 @@ class FitbitOAuth2RouterTest {
         router.mountSubRouter("/", authenticationRouter)
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(8083, tc.succeeding {
+                .listen(8183, tc.succeeding {
                     testFunction(vertx, tc)
                 })
     }

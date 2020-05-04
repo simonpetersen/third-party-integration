@@ -9,8 +9,8 @@ services:
     depends_on:
       - db
     ports:
-      - 8084:8084
-      - 8080:8080
+      - 8184:8184
+      - 8180:8180
     networks:
       - confluent-kafka_shared-network
 

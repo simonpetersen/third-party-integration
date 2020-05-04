@@ -75,7 +75,7 @@ abstract class OAuth2Router(private val vertx: Vertx, private val oauth2: OAuth2
             userDataService.createUser(user)
 
             routingContext.response()
-                    .putHeader("Location", "http://localhost:8080/success")
+                    .putHeader("Location", "http://localhost:8180/success")
                     .setStatusCode(302)
                     .end()
         }

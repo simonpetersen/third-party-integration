@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class OAuth1RouterTest {
     private val userId = "test_user_2"
     private val consumerKey = "22d54322-2d2d-g67j-9876-234rgf264567"
-    private val redirectUri = "http://localhost:8083/callback"
+    private val redirectUri = "http://localhost:8183/callback"
     private val redirectBody = "Redirect to localhost/oauthConfirm"
     private val authCode = "6789efgh"
     private val oauthVerifier = "verifier_$authCode"
@@ -36,7 +36,7 @@ class OAuth1RouterTest {
         initWebServer(vertx, tc, requestTokenCheckpoint, oauthConfirmToken,null)
 
         val client = WebClient.create(vertx)
-        client.get(8083, "localhost", "/auth/$userId")
+        client.get(8183, "localhost", "/auth/$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
                         tc.verify {
@@ -60,7 +60,7 @@ class OAuth1RouterTest {
         val requestUri = "/callback/$userId?oauth_token=$requestToken&oauth_verifier=$oauthVerifier"
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
-        client.get(8083, "localhost", requestUri)
+        client.get(8183, "localhost", requestUri)
                 .send { ar ->
                     if (ar.succeeded()) {
                         tc.verify {
@@ -80,7 +80,7 @@ class OAuth1RouterTest {
                               oauthConfirmToken: Checkpoint?,
                               accessTokenCheckpoint: Checkpoint?) {
         val serverStartedCheckpoint = tc.checkpoint()
-        val parameters = OAuth1RouterParameters("http://localhost:8083/callback",
+        val parameters = OAuth1RouterParameters("http://localhost:8183/callback",
                 "",
                 "",
                 consumerKey,
@@ -98,7 +98,7 @@ class OAuth1RouterTest {
         router.mountSubRouter("/", authenticationRouter)
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(8083) {
+                .listen(8183) {
                     if (it.succeeded()) {
                         serverStartedCheckpoint.flag()
                     }

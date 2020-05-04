@@ -29,7 +29,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
         router.post("/api/garmin/thirdparty").handler { handleThirdPartySummary(it) }
         router.post("/api/garmin/pulse").handler { handlePulseSummary(it) }
 
-        vertx.createHttpServer().requestHandler(router).listen(8084)
+        vertx.createHttpServer().requestHandler(router).listen(8184)
     }
 
     private fun handleActivitySummary(routingContext : RoutingContext) {
