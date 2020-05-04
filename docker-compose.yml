@@ -11,12 +11,10 @@ services:
     ports:
       - 8084:8084
       - 8080:8080
-  db:
-    image: postgres:latest
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=carp_integration
-      - POSTGRES_DB=db_example
-    ports:
-      - 5432:5432
+    networks:
+      - confluent-kafka_shared-network
+
+networks:
+  confluent-kafka_shared-network:
+    external: true
 

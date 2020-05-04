@@ -11,10 +11,10 @@ import io.vertx.sqlclient.Row
 import io.vertx.sqlclient.RowSet
 
 abstract class BaseDataService(vertx: Vertx) {
-    private val connectOptions = pgConnectOptionsOf(database = "integration-db",
-            host = "localhost",
+    private val connectOptions = pgConnectOptionsOf(database = "integration_db",
+            host = "postgres_db",
             password = "carp_integration", port = 5432,
-            user = "postgres")
+            user = "postgres_integration")
 
     private val poolOptions = poolOptionsOf(maxSize = 5)
 
