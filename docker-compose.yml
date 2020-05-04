@@ -6,8 +6,6 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    depends_on:
-      - db
     ports:
       - 8184:8184
       - 8180:8180
