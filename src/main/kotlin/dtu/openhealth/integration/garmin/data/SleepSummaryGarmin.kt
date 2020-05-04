@@ -1,6 +1,7 @@
 package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
+import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.DurationUnit
 import org.openmhealth.schema.domain.omh.DurationUnitValue
 import org.openmhealth.schema.domain.omh.SleepDuration2
@@ -35,7 +36,7 @@ data class SleepSummaryGarmin(
     }
 }
 
-
+@Serializable
 data class SleepTimeFrame(
         val startTimeInSeconds: Int,
         val endTimeInSeconds: Int
