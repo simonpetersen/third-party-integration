@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.kafka.consumer.property
 
 object KafkaConsumerProperties {
-    const val BOOTSTRAP_SERVERS = "localhost:9092" // broker:29092
+    const val BOOTSTRAP_SERVERS = "broker:29092"
     const val STRING_DESERIALIZER = "org.apache.kafka.common.serialization.StringDeserializer"
     const val OMH_DESERIALIZER = "dtu.openhealth.integration.shared.util.serialization.OmhDTODeserializer"
     const val GROUP_ID = "my_group"
