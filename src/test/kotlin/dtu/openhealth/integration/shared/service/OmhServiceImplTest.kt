@@ -132,6 +132,49 @@ class OmhServiceImplTest {
         verify(omhDataService, times(invocations)).insertOmhData(any())
     }
 
+    @Test
+    fun testPhysicalActivity_OnlyNewActivity() {
+        val activityRunning = initPhysicalActivity("Running",
+                LocalTime.of(10,0,0), 5.6)
+        val activityBiking = initPhysicalActivity("Biking",
+                LocalTime.of(16,5,0), 7.9)
+        val dto = OmhDTO(userId, day, physicalActivities = listOf(activityBiking))
+
+        val jsonRunning = JsonObject.mapFrom(activityRunning)
+        val omhDataRunning = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonRunning)
+
+        val omhDataService: OmhDataService = mock()
+        val omhService = OmhServiceImpl(omhDataService)
+        omhService.checkAndSaveNewestData(listOf(omhDataRunning), dto, userId, day)
+
+        val jsonBiking = JsonObject.mapFrom(activityBiking)
+        val expectedOmhDataBiking = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonBiking)
+        verify(omhDataService).insertOmhData(eq(expectedOmhDataBiking))
+    }
+
+    @Test
+    fun testPhysicalActivity_MultipleNewActivities() {
+        val activityRunning = initPhysicalActivity("Running",
+                LocalTime.of(10,0,0), 5.6)
+        val activityBiking = initPhysicalActivity("Biking",
+                LocalTime.of(16,5,0), 7.9)
+        val dto = OmhDTO(userId, day, physicalActivities = listOf(activityBiking, activityRunning))
+
+        val omhDataService: OmhDataService = mock()
+        val omhService = OmhServiceImpl(omhDataService)
+        omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
+
+        // Verify biking activity is inserted
+        val jsonBiking = JsonObject.mapFrom(activityBiking)
+        val expectedOmhDataBiking = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonBiking)
+        verify(omhDataService).insertOmhData(eq(expectedOmhDataBiking))
+
+        // Verify running activity is inserted
+        val jsonRunning = JsonObject.mapFrom(activityRunning)
+        val expectedOmhDataRunning = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonRunning)
+        verify(omhDataService).insertOmhData(eq(expectedOmhDataRunning))
+    }
+
     private fun initStepCount(stepCount: Long): StepCount2 {
         val dateTime = LocalDateTime.of(day, LocalTime.of(14,0,0))
         val startDateTime = dateTime.atOffset(ZoneOffset.UTC)

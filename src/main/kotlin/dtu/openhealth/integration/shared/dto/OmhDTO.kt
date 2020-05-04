@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 @Serializable
 data class OmhDTO(
-        val userId: String? = null,
+        val extUserId: String? = null,
         @ContextualSerialization val date: LocalDate? = null,
         @ContextualSerialization val stepCount2: StepCount2? = null,
         @ContextualSerialization val bodyWeight: BodyWeight? = null,

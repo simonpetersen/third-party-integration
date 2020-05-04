@@ -22,6 +22,4 @@ class GarminDataTest: GarminData() {
     override fun mapToOMH(): OmhDTO {
         TODO("Not yet implemented")
     }
-
-
 }

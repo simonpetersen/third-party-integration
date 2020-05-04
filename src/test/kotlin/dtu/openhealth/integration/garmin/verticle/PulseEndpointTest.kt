@@ -1,11 +1,20 @@
 package dtu.openhealth.integration.garmin.verticle
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.garmin.data.PulseOXSummaryGarmin
+import dtu.openhealth.integration.garmin.data.SleepSummaryGarmin
+import dtu.openhealth.integration.shared.service.GarminDataService
 import dtu.openhealth.integration.shared.service.mock.MockKafkaProducerService
+import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.client.WebClient
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -14,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(VertxExtension::class)
 class PulseEndpointTest {
 
+    private val port = 8083
     private val validJsonString = """
     {
         "pulseOX":
@@ -39,17 +49,24 @@ class PulseEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
+        val garminDataService : GarminDataService = mock()
+        val authRouter: AuthorizationRouter = mock()
+        whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
+        vertx.deployVerticle(GarminVerticle(garminDataService, authRouter), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8082, "localhost", "/api/garmin/pulse")
+            client.post(port, "localhost", "/api/garmin/pulse")
                     .putHeader("Content-Type", "application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
-                    .subscribe { response ->
-                        testContext.verify {
-                            Assertions.assertThat(response.statusCode()).isEqualTo(200)
-                            testContext.completeNow()
-                        }
-                    }
+                    .subscribe(
+                            { response ->
+                                testContext.verify {
+                                    Assertions.assertThat(response.statusCode()).isEqualTo(200)
+                                    verify(garminDataService).saveDataToOMH(any<PulseOXSummaryGarmin>())
+                                    testContext.completeNow()
+                                }
+                            },
+                            { error -> testContext.failNow(error)}
+                    )
         })
     }
 

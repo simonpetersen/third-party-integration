@@ -15,13 +15,13 @@ class OmhServiceImpl(private val omhDataService: OmhDataService) : OmhService {
     private val logger = LoggerFactory.getLogger(OmhServiceImpl::class.java)
 
     override fun saveNewestOmhData(dto: OmhDTO) {
-        if (dto.userId == null || dto.date == null) {
-            logger.error("UserId (${dto.userId}) or date (${dto.date}) is invalid for $dto")
+        if (dto.extUserId == null || dto.date == null) {
+            logger.error("UserId (${dto.extUserId}) or date (${dto.date}) is invalid for $dto")
             return
         }
 
-        omhDataService.getOmhDataOnDate(dto.userId, dto.date) {
-            oldData -> checkAndSaveNewestData(oldData,dto, dto.userId, dto.date)
+        omhDataService.getOmhDataOnDate(dto.extUserId, dto.date) {
+            oldData -> checkAndSaveNewestData(oldData,dto, dto.extUserId, dto.date)
         }
     }
 
@@ -71,18 +71,15 @@ class OmhServiceImpl(private val omhDataService: OmhDataService) : OmhService {
     private fun checkAndUpdateMeasureList(measureList: List<Measure>?, oldOmhData: List<OmhData>,
                                             userId: String, date: LocalDate, dataType: OmhDataType) {
         if (measureList != null) {
-            checkMeasureList(measureList, oldOmhData, userId, date, dataType)
+            checkAndUpdateOmhDataList(measureList, oldOmhData, userId, date, dataType)
         }
     }
 
-    private fun checkMeasureList(measureList: List<Measure>, oldOmhData: List<OmhData>,
+    private fun checkAndUpdateOmhDataList(measureList: List<Measure>, oldOmhData: List<OmhData>,
                                  userId: String, date: LocalDate, dataType: OmhDataType) {
-        val matchingMeasures = oldOmhData.filter { it.typeOfData == dataType }
-        if (matchingMeasures.size == measureList.size) {
-            return
-        }
-
-        val jsonMatchingMeasures = matchingMeasures.map { JsonObject.mapFrom(it.jsonData) }
+        val jsonMatchingMeasures = oldOmhData
+                .filter { it.typeOfData == dataType }
+                .map { JsonObject.mapFrom(it.jsonData) }
 
         measureList.mapNotNull { measure ->
             val jsonMeasure = JsonObject.mapFrom(measure)

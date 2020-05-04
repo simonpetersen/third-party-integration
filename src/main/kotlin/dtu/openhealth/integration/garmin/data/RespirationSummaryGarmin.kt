@@ -1,14 +1,16 @@
 package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
+import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.RespiratoryRate
 import org.openmhealth.schema.domain.omh.TypedUnitValue
 import java.math.BigDecimal
 
+@Serializable
 data class RespirationSummaryGarmin(
-        val userId: String? = null,
-        val userAccessToken: String? = null,
-        val summaryId: String? = null,
+        val userId: String,
+        val userAccessToken: String,
+        val summaryId: String,
         val startTimeInSeconds: Float? = null,
         val durationInSeconds: Int? = null,
         val startTimeOffsetInSeconds: Int? = null,
@@ -22,7 +24,9 @@ data class RespirationSummaryGarmin(
                     .build()
         }
 
-        return OmhDTO(userId = userId, respiratoryRate = respiratoryRate)
+        val localDate = getLocalDate(startTimeInSeconds?.toInt(), startTimeOffsetInSeconds)
+
+        return OmhDTO(extUserId = userAccessToken, date = localDate, respiratoryRate = respiratoryRate)
     }
 
     private fun averageBreathsPrMinute(breaths: Map<String, Float>): BigDecimal {

@@ -22,7 +22,7 @@ class ConsumerMockTest {
     @Test
     fun testConsume(vertx: Vertx, testContext: VertxTestContext) {
 
-        val omhDTO = OmhDTO(userId = "userIdOfUser")
+        val omhDTO = OmhDTO(extUserId = "userIdOfUser")
         val stringKey = "omh-dto"
         val topic = "omh-data"
         val partition = 0
@@ -49,7 +49,7 @@ class ConsumerMockTest {
 
     @Test
     fun testBatch(vertx: Vertx, testContext: VertxTestContext) {
-        val omhDTO = OmhDTO(userId = "userIdOfUser")
+        val omhDTO = OmhDTO(extUserId = "userIdOfUser")
         val stringKey = "omh-dto"
         val topic = "omh-data"
         val partition = 0

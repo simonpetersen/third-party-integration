@@ -2,11 +2,13 @@ package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.exception.NoMappingFoundException
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class StressDetailSummaryGarmin(
-        val userId: String? = null,
-        val userAccessToken: String? = null,
-        val summaryId: String? = null,
+        val userId: String,
+        val userAccessToken: String,
+        val summaryId: String,
         val startTimeInSeconds: Int? = null,
         val startTimeOffsetInSeconds: Int? = null,
         val durationInSeconds: Int? = null,

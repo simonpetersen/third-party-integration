@@ -2,7 +2,12 @@ package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
+import kotlinx.serialization.Serializable
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
+@Serializable
 data class ActivitySummaryGarmin(
         val userId: String,
         val userAccessToken: String,
@@ -44,6 +49,8 @@ data class ActivitySummaryGarmin(
                     .build()
         }
 
-        return OmhDTO(userId = userId, physicalActivities = listOf(physicalActivity!!))
+        val localDate = getLocalDate(startTimeInSeconds, startTimeOffsetInSeconds)
+
+        return OmhDTO(extUserId = userAccessToken, date = localDate, physicalActivities = listOf(physicalActivity!!))
     }
 }

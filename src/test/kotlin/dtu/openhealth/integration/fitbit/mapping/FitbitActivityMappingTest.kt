@@ -62,11 +62,7 @@ class FitbitActivityMappingTest {
     }
 
     private fun validateCalories(omhDTO: OmhDTO, summary: FitbitActivitySummary) {
-        val caloriesList = omhDTO.caloriesBurned2
-        val expectedElements = 1
-        assertThat(caloriesList?.size).isEqualTo(expectedElements)
-
-        val caloriesBurned = caloriesList?.get(0)
+        val caloriesBurned = omhDTO.caloriesBurned2
         assertThat(caloriesBurned?.kcalBurned?.value?.longValueExact()).isEqualTo(summary.caloriesOut)
     }
 
