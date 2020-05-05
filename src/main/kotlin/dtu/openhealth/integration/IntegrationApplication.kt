@@ -4,6 +4,7 @@ import dtu.openhealth.integration.kafka.consumer.KafkaConsumer
 
 import io.vertx.reactivex.core.Vertx
 import dtu.openhealth.integration.shared.verticle.MainVerticle
+import io.vertx.reactivex.config.ConfigRetriever
 
 
 class IntegrationApplication

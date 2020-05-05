@@ -1,45 +1,45 @@
 package dtu.openhealth.integration.kafka.consumer
 
-import dtu.openhealth.integration.kafka.consumer.property.KafkaConsumerProperties
 import dtu.openhealth.integration.shared.dto.OmhDTO
+import dtu.openhealth.integration.shared.util.PropertiesLoader
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
-import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord
 import java.util.HashMap
 
 class KafkaConsumer(vertx: Vertx) {
 
-    private val LOGGER = LoggerFactory.getLogger(KafkaConsumer::class.java)
+    private val logger = LoggerFactory.getLogger(KafkaConsumer::class.java)
+    private val configuration = PropertiesLoader.loadProperties()
     
     private var consumer: KafkaConsumer<String, OmhDTO>
     init {
         val config: MutableMap<String, String> = HashMap()
-        config["bootstrap.servers"] = KafkaConsumerProperties.BOOTSTRAP_SERVERS
-        config["key.deserializer"] = KafkaConsumerProperties.STRING_DESERIALIZER
-        config["value.deserializer"] = KafkaConsumerProperties.OMH_DESERIALIZER
-        config["group.id"] = KafkaConsumerProperties.GROUP_ID
-        config["auto.offset.reset"] = KafkaConsumerProperties.AUTO_OFFSET_RESET
-        config["enable.auto.commit"] = KafkaConsumerProperties.ENABLE_AUTO_COMMIT
+        config["bootstrap.servers"] = configuration.getProperty("kafka.bootstrap.servers")
+        config["key.deserializer"] = configuration.getProperty("kafka.string.deserializer")
+        config["value.deserializer"] = configuration.getProperty("kafka.omh.deserializer")
+        config["group.id"] = configuration.getProperty("kafka.group.id")
+        config["auto.offset.reset"] = configuration.getProperty("kafka.auto.offset.reset")
+        config["enable.auto.commit"] = configuration.getProperty("kafka_enable_auto_commit")
         consumer = KafkaConsumer.create(vertx, config)
     }
 
     fun consume() {
         consumer.handler { record ->
-            LOGGER.info("Getting data from Kafka stream $record")
+            logger.info("Getting data from Kafka stream $record")
             consumeOmhData(record.value())
         }
         
-        consumer.subscribe(KafkaConsumerProperties.TOPIC) { ar ->
+        consumer.subscribe(configuration.getProperty("kafka.topic")) { ar ->
             if (ar.succeeded()) {
-                LOGGER.info("subscribed")
+                logger.info("subscribed")
             } else {
-                LOGGER.info("Could not subscribe ${ar.cause().message}")
+                logger.info("Could not subscribe ${ar.cause().message}")
             }
         }
     }
 
     private fun consumeOmhData(omhDTO: OmhDTO) {
-        LOGGER.info("Consume OmhDTO: $omhDTO")
+        logger.info("Consume OmhDTO: $omhDTO")
     }
 }

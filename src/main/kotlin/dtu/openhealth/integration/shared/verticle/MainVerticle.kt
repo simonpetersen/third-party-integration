@@ -6,6 +6,7 @@ import dtu.openhealth.integration.garmin.GarminVerticle
 import dtu.openhealth.integration.kafka.producer.impl.KafkaProducerServiceImpl
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.impl.*
+import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.web.FitbitRestUrl
 import dtu.openhealth.integration.shared.web.HttpOAuth2ConnectorClient
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
@@ -15,6 +16,7 @@ import io.vertx.reactivex.ext.web.client.WebClient
 class  MainVerticle : AbstractVerticle() {
 
     override fun start() {
+        val configuration = PropertiesLoader.loadProperties()
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx)))
         val activityUrl = FitbitRestUrl("/1/user/[ownerId]/activities/date/[date].json")
         val endpointMap = mapOf(Pair("activities", listOf(RestEndpoint(activityUrl, FitbitActivitiesSummary.serializer()))))

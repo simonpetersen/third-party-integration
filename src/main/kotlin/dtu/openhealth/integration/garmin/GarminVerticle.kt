@@ -4,6 +4,7 @@ import dtu.openhealth.integration.garmin.data.*
 import dtu.openhealth.integration.kafka.producer.KafkaProducerService
 import dtu.openhealth.integration.shared.service.GarminDataService
 import dtu.openhealth.integration.shared.service.impl.GarminDataServiceImpl
+import dtu.openhealth.integration.shared.util.PropertiesLoader
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -16,6 +17,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
 
     private val logger = LoggerFactory.getLogger(GarminVerticle::class.java)
     private val garminDataService: GarminDataService = GarminDataServiceImpl(kafkaProducerService)
+    private val configuration =  PropertiesLoader.loadProperties()
 
     override fun start() {
         val router = Router.router(vertx)
@@ -29,7 +31,8 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
         router.post("/api/garmin/thirdparty").handler { handleThirdPartySummary(it) }
         router.post("/api/garmin/pulse").handler { handlePulseSummary(it) }
 
-        vertx.createHttpServer().requestHandler(router).listen(8184)
+        vertx.createHttpServer().requestHandler(router).listen(
+                configuration.getProperty("garmin.verticle.port").toInt())
     }
 
     private fun handleActivitySummary(routingContext : RoutingContext) {
