@@ -2,6 +2,7 @@ version: '3.5'
 
 services:
   integration:
+    container_name: integration_service
     image: integration
     build:
       context: ./
