@@ -20,6 +20,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
+    implementation("com.google.guava:guava:23.0")
     implementation("org.openmhealth.schema:omh-schema-sdk:1.2.1")
     implementation("com.github.scribejava:scribejava-core:6.9.0")
     implementation("com.github.scribejava:scribejava-httpclient-ahc:6.9.0")
