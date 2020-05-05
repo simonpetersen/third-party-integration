@@ -1,20 +1,24 @@
 package dtu.openhealth.integration.garmin.verticle
 
+import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminVerticle
-import dtu.openhealth.integration.shared.service.mock.MockKafkaProducerService
+import dtu.openhealth.integration.garmin.data.BodyCompositionSummaryGarmin
+import dtu.openhealth.integration.shared.service.ThirdPartyPushService
+import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.reactivex.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.client.WebClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.concurrent.TimeUnit
 
 @ExtendWith(VertxExtension::class)
 class BodyEndpointTest {
 
+    private val port = 8184
     private val validJsonString = """
     {
         "body":
@@ -58,34 +62,48 @@ class BodyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
+        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val authRouter : AuthorizationRouter = mock()
+        whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
+        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8184, "localhost", "/api/garmin/body")
+            client.post(port, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
-                    .subscribe { response ->
-                        testContext.verify {
-                            assertThat(response.statusCode()).isEqualTo(200)
-                            testContext.completeNow()
-                        }
-                        testContext.awaitCompletion(2000, TimeUnit.SECONDS)
-                    }
-            })
+                    .subscribe(
+                            { response ->
+                                testContext.verify {
+                                    assertThat(response.statusCode()).isEqualTo(200)
+                                    verify(thirdPartyPushService).saveDataToOMH(any<BodyCompositionSummaryGarmin>())
+                                    testContext.completeNow()
+                                }
+                            },
+                            { error -> testContext.failNow(error)}
+                    )
+        })
     }
 
     @Test
     fun testInvalidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(GarminVerticle(MockKafkaProducerService()), testContext.succeeding {
+        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val authRouter : AuthorizationRouter = mock()
+        whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
+        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(8184, "localhost", "/api/garmin/body")
+            client.post(port, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(invalidJsonString))
-                    .subscribe { response ->
-                        testContext.verify {
-                            assertThat(response.statusCode()).isEqualTo(500)
-                            testContext.completeNow()
-                        }
-                    }
+                    .subscribe(
+                            { response ->
+                                testContext.verify {
+                                    assertThat(response.statusCode()).isEqualTo(500)
+                                    verify(thirdPartyPushService, times(0))
+                                            .saveDataToOMH(any<BodyCompositionSummaryGarmin>())
+                                    testContext.completeNow()
+                                }
+                            },
+                            { error -> testContext.failNow(error)}
+                    )
         })
     }
 

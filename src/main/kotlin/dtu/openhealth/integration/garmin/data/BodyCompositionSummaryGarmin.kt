@@ -2,11 +2,15 @@ package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.openmhealth.schema.domain.omh.*
+import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
+@Serializable
 data class BodyCompositionSummaryGarmin(
-        val userId: String? = null,
-        val userAccessToken: String? = null,
-        val summaryId: String? = null,
+        val userId: String,
+        val userAccessToken: String,
+        val summaryId: String,
         val measurementTimeInSeconds: Int? = null,
         val measurementTimeOffsetInSeconds: Int? = null,
         val muscleMassInGrams: Int? = null,
@@ -16,7 +20,7 @@ data class BodyCompositionSummaryGarmin(
         val bodyMassIndex: Float? = null,
         val weightInGrams: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val bodyWeight = weightInGrams?.let {
             BodyWeight.Builder(MassUnitValue(MassUnit.GRAM, it.toBigDecimal())).build()
         }
@@ -30,7 +34,9 @@ data class BodyCompositionSummaryGarmin(
             BodyFatPercentage.Builder(TypedUnitValue(PercentUnit.PERCENT, it.toBigDecimal())).build()
         }
 
-        return OmhDTO(userId = userId, bodyWeight = bodyWeight,
+        val localDate = getLocalDate(measurementTimeInSeconds, measurementTimeOffsetInSeconds)
+
+        return OmhDTO(extUserId = userAccessToken, date = localDate, bodyWeight = bodyWeight,
                 bodyMassIndex1 = bodyMassIndex, bodyFatPercentage = bodyFatPercentage)
     }
 }

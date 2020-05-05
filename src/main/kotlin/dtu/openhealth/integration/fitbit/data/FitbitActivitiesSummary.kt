@@ -1,8 +1,10 @@
 package dtu.openhealth.integration.fitbit.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
+import dtu.openhealth.integration.shared.service.impl.ThirdPartyNotificationServiceImpl
 import dtu.openhealth.integration.shared.util.serialization.LocalDateSerializer
 import dtu.openhealth.integration.shared.util.serialization.LocalTimeSerializer
+import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.*
 import java.time.*
@@ -13,13 +15,21 @@ data class FitbitActivitiesSummary(
         val goals: FitbitActivityGoals? = null,
         val summary: FitbitActivitySummary
 ) : FitbitData() {
-    override fun mapToOMH(): OmhDTO {
-        val omhDTO = summary.mapToOMH(LocalDate.now()) // Parse date of summary.
 
-        val activityList = activities.map { it.mapToOMH() }.toMutableList()
-        omhDTO.physicalActivities = activityList
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
+        val fitbitUserId = parameters[FitbitConstants.UserParameterTag]
+        val dateParameter = parameters[FitbitConstants.DateParameterTag]
+        val date = if (dateParameter != null) LocalDate.parse(dateParameter) else LocalDate.now()
+        val dto = summary.mapToOMH(date)
 
-        return omhDTO
+        val activityList = activities.map { it.mapToOMH() }
+
+        return OmhDTO(extUserId = fitbitUserId, date = date,
+                caloriesBurned2 = dto.caloriesBurned2,
+                heartRate = dto.heartRate,
+                stepCount2 = dto.stepCount2,
+                physicalActivities = activityList
+        )
     }
 }
 
@@ -103,7 +113,7 @@ data class FitbitActivitySummary(
                     .build()
         }
 
-        return OmhDTO(caloriesBurned2 = listOf(caloriesBurned2), heartRate = heartRate, stepCount2 = stepCount2)
+        return OmhDTO(caloriesBurned2 = caloriesBurned2, heartRate = heartRate, stepCount2 = stepCount2)
     }
 }
 

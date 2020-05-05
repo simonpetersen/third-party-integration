@@ -1,7 +1,6 @@
 package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
-import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.DurationUnit
 import org.openmhealth.schema.domain.omh.DurationUnitValue
@@ -9,9 +8,9 @@ import org.openmhealth.schema.domain.omh.SleepDuration2
 
 @Serializable
 data class SleepSummaryGarmin(
-        val userId: String? = null,
-        val userAccessToken: String? = null,
-        val summaryId: String? = null,
+        val userId: String,
+        val userAccessToken: String,
+        val summaryId: String,
         val calendarDate: String? = null, //Date
         val startTimeInSeconds: Int? = null,
         val startTimeOffsetInSeconds: Int? = null,
@@ -26,7 +25,7 @@ data class SleepSummaryGarmin(
         val timeOffsetSleepRespiration: Map<String, Float>? = null,
         val timeOffsetSleepSpo2: Map<String, Int>? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val sleepDuration = durationInSeconds?.let {
             SleepDuration2.Builder(
                     DurationUnitValue(DurationUnit.SECOND, (it-awakeDurationInSeconds!!).toBigDecimal()),
@@ -34,12 +33,14 @@ data class SleepSummaryGarmin(
                     .build()
         }
 
-        return OmhDTO(userId = userId, sleepDuration2 = sleepDuration)
+        val localDate = getLocalDate(startTimeInSeconds, startTimeOffsetInSeconds)
+
+        return OmhDTO(extUserId = userAccessToken, date = localDate, sleepDuration2 = sleepDuration)
     }
 }
 
 @Serializable
 data class SleepTimeFrame(
-        val startTimeInSeconds: Int? = null,
-        val endTimeInSeconds: Int? = null
+        val startTimeInSeconds: Int,
+        val endTimeInSeconds: Int
 )

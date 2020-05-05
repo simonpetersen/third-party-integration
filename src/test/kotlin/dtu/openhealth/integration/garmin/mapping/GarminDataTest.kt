@@ -19,9 +19,7 @@ class GarminDataTest: GarminData() {
         assertThat(timeInterval.startDateTime.offset.totalSeconds).isEqualTo(offset)
     }
 
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         TODO("Not yet implemented")
     }
-
-
 }

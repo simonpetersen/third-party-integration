@@ -1,22 +1,20 @@
 package dtu.openhealth.integration.garmin
 
 import dtu.openhealth.integration.garmin.data.*
-import dtu.openhealth.integration.kafka.producer.KafkaProducerService
-import dtu.openhealth.integration.shared.service.GarminDataService
-import dtu.openhealth.integration.shared.service.impl.GarminDataServiceImpl
 import dtu.openhealth.integration.shared.util.PropertiesLoader
-import io.vertx.core.AbstractVerticle
+import dtu.openhealth.integration.shared.service.ThirdPartyPushService
+import dtu.openhealth.integration.shared.verticle.BasePushEndpoint
+import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.core.json.JsonArray
-import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
-import io.vertx.ext.web.Router
-import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.BodyHandler
+import io.vertx.reactivex.ext.web.Router
+import io.vertx.reactivex.ext.web.RoutingContext
+import io.vertx.reactivex.ext.web.handler.BodyHandler
 
-class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerticle() {
+class GarminVerticle(pushService: ThirdPartyPushService,
+                     private val authRouter: AuthorizationRouter) : BasePushEndpoint(pushService) {
 
     private val logger = LoggerFactory.getLogger(GarminVerticle::class.java)
-    private val garminDataService: GarminDataService = GarminDataServiceImpl(kafkaProducerService)
     private val configuration =  PropertiesLoader.loadProperties()
 
     override fun start() {
@@ -31,6 +29,8 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
         router.post("/api/garmin/thirdparty").handler { handleThirdPartySummary(it) }
         router.post("/api/garmin/pulse").handler { handlePulseSummary(it) }
 
+        router.mountSubRouter("/", authRouter.getRouter())
+
         vertx.createHttpServer().requestHandler(router).listen(
                 configuration.getProperty("garmin.verticle.port").toInt())
     }
@@ -38,126 +38,49 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     private fun handleActivitySummary(routingContext : RoutingContext) {
         logger.info("Posting activity summary data for Garmin")
         val activitySummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("activities")
-        activitySummaries.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(ActivitySummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(activitySummaries, ActivitySummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleBodyConsumptionSummary(routingContext : RoutingContext) {
         logger.info("Posting body consumption data for Garmin")
         val bodyCompositionSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("body")
-        bodyCompositionSummaries.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(BodyCompositionSummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(bodyCompositionSummaries, BodyCompositionSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleDailySummary(routingContext : RoutingContext) {
         logger.info("Posting daily summary data for Garmin")
         val dailySummaries = routingContext.bodyAsJson.getJsonArray("dailies")
-        dailySummaries.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(DailySummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(dailySummaries, DailySummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleEpochSummary(routingContext : RoutingContext) {
         logger.info("Posting epoch summary data for Garmin")
         val epochsSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("epochs")
-        epochsSummaries.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(EpochSummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(epochsSummaries, EpochSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleRespirationSummary(routingContext : RoutingContext) {
         logger.info("Posting respiration summary data for Garmin")
         val respirationSummary = routingContext.bodyAsJson.getJsonArray("respirations")
-        respirationSummary.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(RespirationSummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(respirationSummary, RespirationSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleSleepSummary(routingContext : RoutingContext) {
         logger.info("Posting sleep summary data for Garmin")
         val sleepSummary = routingContext.bodyAsJson.getJsonArray("sleeps")
-        sleepSummary.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(SleepSummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(sleepSummary, SleepSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleThirdPartySummary(routingContext : RoutingContext) {
         logger.info("Posting third party summary data for Garmin")
         val thirdPartySummaries = routingContext.bodyAsJson.getJsonArray("thirdparty")
-        thirdPartySummaries.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(ThirdPartyDailySummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(thirdPartySummaries, ThirdPartyDailySummaryGarmin.serializer())
         routingContext.response().end()
     }
 
@@ -165,18 +88,7 @@ class GarminVerticle(kafkaProducerService: KafkaProducerService) : AbstractVerti
     private fun handlePulseSummary(routingContext : RoutingContext) {
         logger.info("Posting pulse summary data for Garmin")
         val pulseSummaries = routingContext.bodyAsJson.getJsonArray("pulseOX")
-        pulseSummaries.stream().forEach {
-            data -> if(data is JsonObject) {
-                try{
-                    data.mapTo(PulseOXSummaryGarmin::class.java).also {
-                        logger.info("Saving data to Garmin: $it")
-                        garminDataService.saveDataToOMH(it)
-                    }
-                }catch (e: Exception){
-                    logger.error(e)
-                }
-            }
-        }
+        convertArrayAndSaveData(pulseSummaries, PulseOXSummaryGarmin.serializer())
         routingContext.response().end()
     }
 }

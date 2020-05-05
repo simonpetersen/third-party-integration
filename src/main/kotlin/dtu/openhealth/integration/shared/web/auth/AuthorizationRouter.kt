@@ -2,7 +2,7 @@ package dtu.openhealth.integration.shared.web.auth
 
 import io.vertx.reactivex.ext.web.Router
 
-interface AuthenticationRouter {
+interface AuthorizationRouter {
     fun getRouter(): Router
 
 }
