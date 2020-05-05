@@ -13,7 +13,7 @@ data class UserMetricsSummaryGarmin(
         val vo2Max: Float? = null,
         val fitnessAge: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         throw NoMappingFoundException("No mapping found for this type: ${this.javaClass}")
     }
 }

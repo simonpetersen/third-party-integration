@@ -29,8 +29,9 @@ class OmhServiceImplTest {
         val stepCount = StepCount2.Builder(2345L, timeInterval).build()
         val dto = OmhDTO(userId, day, stepCount2 = stepCount)
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
 
         val jsonObject = JsonObject.mapFrom(stepCount)
@@ -46,8 +47,9 @@ class OmhServiceImplTest {
         val jsonObject = JsonObject.mapFrom(stepCount)
         val omhData = OmhData(0, userId, OmhDataType.StepCount2, day, jsonObject)
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(listOf(omhData), dto, userId, day)
 
         verify(omhDataService, times(0)).insertOmhData(any())
@@ -62,8 +64,9 @@ class OmhServiceImplTest {
         val newStepCount = initStepCount(4690L)
         val dto = OmhDTO(userId, day, stepCount2 = newStepCount)
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(listOf(oldOmhData), dto, userId, day)
 
         val newJsonObject = JsonObject.mapFrom(newStepCount)
@@ -78,8 +81,9 @@ class OmhServiceImplTest {
                 LocalTime.of(16,5,0), 7.9)
         val dto = OmhDTO(userId, day, physicalActivities = listOf(activity1, activity2))
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
 
         val jsonObject1 = JsonObject.mapFrom(activity1)
@@ -102,8 +106,9 @@ class OmhServiceImplTest {
         val jsonRunning = JsonObject.mapFrom(activityRunning)
         val omhDataRunning = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonRunning)
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(listOf(omhDataRunning), dto, userId, day)
 
         val jsonBiking = JsonObject.mapFrom(activityBiking)
@@ -124,8 +129,9 @@ class OmhServiceImplTest {
         val jsonBiking = JsonObject.mapFrom(activityBiking)
         val expectedOmhDataBiking = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonBiking)
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(listOf(omhDataRunning, expectedOmhDataBiking), dto, userId, day)
 
         val invocations = 0
@@ -143,8 +149,9 @@ class OmhServiceImplTest {
         val jsonRunning = JsonObject.mapFrom(activityRunning)
         val omhDataRunning = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonRunning)
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(listOf(omhDataRunning), dto, userId, day)
 
         val jsonBiking = JsonObject.mapFrom(activityBiking)
@@ -160,8 +167,9 @@ class OmhServiceImplTest {
                 LocalTime.of(16,5,0), 7.9)
         val dto = OmhDTO(userId, day, physicalActivities = listOf(activityBiking, activityRunning))
 
+        val userTokensDataService: UserDataService = mock()
         val omhDataService: OmhDataService = mock()
-        val omhService = OmhServiceImpl(omhDataService)
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
         omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
 
         // Verify biking activity is inserted

@@ -4,30 +4,39 @@ import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.model.OmhData
 import dtu.openhealth.integration.shared.service.OmhDataService
 import dtu.openhealth.integration.shared.service.OmhService
+import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.util.OmhDataType
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
 import org.openmhealth.schema.domain.omh.Measure
 import java.time.LocalDate
 
-class OmhServiceImpl(private val omhDataService: OmhDataService) : OmhService {
+class OmhServiceImpl(private val userDataService: UserDataService,
+                     private val omhDataService: OmhDataService) : OmhService {
 
     private val logger = LoggerFactory.getLogger(OmhServiceImpl::class.java)
 
     override fun saveNewestOmhData(dto: OmhDTO) {
         if (dto.extUserId == null || dto.date == null) {
-            logger.error("UserId (${dto.extUserId}) or date (${dto.date}) is invalid for $dto")
+            logger.error("ExtUserId (${dto.extUserId}) or date (${dto.date}) is invalid for $dto")
             return
         }
 
-        omhDataService.getOmhDataOnDate(dto.extUserId, dto.date) {
-            oldData -> checkAndSaveNewestData(oldData,dto, dto.extUserId, dto.date)
+        userDataService.getUserIdByExtId(dto.extUserId) {
+            userId -> callbackWithUserId(userId, dto.date, dto)
+        }
+    }
+
+    fun callbackWithUserId(userId: String, date: LocalDate, dto: OmhDTO) {
+        omhDataService.getOmhDataOnDate(userId, date) {
+            oldData -> checkAndSaveNewestData(oldData,dto,userId,date)
         }
     }
 
     fun checkAndSaveNewestData(oldOmhData: List<OmhData>, dto: OmhDTO, userId: String, date: LocalDate) {
         checkAndUpdateSingleMeasure(dto.stepCount2, oldOmhData, userId, date, OmhDataType.StepCount2)
         checkAndUpdateSingleMeasure(dto.bodyWeight, oldOmhData, userId, date, OmhDataType.BodyWeight)
+        checkAndUpdateSingleMeasure(dto.bodyHeight, oldOmhData, userId, date, OmhDataType.BodyHeight)
         checkAndUpdateSingleMeasure(dto.bodyMassIndex1, oldOmhData, userId, date, OmhDataType.BodyMassIndex1)
         checkAndUpdateSingleMeasure(dto.bodyFatPercentage, oldOmhData, userId, date, OmhDataType.BodyFatPercentage)
         checkAndUpdateSingleMeasure(dto.heartRate, oldOmhData, userId, date, OmhDataType.HeartRate)

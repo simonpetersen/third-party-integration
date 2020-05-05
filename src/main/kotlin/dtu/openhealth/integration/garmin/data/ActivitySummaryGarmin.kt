@@ -40,7 +40,7 @@ data class ActivitySummaryGarmin(
         val parentSummaryId: Int? = null,
         val manual: Boolean? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val physicalActivity = activityType?.let {
                 PhysicalActivity.Builder(it)
                     .setDistance(LengthUnitValue(LengthUnit.METER, distanceInMeters?.toBigDecimal()))

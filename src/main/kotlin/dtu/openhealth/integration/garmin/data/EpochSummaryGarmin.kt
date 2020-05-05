@@ -23,7 +23,7 @@ data class EpochSummaryGarmin(
     val meanMotionIntensity: Float? = null,
     val maxMotionIntensity: Float? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
 
         val steps = steps?.let {
             StepCount2.Builder(

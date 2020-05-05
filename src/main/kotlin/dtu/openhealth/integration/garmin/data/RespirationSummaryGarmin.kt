@@ -16,7 +16,7 @@ data class RespirationSummaryGarmin(
         val startTimeOffsetInSeconds: Int? = null,
         val timeOffsetEpochToBreaths: Map<String, Float>? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val respiratoryRate = timeOffsetEpochToBreaths?.let {
             RespiratoryRate.Builder(
                     TypedUnitValue((RespiratoryRate.RespirationUnit.BREATHS_PER_MINUTE), averageBreathsPrMinute(it)))

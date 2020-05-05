@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.shared.web.auth
 
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
 import io.vertx.core.AsyncResult
@@ -9,6 +9,7 @@ import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.ext.auth.User
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.RoutingContext
@@ -17,7 +18,7 @@ import io.vertx.reactivex.ext.web.RoutingContext
 abstract class OAuth2Router(private val vertx: Vertx, private val oauth2: OAuth2Auth,
                    private val parameters: OAuth2RouterParameters,
                    private val userDataService: UserDataService)
-    : AuthenticationRouter {
+    : AuthorizationRouter {
 
     private val logger = LoggerFactory.getLogger(OAuth2Router::class.java)
 
@@ -30,7 +31,7 @@ abstract class OAuth2Router(private val vertx: Vertx, private val oauth2: OAuth2
         return router
     }
 
-    abstract fun createUser(userId: String, jsonObject: JsonObject): User
+    abstract fun createUser(userId: String, jsonObject: JsonObject): UserToken
 
     private fun handleAuthRedirect(routingContext: RoutingContext) {
         val userId = routingContext.request().getParam("userId")
@@ -61,21 +62,23 @@ abstract class OAuth2Router(private val vertx: Vertx, private val oauth2: OAuth2
             )
         }
 
-        oauth2.authenticate(tokenConfig) { authorizationSuccessful(it, userId, routingContext) }
+        oauth2.authenticate(tokenConfig) {
+            authorizationCompleted(it, userId, routingContext)
+        }
     }
 
     private fun handleSuccessfulAuthentication(routingContext: RoutingContext) {
         routingContext.response().end("User authenticated.")
     }
 
-    private fun authorizationSuccessful(ar : AsyncResult<io.vertx.reactivex.ext.auth.User>, userId: String, routingContext: RoutingContext) {
+    private fun authorizationCompleted(ar : AsyncResult<User>, userId: String, routingContext: RoutingContext) {
         if (ar.succeeded()) {
             val jsonToken = ar.result().principal()
             val user = createUser(userId, jsonToken)
-            userDataService.createUser(user)
+            userDataService.insertUser(user)
 
             routingContext.response()
-                    .putHeader("Location", "http://localhost:8080/success")
+                    .putHeader("Location", parameters.returnUri)
                     .setStatusCode(302)
                     .end()
         }

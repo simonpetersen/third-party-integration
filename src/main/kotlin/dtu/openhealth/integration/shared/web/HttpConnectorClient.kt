@@ -4,5 +4,5 @@ import dtu.openhealth.integration.shared.model.UserToken
 import io.reactivex.Single
 
 interface HttpConnectorClient {
-    fun get(request: ApiRequest, user : UserToken) : Single<ApiResponse>
+    fun get(request: ApiRequest, userToken : UserToken) : Single<ApiResponse>
 }

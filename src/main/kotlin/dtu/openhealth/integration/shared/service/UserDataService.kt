@@ -7,4 +7,5 @@ interface UserDataService {
     suspend fun getUserByExtId(extId: String): UserToken?
     fun insertUser(userToken: UserToken)
     suspend fun updateTokens(userToken: UserToken)
-}
+    fun getUserIdByExtId(extId: String, callback: (String) -> Unit)
+ }

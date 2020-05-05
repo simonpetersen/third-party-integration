@@ -1,14 +1,17 @@
 package dtu.openhealth.integration.shared.web.auth
 
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.*
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
 import io.vertx.junit5.Checkpoint
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.RoutingContext
+import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 import org.assertj.core.api.Assertions.assertThat
@@ -17,34 +20,38 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(VertxExtension::class)
 class OAuth1RouterTest {
-    private val userId = "test_user_2"
-    private val consumerKey = "22d54322-2d2d-g67j-9876-234rgf264567"
-    private val redirectUri = "http://localhost:8080/callback"
-    private val redirectBody = "Redirect to localhost/oauthConfirm"
+    // Values
+    private val port = 8191
+    private val oauthServicePort = port + 1
+    private val userId = "testUser5756"
+    private val consumerKey = "22d54322-2d2h-g67c-9876-234rgf264567"
+    private val consumerSecret = "bM4bfF9fgmcfutToV17VEDFdfdsGVECGmIftaUZ3"
     private val authCode = "6789efgh"
     private val oauthVerifier = "verifier_$authCode"
-    private val requestToken = "request_token_$authCode"
-    private val requestTokenSecret = "request_token_secret_$authCode"
+    private val requestToken = "request_token_sfsfds_$authCode"
+    private val requestTokenSecret = "request_token_secret_dfssdfs_$authCode"
     private val accessToken = "access_token_$authCode"
     private val accessTokenSecret = "access_token_secret_$authCode"
+
+    // Urls and bodies
+    private val callbackUri = "https://localhost:$port/callback"
+    private val returnUri = "http://localhost:$oauthServicePort/return"
+    private val redirectBody = "Redirect to localhost/oauthConfirm"
+    private val returnBody = "Authorization finished"
 
     @Test
     fun testOAuth1RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
         val checkpoint = tc.checkpoint()
         val requestTokenCheckpoint = tc.checkpoint()
         val oauthConfirmToken = tc.checkpoint()
-        initWebServer(vertx, tc, requestTokenCheckpoint, oauthConfirmToken,null)
+        val userDataService: UserDataService = mock()
+        initWebServers(vertx, tc, userDataService, requestTokenCheckpoint, oauthConfirmToken,null)
 
         val client = WebClient.create(vertx)
-        client.get(8080, "localhost", "/auth/$userId")
+        client.get(port, "localhost", "/auth/$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
-                        tc.verify {
-                            val response = ar.result()
-                            assertThat(response.statusCode()).isEqualTo(200)
-                            assertThat(response.body().toString()).isEqualTo(redirectBody)
-                        }
-                        checkpoint.flag()
+                        validateAuthorizationRedirect(tc, ar.result(), checkpoint)
                     }
                     else {
                         tc.failNow(ar.cause())
@@ -55,19 +62,16 @@ class OAuth1RouterTest {
     @Test
     fun testOAuth1AccessToken(vertx: Vertx, tc: VertxTestContext) {
         val accessTokenCheckpoint = tc.checkpoint()
-        initWebServer(vertx, tc, null,null, accessTokenCheckpoint)
+        val userDataService: UserDataService = mock()
+        initWebServers(vertx, tc, userDataService,null,null, accessTokenCheckpoint)
 
         val requestUri = "/callback/$userId?oauth_token=$requestToken&oauth_verifier=$oauthVerifier"
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
-        client.get(8080, "localhost", requestUri)
+        client.get(port, "localhost", requestUri)
                 .send { ar ->
                     if (ar.succeeded()) {
-                        tc.verify {
-                            val response = ar.result()
-                            assertThat(response.statusCode()).isEqualTo(200)
-                        }
-                        checkpoint.flag()
+                        validateAccessTokenObtained(tc, userDataService, checkpoint, ar.result())
                     }
                     else {
                         tc.failNow(ar.cause())
@@ -75,36 +79,32 @@ class OAuth1RouterTest {
                 }
     }
 
-    private fun initWebServer(vertx: Vertx, tc: VertxTestContext,
-                              requestTokenCheckpoint: Checkpoint?,
-                              oauthConfirmToken: Checkpoint?,
-                              accessTokenCheckpoint: Checkpoint?) {
-        val serverStartedCheckpoint = tc.checkpoint()
-        val parameters = OAuth1RouterParameters("http://localhost:8080/callback",
-                "",
-                "",
-                consumerKey,
-                "bM4bfF9fgmcfutToV17VEDFjQGVECGmIftaUZ3",
-                OAuth1TestApi.instance())
+    private fun initWebServers(vertx: Vertx, tc: VertxTestContext, userDataService: UserDataService,
+                               requestTokenCheckpoint: Checkpoint?,
+                               oauthConfirmToken: Checkpoint?,
+                               accessTokenCheckpoint: Checkpoint?) {
+        val serverStartedCheckpoint = tc.checkpoint(2)
+        val parameters = OAuth1RouterParameters(callbackUri, returnUri,
+                consumerKey, consumerSecret,
+                OAuth1TestApi(oauthServicePort))
         val map = mutableMapOf(Pair(userId, requestTokenSecret))
-        val userDataService: UserDataService = mock()
-        val authenticationRouter = OAuth1Router(vertx,parameters, userDataService, map).getRouter()
+        val authRouter = OAuth1Router(vertx, parameters, userDataService, map).getRouter()
 
-        val router = Router.router(vertx)
-        router.route().handler(BodyHandler.create())
-        router.post("/oauth-service/request_token").handler { requestToken(it, requestTokenCheckpoint) }
-        router.post("/oauth-service/access_token").handler { accessToken(it, accessTokenCheckpoint) }
-        router.get("/oauthConfirm").handler { oauthConfirm(it, oauthConfirmToken) }
-        router.mountSubRouter("/", authenticationRouter)
-        vertx.createHttpServer()
-                .requestHandler(router)
-                .listen(8080) {
-                    if (it.succeeded()) {
-                        serverStartedCheckpoint.flag()
-                    }
-                    else {
-                        tc.failNow(it.cause())
-                    }
+        val oauthServiceRouter = Router.router(vertx)
+        oauthServiceRouter.route().handler(BodyHandler.create())
+        oauthServiceRouter.post("/oauth-service/request_token").handler { requestToken(it, requestTokenCheckpoint) }
+        oauthServiceRouter.post("/oauth-service/access_token").handler { accessToken(it, accessTokenCheckpoint) }
+        oauthServiceRouter.get("/oauthConfirm").handler { oauthConfirm(it, oauthConfirmToken) }
+        oauthServiceRouter.get("/return").handler { returnHandler(it) }
+
+        createWebServer(vertx, tc, oauthServiceRouter, oauthServicePort, serverStartedCheckpoint)
+        createWebServer(vertx, tc, authRouter, port, serverStartedCheckpoint)
+    }
+
+    private fun createWebServer(vertx: Vertx, tc: VertxTestContext, router: Router, port: Int, checkpoint: Checkpoint) {
+        vertx.createHttpServer().requestHandler(router).listen(port) {
+                    if (it.succeeded()) { checkpoint.flag() }
+                    else { tc.failNow(it.cause()) }
                 }
     }
 
@@ -120,11 +120,15 @@ class OAuth1RouterTest {
     private fun oauthConfirm(routingContext: RoutingContext, checkpoint: Checkpoint?) {
         val code = routingContext.request().getParam("oauth_token")
         val url = routingContext.request().getParam("oauth_callback")
-        val expectedUrl = "$redirectUri/$userId"
+        val expectedUrl = "$callbackUri/$userId"
         assertThat(code).isEqualTo(requestToken)
         assertThat(url).isEqualTo(expectedUrl)
         checkpoint?.flag()
         routingContext.response().end(redirectBody)
+    }
+
+    private fun returnHandler(routingContext: RoutingContext) {
+        routingContext.response().end(returnBody)
     }
 
     private fun accessToken(routingContext: RoutingContext, checkpoint: Checkpoint?) {
@@ -134,9 +138,27 @@ class OAuth1RouterTest {
         assertThat(authorizationHeader).contains("oauth_consumer_key=\"$consumerKey\"")
         checkpoint?.flag()
 
-        // Return token info
         val tokenInfo = "oauth_token=$accessToken&oauth_token_secret=$accessTokenSecret"
-        routingContext.response()
-                .end(tokenInfo)
+        routingContext.response().end(tokenInfo)
+    }
+
+    private fun validateAccessTokenObtained(tc: VertxTestContext, userDataService: UserDataService,
+                         checkpoint: Checkpoint, response: HttpResponse<Buffer>) {
+        tc.verify {
+            assertThat(response.statusCode()).isEqualTo(200)
+            assertThat(response.bodyAsString()).isEqualTo(returnBody)
+            val expectedToken = UserToken(userId, accessToken, accessToken, tokenSecret = accessTokenSecret)
+            verify(userDataService).insertUser(eq(expectedToken))
+        }
+        checkpoint.flag()
+    }
+
+    private fun validateAuthorizationRedirect(tc: VertxTestContext, response: HttpResponse<Buffer>,
+                                              checkpoint: Checkpoint) {
+        tc.verify {
+            assertThat(response.statusCode()).isEqualTo(200)
+            assertThat(response.body().toString()).isEqualTo(redirectBody)
+        }
+        checkpoint.flag()
     }
 }

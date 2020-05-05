@@ -3,7 +3,7 @@ package dtu.openhealth.integration.garmin.verticle
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminVerticle
 import dtu.openhealth.integration.garmin.data.BodyCompositionSummaryGarmin
-import dtu.openhealth.integration.shared.service.GarminDataService
+import dtu.openhealth.integration.shared.service.ThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.reactivex.core.Vertx
 import io.vertx.junit5.VertxExtension
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(VertxExtension::class)
 class BodyEndpointTest {
 
-    private val port = 8083
+    private val port = 8184
     private val validJsonString = """
     {
         "body":
@@ -62,10 +62,10 @@ class BodyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val garminDataService : GarminDataService = mock()
+        val thirdPartyPushService : ThirdPartyPushService = mock()
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-        vertx.deployVerticle(GarminVerticle(garminDataService, authRouter), testContext.succeeding {
+        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter, port), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
@@ -74,7 +74,7 @@ class BodyEndpointTest {
                             { response ->
                                 testContext.verify {
                                     assertThat(response.statusCode()).isEqualTo(200)
-                                    verify(garminDataService).saveDataToOMH(any<BodyCompositionSummaryGarmin>())
+                                    verify(thirdPartyPushService).saveDataToOMH(any<BodyCompositionSummaryGarmin>())
                                     testContext.completeNow()
                                 }
                             },
@@ -85,10 +85,10 @@ class BodyEndpointTest {
 
     @Test
     fun testInvalidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val garminDataService : GarminDataService = mock()
+        val thirdPartyPushService : ThirdPartyPushService = mock()
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-        vertx.deployVerticle(GarminVerticle(garminDataService, authRouter), testContext.succeeding {
+        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter, port), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/api/garmin/body")
                     .putHeader("Content-Type","application/json")
@@ -97,7 +97,7 @@ class BodyEndpointTest {
                             { response ->
                                 testContext.verify {
                                     assertThat(response.statusCode()).isEqualTo(500)
-                                    verify(garminDataService, times(0))
+                                    verify(thirdPartyPushService, times(0))
                                             .saveDataToOMH(any<BodyCompositionSummaryGarmin>())
                                     testContext.completeNow()
                                 }

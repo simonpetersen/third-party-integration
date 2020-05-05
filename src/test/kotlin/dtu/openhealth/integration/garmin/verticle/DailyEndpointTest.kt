@@ -6,9 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.garmin.GarminVerticle
 import dtu.openhealth.integration.garmin.data.DailySummaryGarmin
-import dtu.openhealth.integration.garmin.data.RespirationSummaryGarmin
-import dtu.openhealth.integration.shared.service.GarminDataService
-import dtu.openhealth.integration.shared.service.mock.MockKafkaProducerService
+import dtu.openhealth.integration.shared.service.ThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -23,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(VertxExtension::class)
 class DailyEndpointTest {
 
-    private val port = 8083
+    private val port = 8184
     private val validJsonString ="""
     {
         "dailies":
@@ -78,10 +76,10 @@ class DailyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val garminDataService : GarminDataService = mock()
+        val thirdPartyPushService : ThirdPartyPushService = mock()
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-        vertx.deployVerticle(GarminVerticle(garminDataService, authRouter), testContext.succeeding {
+        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter, port), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/api/garmin/dailies")
                     .putHeader("Content-Type","application/json")
@@ -90,7 +88,7 @@ class DailyEndpointTest {
                             { response ->
                                 testContext.verify {
                                     Assertions.assertThat(response.statusCode()).isEqualTo(200)
-                                    verify(garminDataService).saveDataToOMH(any<DailySummaryGarmin>())
+                                    verify(thirdPartyPushService).saveDataToOMH(any<DailySummaryGarmin>())
                                     testContext.completeNow()
                                 }
                             },

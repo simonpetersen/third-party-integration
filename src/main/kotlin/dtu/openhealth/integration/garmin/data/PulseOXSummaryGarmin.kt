@@ -18,7 +18,7 @@ data class PulseOXSummaryGarmin(
         val timeOffsetSpo2Values: Map<String, Int>? = null,
         val onDemand: Boolean? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val heartRate = timeOffsetSpo2Values?.let {
             HeartRate.Builder(TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, it.values.average()))
                     .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds?.toInt(), startTimeOffsetInSeconds, durationInSeconds))

@@ -25,7 +25,7 @@ data class SleepSummaryGarmin(
         val timeOffsetSleepRespiration: Map<String, Float>? = null,
         val timeOffsetSleepSpo2: Map<String, Int>? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val sleepDuration = durationInSeconds?.let {
             SleepDuration2.Builder(
                     DurationUnitValue(DurationUnit.SECOND, (it-awakeDurationInSeconds!!).toBigDecimal()),

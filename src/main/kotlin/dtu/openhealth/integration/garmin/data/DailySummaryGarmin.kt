@@ -42,7 +42,7 @@ data class DailySummaryGarmin(
     val intensityDurationGoalInSeconds: Int? = null,
     val floorsClimbedGoal: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val steps = steps?.let {
             StepCount2.Builder(
                     it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))

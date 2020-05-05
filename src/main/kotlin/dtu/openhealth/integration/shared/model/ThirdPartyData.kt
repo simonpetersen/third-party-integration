@@ -6,5 +6,5 @@ import org.openmhealth.schema.domain.omh.Measure
 
 @Serializable
 abstract class ThirdPartyData {
-    abstract fun mapToOMH(): OmhDTO
+    abstract fun mapToOMH(parameters: Map<String,String> = emptyMap()): OmhDTO
 }

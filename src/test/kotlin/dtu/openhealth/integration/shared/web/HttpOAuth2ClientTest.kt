@@ -1,7 +1,8 @@
 package dtu.openhealth.integration.shared.web
 
-import dtu.openhealth.integration.shared.data.ThirdPartyData
+import dtu.openhealth.integration.shared.model.ThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
+import dtu.openhealth.integration.shared.model.UserToken
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.kotlin.core.http.httpServerOptionsOf
@@ -10,9 +11,7 @@ import io.vertx.kotlin.ext.web.client.webClientOptionsOf
 import io.vertx.reactivex.ext.web.client.WebClient
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.http.HttpServerRequest
-import io.vertx.reactivex.ext.web.RoutingContext
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.extension.ExtendWith
@@ -22,7 +21,7 @@ class HttpOAuth2ClientTest {
 
     private val responseJson = "{}"
     private val port = 8443
-    private val testToken = "hjkhfakelfbqjkwbf"
+    private val testToken = UserToken("id123", "extUserId123","hjkhfakelfbqjkwbf")
 
     @Test
     fun testOAuth2Client(vertx: Vertx, tc: VertxTestContext) {

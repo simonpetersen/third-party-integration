@@ -16,7 +16,7 @@ data class StressDetailSummaryGarmin(
         val timeOffsetStressLevelValues: Map<String, Int>? = null,
         val timeOffsetBodyBatteryDetails: Map<String, Int>? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         throw NoMappingFoundException("No mapping found for this type: ${this.javaClass}")
     }
 }

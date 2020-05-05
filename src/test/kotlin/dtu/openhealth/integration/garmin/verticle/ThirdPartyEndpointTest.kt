@@ -3,7 +3,7 @@ package dtu.openhealth.integration.garmin.verticle
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminVerticle
 import dtu.openhealth.integration.garmin.data.ThirdPartyDailySummaryGarmin
-import dtu.openhealth.integration.shared.service.GarminDataService
+import dtu.openhealth.integration.shared.service.ThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(VertxExtension::class)
 class ThirdPartyEndpointTest {
 
-    private val port = 8083
+    private val port = 8184
     private val validJsonString = """
     {
         "thirdparty":
@@ -61,10 +61,10 @@ class ThirdPartyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val garminDataService : GarminDataService = mock()
+        val thirdPartyPushService : ThirdPartyPushService = mock()
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-        vertx.deployVerticle(GarminVerticle(garminDataService, authRouter), testContext.succeeding {
+        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter, port), testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/api/garmin/thirdparty")
                     .putHeader("Content-Type","application/json")
@@ -73,7 +73,7 @@ class ThirdPartyEndpointTest {
                             { response ->
                                 testContext.verify {
                                     assertThat(response.statusCode()).isEqualTo(200)
-                                    verify(garminDataService, times(2))
+                                    verify(thirdPartyPushService, times(2))
                                             .saveDataToOMH(any<ThirdPartyDailySummaryGarmin>())
                                     testContext.completeNow()
                                 }

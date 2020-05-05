@@ -16,7 +16,7 @@ data class MoveIQSummaryGarmin(
         val activityType: String? = null,
         val activitySubType: String? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         throw NoMappingFoundException("No mapping found for this type: ${this.javaClass}")
     }
 }

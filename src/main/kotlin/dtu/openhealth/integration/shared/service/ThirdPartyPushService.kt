@@ -2,6 +2,6 @@ package dtu.openhealth.integration.shared.service
 
 import dtu.openhealth.integration.shared.model.ThirdPartyData
 
-interface GarminDataService {
+interface ThirdPartyPushService {
     fun saveDataToOMH(thirdPartyData: ThirdPartyData)
 }

@@ -11,6 +11,7 @@ data class OmhDTO(
         @ContextualSerialization val date: LocalDate? = null,
         @ContextualSerialization val stepCount2: StepCount2? = null,
         @ContextualSerialization val bodyWeight: BodyWeight? = null,
+        @ContextualSerialization val bodyHeight: BodyHeight? = null,
         @ContextualSerialization val bodyMassIndex1: BodyMassIndex1? = null,
         @ContextualSerialization val bodyFatPercentage: BodyFatPercentage? = null,
         @ContextualSerialization val caloriesBurned2: CaloriesBurned2? = null,

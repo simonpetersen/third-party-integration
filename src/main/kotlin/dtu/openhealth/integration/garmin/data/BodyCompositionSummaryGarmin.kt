@@ -20,7 +20,7 @@ data class BodyCompositionSummaryGarmin(
         val bodyMassIndex: Float? = null,
         val weightInGrams: Int? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
         val bodyWeight = weightInGrams?.let {
             BodyWeight.Builder(MassUnitValue(MassUnit.GRAM, it.toBigDecimal())).build()
         }

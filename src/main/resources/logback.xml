@@ -21,13 +21,12 @@
         </encoder>
     </appender>
 
-    <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+    <!--appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
         <token>1111-111</token>
         <channel>${SLACK_CHANNEL}</channel>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%-4relative [%thread] %-5level %logger{36} - %msg%n</pattern>
         </layout>
-        <!-- Username of the messages sender -->
         <username>${HOSTNAME}</username>
         <colorCoding>true</colorCoding>
     </appender>
@@ -37,12 +36,12 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-    </appender>
+    </appender-->
 
     <root level="debug">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
-        <appender-ref ref="ASYNC_SLACK"/>
+        <!--appender-ref ref="ASYNC_SLACK"/-->
     </root>
 
 </configuration>

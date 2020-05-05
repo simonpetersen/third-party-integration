@@ -1,7 +1,5 @@
 package dtu.openhealth.integration
 
-import dtu.openhealth.integration.kafka.consumer.KafkaConsumer
-
 import io.vertx.reactivex.core.Vertx
 import dtu.openhealth.integration.shared.verticle.MainVerticle
 
