@@ -1,10 +1,11 @@
 package dtu.openhealth.integration.shared.service
 
 import com.nhaarman.mockitokotlin2.*
-import dtu.openhealth.integration.shared.data.ThirdPartyData
+import dtu.openhealth.integration.kafka.producer.KafkaProducerService
+import dtu.openhealth.integration.shared.model.ThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.impl.ThirdPartyNotificationServiceImpl
 import dtu.openhealth.integration.shared.service.mock.MockRestUrl
 import io.reactivex.Single
@@ -37,20 +38,21 @@ class ThirdPartyNotificationServiceTest {
         val endpointMap = getEndpointMap()
         val parameters = mapOf(Pair("dataType", dataType), Pair("userId", extUserId))
         val notification = ThirdPartyNotification(parameters, "dataType", "userId")
-        val user = User(userId, extUserId, accessToken, expireDateTime = tokenExpireDateTime)
+        val user = UserToken(userId, extUserId, accessToken, expireDateTime = tokenExpireDateTime)
 
         // Mock
         val httpService: HttpService = mock()
         val userService: UserDataService = mock()
+        val kafkaProducerService: KafkaProducerService = mock()
         val tokenRefreshService: TokenRefreshService = mock()
         val expireDateTime = LocalDateTime.now().plusHours(8)
-        val refreshedUser = User(userId, extUserId, accessToken, expireDateTime = expireDateTime)
+        val refreshedUser = UserToken(userId, extUserId, accessToken, expireDateTime = expireDateTime)
         whenever(tokenRefreshService.refreshToken(user)).thenReturn(refreshedUser)
         whenever(userService.getUserByExtId(extUserId)).thenReturn(user)
         whenever(httpService.callApiForUser(any(), any(), any())).thenReturn(Single.just(emptyList()))
 
         // Call notificationService
-        val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, userService, tokenRefreshService)
+        val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, userService, kafkaProducerService, tokenRefreshService)
         notificationService.getUpdatedData(listOf(notification))
 
         // Verify

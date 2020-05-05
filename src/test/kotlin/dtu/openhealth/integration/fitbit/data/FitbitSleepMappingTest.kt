@@ -1,18 +1,18 @@
-package dtu.openhealth.integration.fitbit.mapping
+package dtu.openhealth.integration.fitbit.data
 
-import dtu.openhealth.integration.fitbit.data.FitbitSleepLog
-import dtu.openhealth.integration.fitbit.data.FitbitSleepLogSummary
-import dtu.openhealth.integration.fitbit.data.FitbitSleepStages
-import dtu.openhealth.integration.fitbit.data.FitbitSleepSummary
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openmhealth.schema.domain.omh.*
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneOffset
 
 class FitbitSleepMappingTest {
+    private val sleepDate = LocalDate.of(2020,6,27)
+    private val sleepDateString = "2020-06-27"
+    private val fitbitUserId = "hjdlafhska"
 
     @Test
     fun testFitbitSleepMapping() {
@@ -23,7 +23,11 @@ class FitbitSleepMappingTest {
                 totalSleepRecords = 1,
                 totalTimeInBed = 507)
         val fitbitSleepLogSummary = FitbitSleepLogSummary(listOf(sleepLog), sleepSummary)
-        val omhDTO = fitbitSleepLogSummary.mapToOMH()
+        val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId),
+                Pair(FitbitConstants.DateParameterTag, sleepDateString))
+        val omhDTO = fitbitSleepLogSummary.mapToOMH(parameters)
+        assertThat(omhDTO.extUserId).isEqualTo(fitbitUserId)
+        assertThat(omhDTO.date).isEqualTo(sleepDate)
 
         validateSleepEpisodes(omhDTO, sleepLog)
         validateSleepDuration(omhDTO, sleepSummary)
@@ -53,7 +57,8 @@ class FitbitSleepMappingTest {
         assertThat(sleepDuration?.sleepDuration?.value?.longValueExact()).isEqualTo(sleepSummary.totalMinutesAsleep)
 
         val durationInterval = sleepDuration?.effectiveTimeFrame
-//        assertThat(durationInterval.timeInterval?.startDateTime).isEqualTo(OffsetDateTime.now())
+        val expectedStartDateTime = sleepDate.atStartOfDay().atOffset(ZoneOffset.UTC)
+        assertThat(durationInterval?.timeInterval?.startDateTime).isEqualTo(expectedStartDateTime)
         assertThat(durationInterval?.timeInterval?.duration?.typedUnit).isEqualTo(DurationUnit.DAY)
         assertThat(durationInterval?.timeInterval?.duration?.value?.intValueExact()).isEqualTo(1)
     }
@@ -62,21 +67,21 @@ class FitbitSleepMappingTest {
         return FitbitSleepLog(0,
                 awakeDuration = 0,
                 awakeningsCount = 17,
-                dateOfSleep = LocalDate.of(2020,3,24),
+                dateOfSleep = sleepDate,
                 duration = 30420000,
                 efficiency = 96,
-                endTime = LocalDateTime.of(2020,3,24,7,13,30),
+                endTime = LocalDateTime.of(sleepDate, LocalTime.of(7,13,30)),
                 isMainSleep = true,
                 logId = 26454176508,
-                minuteData = emptyList(),
+                levels = FitbitSleepLevels(emptyList(), emptyList()),
                 minutesAfterWakeup = 2,
                 minutesAsleep = 488,
                 minutesAwake = 19,
                 minutesToFallAsleep = 11,
-                restlessCount = 17,
-                restlessDuration = 19,
-                startTime = LocalDateTime.of(2020,3,23,22,46,30),
-                timeInBed = 507
+                startTime = LocalDateTime.of(LocalDate.of(2020,6,26), LocalTime.of(22,46,30)),
+                timeInBed = 507,
+                type = "stages",
+                infoCode = 0
         )
     }
 }

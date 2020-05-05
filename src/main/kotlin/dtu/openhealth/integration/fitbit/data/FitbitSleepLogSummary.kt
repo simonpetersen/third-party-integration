@@ -12,11 +12,14 @@ data class FitbitSleepLogSummary(
         val sleep : List<FitbitSleepLog>,
         val summary : FitbitSleepSummary
 ) : FitbitData(){
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
+        val fitbitUserId = parameters[FitbitConstants.UserParameterTag]
+        val dateParameter = parameters[FitbitConstants.DateParameterTag]
+        val date = if (dateParameter != null) LocalDate.parse(dateParameter) else LocalDate.now()
         val sleepEpisodes = sleep.map { it.mapToOMH() }
-        val sleepDuration = summary.mapToOMH(LocalDate.now()) // TODO: Parse date in a smarter way.
+        val sleepDuration = summary.mapToOMH(date)
 
-        return OmhDTO(sleepEpisodes = sleepEpisodes, sleepDuration2 = sleepDuration)
+        return OmhDTO(fitbitUserId, date = date, sleepEpisodes = sleepEpisodes, sleepDuration2 = sleepDuration)
     }
 }
 
@@ -25,21 +28,21 @@ data class FitbitSleepLog(
         val awakeCount: Long,
         val awakeDuration: Long,
         val awakeningsCount: Int,
+        val infoCode: Int,
         @Serializable(with = LocalDateSerializer::class) val dateOfSleep: LocalDate,
         val duration: Long,
         val efficiency: Long,
         @Serializable(with = LocalDateTimeSerializer::class) val endTime: LocalDateTime,
         val isMainSleep: Boolean,
         val logId: Long,
-        val minuteData: List<FitbitSleepMinuteData>,
+        val levels: FitbitSleepLevels,
         val minutesAfterWakeup: Long,
         val minutesAsleep: Long,
         val minutesAwake: Long,
         val minutesToFallAsleep: Long,
-        val restlessCount: Long,
-        val restlessDuration: Long,
         @Serializable(with = LocalDateTimeSerializer::class) val startTime: LocalDateTime,
-        val timeInBed: Long
+        val timeInBed: Long,
+        val type: String
 ) {
     fun mapToOMH(): SleepEpisode {
         val timeInterval = TimeInterval.ofStartDateTimeAndEndDateTime(
@@ -57,17 +60,47 @@ data class FitbitSleepLog(
 }
 
 @Serializable
-data class FitbitSleepMinuteData(
+data class FitbitSleepLevels(
+        val data: List<FitbitSleepLongData>,
+        val shortData: List<FitbitSleepShortData>,
+        val summary: FitbitSleepLevelsFullSummary? = null
+)
+
+@Serializable
+data class FitbitSleepShortData(
         val dateTime: String,
-        val value: Int
+        val level: String,
+        val seconds: Int
+)
+
+@Serializable
+data class FitbitSleepLongData(
+        val dateTime: String,
+        val level: String,
+        val seconds: Int
+)
+
+@Serializable
+data class FitbitSleepLevelsFullSummary(
+        val deep: FitbitSleepLevelsSummary,
+        val light: FitbitSleepLevelsSummary,
+        val rem: FitbitSleepLevelsSummary,
+        val wake: FitbitSleepLevelsSummary
+)
+
+@Serializable
+data class FitbitSleepLevelsSummary(
+        val count: Int,
+        val minutes: Int,
+        val thirtyDayAvgMinutes: Int
 )
 
 @Serializable
 data class FitbitSleepSummary(
         val stages: FitbitSleepStages? = null,
         val totalMinutesAsleep: Long,
-        val totalSleepRecords: Long,
-        val totalTimeInBed: Long
+        val totalSleepRecords: Int,
+        val totalTimeInBed: Int
 ) {
     fun mapToOMH(sleepDate: LocalDate): SleepDuration2 {
         val duration = DurationUnitValue(DurationUnit.MINUTE, totalMinutesAsleep)
@@ -81,8 +114,8 @@ data class FitbitSleepSummary(
 
 @Serializable
 data class FitbitSleepStages(
-        val deep: Long,
-        val light: Long,
-        val rem: Long,
-        val wake: Long
+        val deep: Int,
+        val light: Int,
+        val rem: Int,
+        val wake: Int
 )

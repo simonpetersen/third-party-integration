@@ -1,24 +1,28 @@
 package dtu.openhealth.integration.shared.service.impl
 
-import dtu.openhealth.integration.shared.data.ThirdPartyData
+import dtu.openhealth.integration.kafka.producer.KafkaProducerService
+import dtu.openhealth.integration.shared.model.ThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.*
 import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import java.time.LocalDateTime
 
 
 class ThirdPartyNotificationServiceImpl(
         private val httpService: HttpService,
         private val endpointMap: Map<String, List<RestEndpoint>>,
-        private val userService: UserDataService,
+        private val userDataService: UserDataService,
+        private val kafkaProducerService: KafkaProducerService,
         private val tokenRefreshService: TokenRefreshService
 ) : ThirdPartyNotificationService {
 
     private val logger = LoggerFactory.getLogger(ThirdPartyNotificationServiceImpl::class.java)
+    private val json = Json(JsonConfiguration.Stable)
 
     override suspend fun getUpdatedData(notificationList: List<ThirdPartyNotification>) {
         for (notification in notificationList) {
@@ -35,30 +39,43 @@ class ThirdPartyNotificationServiceImpl(
     }
 
     private suspend fun getUserAndCallApi(extUserId: String, dataType: String, parameters: Map<String, String>) {
-        val user = userService.getUserByExtId(extUserId)
-        if (user != null) {
-            if (tokenIsExpired(user.expireDateTime)) {
-                val updatedUser = tokenRefreshService.refreshToken(user)
-                callApi(updatedUser, dataType, parameters)
-            }
-            else {
-                callApi(user, dataType, parameters)
-            }
+        val userToken = userDataService.getUserByExtId(extUserId)
+        if (userToken != null) {
+            callApiForUser(userToken, dataType, parameters)
+        }
+        else {
+            logger.error("User $extUserId was not found.")
         }
     }
 
-    private fun callApi(user: User, dataType: String, parameters: Map<String, String>) {
+    private suspend fun callApiForUser(userToken: UserToken, dataType: String, parameters: Map<String, String>) {
+        if (tokenIsExpired(userToken.expireDateTime)) {
+            val updatedUser = tokenRefreshService.refreshToken(userToken)
+            callApi(updatedUser, dataType, parameters)
+        }
+        else {
+            callApi(userToken, dataType, parameters)
+        }
+    }
+
+    private fun callApi(userToken: UserToken, dataType: String, parameters: Map<String, String>) {
         val endpointList = endpointMap[dataType]
         if (endpointList != null) {
-            val apiResponseList = httpService.callApiForUser(endpointList,user,parameters)
+            val apiResponseList = httpService.callApiForUser(endpointList,userToken,parameters)
 
-            // TODO: Put result on Kafka stream.
             apiResponseList.subscribe(
                     { result ->
-                        println("Result = $result")
+                        result.mapNotNull{
+                            convertJsonToThirdPartyData(it.responseJson, it.serializer, json)
+                                    ?.mapToOMH(it.parameters)
+                        }
+                                .forEach { kafkaProducerService.sendOmhData(it) }
                     },
                     { error -> logger.error(error) }
             )
+        }
+        else {
+            logger.error("No endpoints configured for $dataType")
         }
     }
 

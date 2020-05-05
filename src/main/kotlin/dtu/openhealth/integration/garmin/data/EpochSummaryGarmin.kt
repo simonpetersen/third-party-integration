@@ -2,12 +2,14 @@ package dtu.openhealth.integration.garmin.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.exception.InvalidActivityNameException
+import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.*
 
+@Serializable
 data class EpochSummaryGarmin(
-    val userId: String? = null,
-    val userAccessToken: String? = null,
-    val summaryId: String? = null,
+    val userId: String,
+    val userAccessToken: String,
+    val summaryId: String,
     val startTimeInSeconds: Int? = null,
     val startTimeOffsetInSeconds: Int? = null,
     val activityType: String? = null,
@@ -21,7 +23,7 @@ data class EpochSummaryGarmin(
     val meanMotionIntensity: Float? = null,
     val maxMotionIntensity: Float? = null
 ): GarminData() {
-    override fun mapToOMH(): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
 
         val steps = steps?.let {
             StepCount2.Builder(
@@ -38,7 +40,10 @@ data class EpochSummaryGarmin(
                     .build()
         }
 
-        return OmhDTO(userId = userId, stepCount2 = steps, physicalActivities = listOf(activity!!))
+        val localDate = getLocalDate(startTimeInSeconds, startTimeOffsetInSeconds)
+
+        return OmhDTO(extUserId = userAccessToken, date = localDate,
+                stepCount2 = steps, physicalActivities = listOf(activity!!))
     }
 
     private fun getActivityName(activityType: String?): PhysicalActivity.SelfReportedIntensity {

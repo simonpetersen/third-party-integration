@@ -3,7 +3,7 @@ package dtu.openhealth.integration.shared.service
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.impl.OAuth2TokenRefreshServiceImpl
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import io.vertx.junit5.Checkpoint
@@ -73,7 +73,7 @@ class OAuth2TokenRefreshTest {
                 8183
         )
 
-        val user = User(userId, extUserId,"someToken", oldRefreshToken, oldExpireDateTime)
+        val user = UserToken(userId, extUserId,"someToken", oldRefreshToken, oldExpireDateTime)
         val refreshService = OAuth2TokenRefreshServiceImpl(webClient, parameters, userService)
 
         GlobalScope.launch {

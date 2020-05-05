@@ -19,7 +19,7 @@ class OmhDTOSerializerTest {
         val deserialized = OmhDTODeserializer().deserialize("omh-data", serialized)
 
         assertThat(deserialized).isInstanceOf(OmhDTO::class.java)
-        assertThat(omhDTO.userId).isEqualTo(deserialized?.userId)
+        assertThat(omhDTO.extUserId).isEqualTo(deserialized?.extUserId)
         assertThat(omhDTO.stepCount2).isEqualTo(deserialized?.stepCount2)
     }
 
@@ -36,7 +36,7 @@ class OmhDTOSerializerTest {
                 .build()
 
         return OmhDTO(
-                userId = userId,
+                extUserId = userId,
                 stepCount2 = steCount2
         )
     }

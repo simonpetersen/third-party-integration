@@ -1,8 +1,5 @@
-package dtu.openhealth.integration.fitbit.mapping
+package dtu.openhealth.integration.fitbit.data
 
-import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
-import dtu.openhealth.integration.fitbit.data.FitbitActivity
-import dtu.openhealth.integration.fitbit.data.FitbitActivitySummary
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -14,12 +11,21 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 
 class FitbitActivityMappingTest {
+    private val activityDate = LocalDate.of(2020,6,27)
+    private val activityDateString = "2020-06-27"
+    private val fitbitUserId = "hjdlafhska"
+    private val durationUnitValue = DurationUnitValue(DurationUnit.DAY,1)
+    private val expectedStartDateTime = activityDate.atStartOfDay().atOffset(ZoneOffset.UTC)
 
     @Test
     fun testFitbitActivitySummaryMapping_NoActivity() {
         val activitySummary = prepareActivitySummary()
         val fitbitSummary = FitbitActivitiesSummary(emptyList(), summary = activitySummary)
-        val omhDTO = fitbitSummary.mapToOMH()
+        val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId),
+                Pair(FitbitConstants.DateParameterTag, activityDateString))
+        val omhDTO = fitbitSummary.mapToOMH(parameters)
+        assertThat(omhDTO.extUserId).isEqualTo(fitbitUserId)
+        assertThat(omhDTO.date).isEqualTo(activityDate)
 
         validateHeartRate(omhDTO, activitySummary)
         validateCalories(omhDTO, activitySummary)
@@ -32,7 +38,11 @@ class FitbitActivityMappingTest {
         val activity = prepareActivity()
 
         val fitbitSummary = FitbitActivitiesSummary(listOf(activity), summary = activitySummary)
-        val omhDTO = fitbitSummary.mapToOMH()
+        val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId),
+                Pair(FitbitConstants.DateParameterTag, activityDateString))
+        val omhDTO = fitbitSummary.mapToOMH(parameters)
+        assertThat(omhDTO.extUserId).isEqualTo(fitbitUserId)
+        assertThat(omhDTO.date).isEqualTo(activityDate)
 
         validateHeartRate(omhDTO, activitySummary)
         validateCalories(omhDTO, activitySummary)
@@ -59,15 +69,15 @@ class FitbitActivityMappingTest {
         val stepCount = omhDTO.stepCount2
         assertThat(stepCount).isNotNull
         assertThat(stepCount?.stepCount?.longValueExact()).isEqualTo(summary.steps)
+        assertThat(stepCount?.effectiveTimeFrame?.timeInterval?.startDateTime).isEqualTo(expectedStartDateTime)
+        assertThat(stepCount?.effectiveTimeFrame?.timeInterval?.duration).isEqualTo(durationUnitValue)
     }
 
     private fun validateCalories(omhDTO: OmhDTO, summary: FitbitActivitySummary) {
-        val caloriesList = omhDTO.caloriesBurned2
-        val expectedElements = 1
-        assertThat(caloriesList?.size).isEqualTo(expectedElements)
-
-        val caloriesBurned = caloriesList?.get(0)
+        val caloriesBurned = omhDTO.caloriesBurned2
         assertThat(caloriesBurned?.kcalBurned?.value?.longValueExact()).isEqualTo(summary.caloriesOut)
+        assertThat(caloriesBurned?.effectiveTimeFrame?.timeInterval?.startDateTime).isEqualTo(expectedStartDateTime)
+        assertThat(caloriesBurned?.effectiveTimeFrame?.timeInterval?.duration).isEqualTo(durationUnitValue)
     }
 
     private fun validateActivity(omhDTO: OmhDTO, activity: FitbitActivity) {
@@ -89,7 +99,7 @@ class FitbitActivityMappingTest {
         assertThat(physicalActivity.activityName).isEqualTo(activity.name)
         assertThat(physicalActivity.caloriesBurned.value.longValueExact()).isEqualTo(activity.calories)
 
-        val startDateTime = LocalDateTime.of(2020,3,24,8,10).atOffset(ZoneOffset.UTC)
+        val startDateTime = LocalDateTime.of(activityDate,LocalTime.of(8,10)).atOffset(ZoneOffset.UTC)
         assertThat(physicalActivity.effectiveTimeFrame.timeInterval.startDateTime).isEqualTo(startDateTime)
         assertThat(physicalActivity.effectiveTimeFrame.timeInterval.duration.value.longValueExact()).isEqualTo(activity.duration)
         assertThat(physicalActivity.effectiveTimeFrame.timeInterval.duration.typedUnit).isEqualTo(DurationUnit.MILLISECOND)
@@ -119,7 +129,7 @@ class FitbitActivityMappingTest {
                 description = "Running",
                 hasStartTime = true,
                 duration = 1200000,
-                startDate = LocalDate.of(2020,3,24),
+                startDate = activityDate,
                 startTime = LocalTime.of(8,10,0),
                 steps = 3876
         )
@@ -134,7 +144,7 @@ class FitbitActivityMappingTest {
                 hasStartTime = true,
                 duration = 1200000,
                 distance = 4.1,
-                startDate = LocalDate.of(2020,3,24),
+                startDate = activityDate,
                 startTime = LocalTime.of(8,10,0),
                 steps = 3876
         )

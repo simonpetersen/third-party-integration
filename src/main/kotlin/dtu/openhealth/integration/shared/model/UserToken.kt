@@ -2,7 +2,7 @@ package dtu.openhealth.integration.shared.model
 
 import java.time.LocalDateTime
 
-data class User(
+data class UserToken(
         val userId: String,
         val extUserId: String,
         val token: String,

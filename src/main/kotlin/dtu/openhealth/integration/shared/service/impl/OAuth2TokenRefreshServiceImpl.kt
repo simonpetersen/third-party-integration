@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.shared.service.impl
 
-import dtu.openhealth.integration.shared.model.User
+import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.TokenRefreshService
 import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
@@ -18,10 +18,10 @@ class OAuth2TokenRefreshServiceImpl(private val webClient: WebClient,
                                     private val parameters: OAuth2RefreshParameters,
                                     private val userDataService: UserDataService) : TokenRefreshService {
 
-    override suspend fun refreshToken(user: User): User {
+    override suspend fun refreshToken(userToken: UserToken): UserToken {
         val form = MultiMap.caseInsensitiveMultiMap()
         form.set("grant_type", "refresh_token")
-        form.set("refresh_token", user.refreshToken)
+        form.set("refresh_token", userToken.refreshToken)
 
         val promise = Promise.promise<HttpResponse<JsonObject>>()
         webClient.post(parameters.port, parameters.host, parameters.refreshPath)
@@ -40,10 +40,10 @@ class OAuth2TokenRefreshServiceImpl(private val webClient: WebClient,
                 }
 
         val response = promise.future().await()
-        return saveRefreshedToken(response.body(), user.userId)
+        return saveRefreshedToken(response.body(), userToken.userId)
     }
 
-    private suspend fun saveRefreshedToken(jsonBody: JsonObject, userId: String): User {
+    private suspend fun saveRefreshedToken(jsonBody: JsonObject, userId: String): UserToken {
         val accessToken = jsonBody.getString("access_token")
         val refreshToken = jsonBody.getString("refresh_token")
         val expiresIn = jsonBody.getLong("expires_in")
@@ -51,7 +51,7 @@ class OAuth2TokenRefreshServiceImpl(private val webClient: WebClient,
 
         val expireDateTime = LocalDateTime.now().plusSeconds(expiresIn)
 
-        val updatedUser = User(userId, extUserId, accessToken, refreshToken, expireDateTime)
+        val updatedUser = UserToken(userId, extUserId, accessToken, refreshToken, expireDateTime)
         userDataService.updateTokens(updatedUser)
         return updatedUser
     }

@@ -7,10 +7,13 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import dtu.openhealth.integration.shared.dto.OmhDTO
+import io.vertx.core.logging.LoggerFactory
 import org.apache.kafka.common.serialization.Deserializer
 import java.time.OffsetDateTime
 
 class OmhDTODeserializer: Deserializer<Any?> {
+    private val logger = LoggerFactory.getLogger(OmhDTODeserializer::class.java)
+
     override fun deserialize(s: String, bytes: ByteArray): OmhDTO? {
         val mapper = ObjectMapper()
         val module = SimpleModule()
@@ -22,7 +25,7 @@ class OmhDTODeserializer: Deserializer<Any?> {
         try {
             omhDTO = mapper.readValue(bytes, OmhDTO::class.java)
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error(e)
         }
         return omhDTO
     }
