@@ -1,8 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.2.5.RELEASE"
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.61"
     kotlin("plugin.spring") version "1.3.61"
     kotlin("plugin.serialization") version "1.3.61"
@@ -18,16 +16,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
     implementation("org.openmhealth.schema:omh-schema-sdk:1.2.1")
-    implementation("org.postgresql:postgresql")
-    implementation("com.h2database:h2:1.3.148")
-    implementation("com.google.guava:guava:23.0")
     implementation("com.github.scribejava:scribejava-core:6.9.0")
     implementation("com.github.scribejava:scribejava-httpclient-ahc:6.9.0")
     implementation("io.vertx:vertx-core:3.8.5")
@@ -35,6 +28,7 @@ dependencies {
     implementation("io.vertx:vertx-web:3.8.5")
     implementation("io.vertx:vertx-web-client:3.8.5")
     implementation("io.vertx:vertx-rx-java2:3.8.5")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.4")
     implementation("io.vertx:vertx-kafka-client:3.8.5") {
         exclude("org.slf4j")
         exclude("log4j")
@@ -44,11 +38,8 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:3.9.0")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("com.github.maricn:logback-slack-appender:1.4.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
-    testImplementation("io.projectreactor:reactor-test")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+    testImplementation("org.assertj:assertj-core:3.11.1")
     testImplementation("io.vertx:vertx-junit5:3.8.5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.5")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
