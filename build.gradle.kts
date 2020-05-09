@@ -18,7 +18,6 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0")
     implementation("com.google.guava:guava:23.0")
     implementation("org.openmhealth.schema:omh-schema-sdk:1.2.1")
@@ -59,3 +58,18 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<AbstractArchiveTask> {setProperty("archiveFileName", "integration.jar")}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes(
+                "Main-Class" to "dtu.openhealth.integration.IntegrationApplicationKt"
+        )
+    }
+
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}
