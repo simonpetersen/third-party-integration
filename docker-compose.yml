@@ -8,8 +8,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - 8184:8184
-      - 8180:8180
+      - 443
     networks:
       - confluentkafka_shared-network
 

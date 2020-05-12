@@ -23,6 +23,9 @@ import dtu.openhealth.integration.shared.web.auth.OAuth1Router
 import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
+import io.vertx.core.http.HttpServerOptions
+import io.vertx.core.logging.LoggerFactory
+import io.vertx.core.net.PemKeyCertOptions
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
@@ -30,10 +33,12 @@ import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
 import io.vertx.reactivex.ext.web.client.WebClient
+import java.util.logging.Logger
 
 class WebServerVerticle(private val userDataService: UserDataService) : AbstractVerticle() {
 
     private val configuration = PropertiesLoader.loadProperties()
+    private val logger = LoggerFactory.getLogger(WebServerVerticle::class.java)
 
     override fun start() {
         val kafkaProducerService = KafkaProducerServiceImpl(vertx)
@@ -45,7 +50,23 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
         mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
 
         val port = configuration.getProperty("webserver.port").toInt()
-        vertx.createHttpServer().requestHandler(mainRouter).listen(port)
+
+        val httpServerOptions = HttpServerOptions()
+                .setPort(port)
+                .setSsl(true)
+                .setPemKeyCertOptions(PemKeyCertOptions()
+                        .addKeyPath(configuration.getProperty("ssl.certificate.key.file"))
+                        .addCertPath(configuration.getProperty("ssl.certificate.chain.file")))
+
+        val server = vertx.createHttpServer(httpServerOptions)
+                .requestHandler(mainRouter)
+                .listen { ar ->
+                    if (ar.succeeded()) {
+                        logger.info("Web server verticle successfuly started on port: ${ar.result().actualPort()}")
+                    } else {
+                        logger.error(ar.cause())
+                    }
+                }
 
     }
 

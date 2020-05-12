@@ -2,7 +2,9 @@
 # Copy this file to this folder as "application.properties" for development
 
 # Web
-webserver.port = 8443
+webserver.port=8443
+ssl.certificate.key.file=path/
+ssl.certificate.chain.file=path/
 
 # Postgres
 postgres.database=name_of_db
@@ -12,7 +14,6 @@ postgres.user=postgres_user
 postgres.password=postgres_password
 
 # Fitbit
-fitbit.verticle.port=8180
 fitbit.oauth2.redirect.uri=http://localhost:8180/login
 fitbit.oauth2.return.uri=http://localhost:8180/success
 fitbit.oauth2.scope=activity nutrition heartrate profile settings sleep weight
@@ -21,7 +22,6 @@ fitbit.client.secret=jdflksajdfk
 fitbit.verify.code=fljdslkfas
 
 # Garmin
-garmin.verticle.port=8181
 garmin.consumer.key=123
 garmin.consumer.secret=123
 garmin.callback.url=http://localhost:8082/callback
