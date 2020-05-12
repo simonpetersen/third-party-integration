@@ -7,7 +7,6 @@ import io.vertx.kotlin.pgclient.pgConnectOptionsOf
 import io.vertx.kotlin.sqlclient.poolOptionsOf
 import io.vertx.pgclient.PgPool
 import io.vertx.core.Vertx
-import io.vertx.core.json.JsonArray
 import io.vertx.sqlclient.Row
 import io.vertx.sqlclient.RowSet
 

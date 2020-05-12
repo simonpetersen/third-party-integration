@@ -2,17 +2,20 @@
 # Copy this file to this folder as "application.properties" for development
 
 # Postgres
-postgres.database="name_of_db"
-postgres.host="host_of_db"
-postgres.port=1234
-postgres.user="postgres_user"
-postgres.password="postgres_password"
+postgres.database=integration-db
+postgres.host=localhost
+postgres.port=5432
+postgres.user=postgres
+postgres.password=carp_integration
 
 # Fitbit
 fitbit.verticle.port=8180
-fitbit.oauth2.redirect.uri="http://localhost:8180/login"
-fitbit.client.id="abc"
-fitbit.client.secret="abc"
+fitbit.oauth2.redirect.uri=http://localhost:8180/login
+fitbit.oauth2.return.uri=http://localhost:8180/success
+fitbit.oauth2.scope=activity nutrition heartrate profile settings sleep weight
+fitbit.client.id=22B9BW
+fitbit.client.secret=51cfa2f4874bafc7eda72aaca3a89011
+fitbit.verify.code=fljdslkfas
 
 # Garmin
 garmin.verticle.port=8181

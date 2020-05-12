@@ -11,8 +11,9 @@ import java.time.*
 data class FitbitSleepLogSummary(
         val sleep : List<FitbitSleepLog>,
         val summary : FitbitSleepSummary
-) : FitbitData(){
-    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
+): FitbitData() {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO
+    {
         val fitbitUserId = parameters[FitbitConstants.UserParameterTag]
         val dateParameter = parameters[FitbitConstants.DateParameterTag]
         val date = if (dateParameter != null) LocalDate.parse(dateParameter) else LocalDate.now()
@@ -25,32 +26,34 @@ data class FitbitSleepLogSummary(
 
 @Serializable
 data class FitbitSleepLog(
-        val awakeCount: Long,
-        val awakeDuration: Long,
-        val awakeningsCount: Int,
-        val infoCode: Int,
-        @Serializable(with = LocalDateSerializer::class) val dateOfSleep: LocalDate,
+        // Sleep details
         val duration: Long,
         val efficiency: Long,
-        @Serializable(with = LocalDateTimeSerializer::class) val endTime: LocalDateTime,
         val isMainSleep: Boolean,
-        val logId: Long,
         val levels: FitbitSleepLevels,
+        // Sleep minutes
         val minutesAfterWakeup: Long,
         val minutesAsleep: Long,
         val minutesAwake: Long,
         val minutesToFallAsleep: Long,
-        @Serializable(with = LocalDateTimeSerializer::class) val startTime: LocalDateTime,
         val timeInBed: Long,
+        // DateTime
+        @Serializable(with = LocalDateTimeSerializer::class) val startTime: LocalDateTime,
+        @Serializable(with = LocalDateTimeSerializer::class) val endTime: LocalDateTime,
+        @Serializable(with = LocalDateSerializer::class) val dateOfSleep: LocalDate,
+        // Id and type
+        val logId: Long,
+        val infoCode: Int,
         val type: String
 ) {
-    fun mapToOMH(): SleepEpisode {
+    fun mapToOMH(): SleepEpisode
+    {
         val timeInterval = TimeInterval.ofStartDateTimeAndEndDateTime(
                 startTime.atOffset(ZoneOffset.UTC), endTime.atOffset(ZoneOffset.UTC))
         val effectiveTimeFrame = TimeFrame(timeInterval)
         return SleepEpisode.Builder(effectiveTimeFrame)
                 .setMainSleep(isMainSleep)
-                .setNumberOfAwakenings(awakeningsCount)
+                .setNumberOfAwakenings(levels.summary?.wake?.count)
                 .setLatencyToSleepOnset(DurationUnitValue(DurationUnit.MINUTE, minutesToFallAsleep))
                 .setTotalSleepTime(DurationUnitValue(DurationUnit.MINUTE, minutesAsleep))
                 .setSleepMaintenanceEfficiencyPercentage(TypedUnitValue(PercentUnit.PERCENT, efficiency))
@@ -102,7 +105,8 @@ data class FitbitSleepSummary(
         val totalSleepRecords: Int,
         val totalTimeInBed: Int
 ) {
-    fun mapToOMH(sleepDate: LocalDate): SleepDuration2 {
+    fun mapToOMH(sleepDate: LocalDate): SleepDuration2
+    {
         val duration = DurationUnitValue(DurationUnit.MINUTE, totalMinutesAsleep)
         val timeIntervalDuration = DurationUnitValue(DurationUnit.DAY, 1)
         val startDateTime = sleepDate.atStartOfDay().atOffset(ZoneOffset.UTC)

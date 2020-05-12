@@ -16,49 +16,56 @@ data class FitbitProfile(val user: FitbitProfileInfo) : FitbitData() {
 
 @Serializable
 data class FitbitProfileInfo (
+        // Personal info
         val age: Long,
-        val ambassador: Boolean,
-        val autoStrideEnabled: Boolean,
+        val dateOfBirth: String? = null,
+        val displayName: String? = null,
+        val displayNameSetting: String? = null,
+        val firstName: String? = null,
+        val lastName: String? = null,
+        val fullName: String? = null,
+        val gender: String,
+        // Height
+        val height: Long,
+        val heightUnit: String,
+        // Weight
+        val weight: Long,
+        val weightUnit: String,
+        // Stride length
+        val strideLengthRunning: Double,
+        val strideLengthRunningType: String,
+        val strideLengthWalking: Double,
+        val strideLengthWalkingType: String,
+        // Avatar
         val avatar: String? = null,
         val avatar150: String? = null,
         val avatar640: String? = null,
+        // Steps
         val averageDailySteps: Long,
-        val clockTimeDisplayFormat: String,
-        val corporate: Boolean,
-        val corporateAdmin: Boolean,
-        val dateOfBirth: String,
-        val displayName: String,
-        val displayNameSetting: String,
+        // Settings
+        val ambassador: Boolean,
+        val autoStrideEnabled: Boolean,
+        val clockTimeDisplayFormat: String? = null,
+        val corporate: Boolean = false,
+        val corporateAdmin: Boolean = false,
         val distanceUnit: String,
         val encodedId: String,
-        val familyGuidanceEnabled: Boolean,
-        val features: FitbitProfileFeatures,
-        val firstName: String,
+        val familyGuidanceEnabled: Boolean = false,
+        val features: FitbitProfileFeatures? = null,
         val foodsLocale: String,
-        val fullName: String,
-        val gender: String,
         val glucoseUnit: String,
-        val height: Long,
-        val heightUnit: String,
-        val isChild: Boolean,
-        val isCoach: Boolean,
-        val lastName: String,
+        val isChild: Boolean = false,
+        val isCoach: Boolean = false,
         val locale: String,
         val memberSince: String,
         val mfaEnabled: Boolean,
         val offsetFromUTCMillis: Long,
         val startDayOfWeek: String,
-        val strideLengthRunning: Double,
-        val strideLengthRunningType: String,
-        val strideLengthWalking: Double,
-        val strideLengthWalkingType: String,
         val swimUnit: String,
         val timezone: String,
         val topBadges: List<FitbitProfileTopBadge>,
         val waterUnit: String,
-        val waterUnitName: String,
-        val weight: Long,
-        val weightUnit: String
+        val waterUnitName: String
 ) {
     fun mapToOMH(fitbitUserId: String?): OmhDTO {
         val date = LocalDate.now()

@@ -13,8 +13,9 @@ import java.time.LocalDate
 @Serializable
 data class FitbitHeartRateSummary(
         @SerialName("activities-heart") val heartRates: List<FitbitActivitiesHeart>
-) : FitbitData() {
-    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
+): FitbitData() {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO
+    {
         val fitbitUserId = parameters[FitbitConstants.UserParameterTag]
         return heartRates.map { it.mapToOMH(fitbitUserId) }.first()
     }
@@ -24,8 +25,9 @@ data class FitbitHeartRateSummary(
 data class FitbitActivitiesHeart(
         @Serializable(with = LocalDateSerializer::class) val dateTime: LocalDate,
         val value: FitbitHeartRateValues
-){
-    fun mapToOMH(fitbitUserId: String?): OmhDTO {
+) {
+    fun mapToOMH(fitbitUserId: String?): OmhDTO
+    {
         return OmhDTO(extUserId = fitbitUserId, date = dateTime, heartRate = value.mapToOMH())
     }
 }
@@ -34,9 +36,14 @@ data class FitbitActivitiesHeart(
 data class FitbitHeartRateValues(
         val customHeartRateZones: List<FitbitHeartRateZone>,
         val heartRateZones: List<FitbitHeartRateZone>,
-        val restingHeartRate: Long
-){
-    fun mapToOMH(): HeartRate {
+        val restingHeartRate: Long? = null
+) {
+    fun mapToOMH(): HeartRate?
+    {
+        if (restingHeartRate == null) {
+            return null
+        }
+
         return HeartRate.Builder(TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, restingHeartRate))
                 .setTemporalRelationshipToPhysicalActivity(TemporalRelationshipToPhysicalActivity.AT_REST)
                 .build()

@@ -1,10 +1,8 @@
 package dtu.openhealth.integration.fitbit.data
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
-import dtu.openhealth.integration.shared.service.impl.ThirdPartyNotificationServiceImpl
 import dtu.openhealth.integration.shared.util.serialization.LocalDateSerializer
 import dtu.openhealth.integration.shared.util.serialization.LocalTimeSerializer
-import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.*
 import java.time.*
@@ -14,9 +12,10 @@ data class FitbitActivitiesSummary(
         val activities: List<FitbitActivity>,
         val goals: FitbitActivityGoals? = null,
         val summary: FitbitActivitySummary
-) : FitbitData() {
+): FitbitData() {
 
-    override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
+    override fun mapToOMH(parameters: Map<String,String>): OmhDTO
+    {
         val fitbitUserId = parameters[FitbitConstants.UserParameterTag]
         val dateParameter = parameters[FitbitConstants.DateParameterTag]
         val date = if (dateParameter != null) LocalDate.parse(dateParameter) else LocalDate.now()
@@ -35,22 +34,27 @@ data class FitbitActivitiesSummary(
 
 @Serializable
 data class FitbitActivity(
+        // Activity
+        val steps: Long,
+        val calories: Long,
+        val distance: Double? = null,
+        val duration: Long,
+        // Description
+        val name: String,
+        val description: String,
+        // Ids and stuff
+        val isFavorite : Boolean = false,
         val activityId : Long,
         val activityParentId: Long? = null,
         val activityParentName: String? = null,
-        val calories: Long,
-        val description: String,
-        val distance: Double? = null,
-        val duration: Long,
-        val hasStartTime: Boolean = false,
-        val isFavorite : Boolean = false,
         val logId: Long? = null,
-        val name: String,
+        // DateTime
+        val hasStartTime: Boolean = false,
         @Serializable(with = LocalDateSerializer::class) val startDate: LocalDate,
-        @Serializable(with = LocalTimeSerializer::class) val startTime: LocalTime? = null,
-        val steps: Long
+        @Serializable(with = LocalTimeSerializer::class) val startTime: LocalTime? = null
 ) {
-    fun mapToOMH(): PhysicalActivity {
+    fun mapToOMH(): PhysicalActivity
+    {
         val startDateTime = if (hasStartTime) LocalDateTime.of(startDate, startTime) else startDate.atStartOfDay()
         val timeInterval = TimeInterval.ofStartDateTimeAndDuration(
                 startDateTime.atOffset(ZoneOffset.UTC), DurationUnitValue(DurationUnit.MILLISECOND, duration))
@@ -78,22 +82,27 @@ data class FitbitActivityGoals(
 @Serializable
 data class FitbitActivitySummary(
         val activeScore: Int? = null,
+        // Calories
         val activityCalories: Long,
         val caloriesBMR: Long,
         val caloriesOut: Long,
-        val fairlyActiveMinutes: Long,
-        val lightlyActiveMinutes: Long,
         val marginalCalories: Long,
-        val sedentaryMinutes: Long,
-        val steps: Long,
+        // Active minutes
         val veryActiveMinutes: Long,
+        val fairlyActiveMinutes: Long,
+        val sedentaryMinutes: Long,
+        val lightlyActiveMinutes: Long,
+        // Steps
+        val steps: Long,
         val floors: Long? = null,
         val elevation: Double? = null,
         val distances: List<FitbitActivityDistance>,
+        // Heart rate
         val heartRateZones: List<FitbitHeartRateZone>? = null,
         val restingHeartRate: Long? = null
 ) {
-    fun mapToOMH(date: LocalDate) : OmhDTO {
+    fun mapToOMH(date: LocalDate) : OmhDTO
+    {
         val startDateTime = date.atStartOfDay().atOffset(ZoneOffset.UTC)
         val timeInterval = TimeInterval
                 .ofStartDateTimeAndDuration(startDateTime, DurationUnitValue(DurationUnit.DAY,1))
