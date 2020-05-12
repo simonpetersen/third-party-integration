@@ -55,10 +55,10 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
                 .setPort(port)
                 .setSsl(true)
                 .setPemKeyCertOptions(PemKeyCertOptions()
-                        .addKeyPath(configuration.getProperty("ssl.certificate.key.file"))
-                        .addCertPath(configuration.getProperty("ssl.certificate.chain.file")))
+                        .addCertPath(configuration.getProperty("ssl.certificate.chain.file"))
+                        .addKeyPath(configuration.getProperty("ssl.certificate.key.file")))
 
-        val server = vertx.createHttpServer(httpServerOptions)
+        vertx.createHttpServer(httpServerOptions)
                 .requestHandler(mainRouter)
                 .listen { ar ->
                     if (ar.succeeded()) {
