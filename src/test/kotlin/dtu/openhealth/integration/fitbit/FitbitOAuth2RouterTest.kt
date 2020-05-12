@@ -74,7 +74,7 @@ class FitbitOAuth2RouterTest {
     private fun oauth2RouterCallback(vertx: Vertx, tc: VertxTestContext, userDataService: UserDataService) {
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
-        client.get(oauthPort, "localhost", "/login?code=$authCode&state=$userId")
+        client.get(oauthPort, "localhost", "/callback?code=$authCode&state=$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
                         tc.verify {

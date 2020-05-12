@@ -13,6 +13,7 @@ class FitbitSleepMappingTest {
     private val sleepDate = LocalDate.of(2020,6,27)
     private val sleepDateString = "2020-06-27"
     private val fitbitUserId = "hjdlafhska"
+    private val awakeCount = 32
 
     @Test
     fun testFitbitSleepMapping() {
@@ -43,7 +44,7 @@ class FitbitSleepMappingTest {
         assertThat(episodeTimeFrame?.timeInterval?.startDateTime).isEqualTo(sleepLog.startTime.atOffset(ZoneOffset.UTC))
         assertThat(episodeTimeFrame?.timeInterval?.endDateTime).isEqualTo(sleepLog.endTime.atOffset(ZoneOffset.UTC))
         assertThat(sleepEpisode?.mainSleep).isEqualTo(sleepLog.isMainSleep)
-        assertThat(sleepEpisode?.numberOfAwakenings).isEqualTo(sleepLog.awakeningsCount)
+        assertThat(sleepEpisode?.numberOfAwakenings).isEqualTo(awakeCount)
         assertThat(sleepEpisode?.latencyToSleepOnset?.value?.longValueExact()).isEqualTo(sleepLog.minutesToFallAsleep)
         assertThat(sleepEpisode?.totalSleepTime?.value?.longValueExact()).isEqualTo(sleepLog.minutesAsleep)
         assertThat(sleepEpisode?.sleepMaintenanceEfficiencyPercentage?.value?.longValueExact()).isEqualTo(sleepLog.efficiency)
@@ -64,16 +65,14 @@ class FitbitSleepMappingTest {
     }
 
     private fun prepareSleepLog() : FitbitSleepLog {
-        return FitbitSleepLog(0,
-                awakeDuration = 0,
-                awakeningsCount = 17,
+        return FitbitSleepLog(
                 dateOfSleep = sleepDate,
                 duration = 30420000,
                 efficiency = 96,
                 endTime = LocalDateTime.of(sleepDate, LocalTime.of(7,13,30)),
                 isMainSleep = true,
                 logId = 26454176508,
-                levels = FitbitSleepLevels(emptyList(), emptyList()),
+                levels = sleepLevels(),
                 minutesAfterWakeup = 2,
                 minutesAsleep = 488,
                 minutesAwake = 19,
@@ -82,6 +81,29 @@ class FitbitSleepMappingTest {
                 timeInBed = 507,
                 type = "stages",
                 infoCode = 0
+        )
+    }
+
+    private fun sleepLevels() : FitbitSleepLevels {
+        return FitbitSleepLevels(emptyList(), emptyList(),
+                summary = FitbitSleepLevelsFullSummary(
+                        deep = FitbitSleepLevelsSummary(
+                                count = 5,
+                                minutes = 61,
+                                thirtyDayAvgMinutes = 58),
+                        light = FitbitSleepLevelsSummary(
+                                count = 9,
+                                minutes = 89,
+                                thirtyDayAvgMinutes = 78),
+                        rem = FitbitSleepLevelsSummary(
+                                count = 7,
+                                minutes = 61,
+                                thirtyDayAvgMinutes = 58),
+                        wake = FitbitSleepLevelsSummary(
+                                count = awakeCount,
+                                minutes = 48,
+                                thirtyDayAvgMinutes = 54)
+                )
         )
     }
 }

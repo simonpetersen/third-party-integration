@@ -14,14 +14,11 @@ class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService
     private val logger = LoggerFactory.getLogger(HttpServiceImpl::class.java)
 
     override fun callApiForUser(endpoints: List<RestEndpoint>, userToken: UserToken, urlParameters: Map<String,String>) : Single<List<ApiResponse>> {
-        val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, userToken) }.toList()
+        val singles = endpoints.map { addUrlParamsAndCallApi(it, urlParameters, userToken) }
 
-        return Single.zip(singles) { combineSingles(it) }
-    }
-
-    private fun combineSingles(values: Array<Any>): List<ApiResponse> {
-        //val json = Json(JsonConfiguration.Stable)
-        return values.filterIsInstance<ApiResponse>()
+        return Single.zip(singles) {
+            it.filterIsInstance<ApiResponse>()
+        }
     }
 
     private fun addUrlParamsAndCallApi(endpoint: RestEndpoint, urlParameters: Map<String, String>, userToken: UserToken): Single<ApiResponse> {

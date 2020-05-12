@@ -79,9 +79,11 @@ class DailyEndpointTest {
         val thirdPartyPushService : ThirdPartyPushService = mock()
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-        vertx.deployVerticle(GarminVerticle(thirdPartyPushService, authRouter), testContext.succeeding {
+
+        val garminRouter = GarminVerticle(vertx, thirdPartyPushService, authRouter)
+        vertx.createHttpServer().requestHandler(garminRouter.getRouter()).listen(port, testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
-            client.post(port, "localhost", "/api/garmin/dailies")
+            client.post(port, "localhost", "/dailies")
                     .putHeader("Content-Type","application/json")
                     .rxSendBuffer(Buffer.buffer(validJsonString))
                     .subscribe(

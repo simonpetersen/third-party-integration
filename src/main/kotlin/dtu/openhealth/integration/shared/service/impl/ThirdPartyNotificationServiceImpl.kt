@@ -65,13 +65,17 @@ class ThirdPartyNotificationServiceImpl(
 
             apiResponseList.subscribe(
                     { result ->
-                        result.mapNotNull{
+                        result.mapNotNull {
                             convertJsonToThirdPartyData(it.responseJson, it.serializer, json)
                                     ?.mapToOMH(it.parameters)
                         }
-                                .forEach { kafkaProducerService.sendOmhData(it) }
+                                .forEach {
+                                    kafkaProducerService.sendOmhData(it)
+                                }
                     },
-                    { error -> logger.error(error) }
+                    { error ->
+                        val errorMsg = "Error when retrieving data ($dataType) for ${userToken.userId}: $endpointList"
+                        logger.error(errorMsg, error) }
             )
         }
         else {
@@ -83,6 +87,7 @@ class ThirdPartyNotificationServiceImpl(
         return try {
             json.parse(serializer, responseJson)
         } catch (e: Exception) {
+            logger.error(responseJson)
             logger.error(e)
             null
         }

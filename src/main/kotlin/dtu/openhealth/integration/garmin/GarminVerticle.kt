@@ -3,36 +3,43 @@ package dtu.openhealth.integration.garmin
 import dtu.openhealth.integration.garmin.data.*
 import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.service.ThirdPartyPushService
-import dtu.openhealth.integration.shared.verticle.BasePushEndpoint
+import dtu.openhealth.integration.shared.verticle.BasePushEndpointRouter
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import io.vertx.core.json.JsonArray
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 
-class GarminVerticle(pushService: ThirdPartyPushService,
-                     private val authRouter: AuthorizationRouter) : BasePushEndpoint(pushService) {
+class GarminVerticle(private val vertx: Vertx,
+                     pushService: ThirdPartyPushService,
+                     private val authRouter: AuthorizationRouter) : BasePushEndpointRouter(pushService) {
 
     private val logger = LoggerFactory.getLogger(GarminVerticle::class.java)
     private val configuration =  PropertiesLoader.loadProperties()
 
-    override fun start() {
+    fun getRouter() : Router {
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
-        router.post("/api/garmin/activities").handler { handleActivitySummary(it) }
-        router.post("/api/garmin/body").handler { handleBodyConsumptionSummary(it) }
-        router.post("/api/garmin/dailies").handler { handleDailySummary(it) }
-        router.post("/api/garmin/epochs").handler { handleEpochSummary(it) }
-        router.post("/api/garmin/respirations").handler { handleRespirationSummary(it) }
-        router.post("/api/garmin/sleep").handler { handleSleepSummary(it) }
-        router.post("/api/garmin/thirdparty").handler { handleThirdPartySummary(it) }
-        router.post("/api/garmin/pulse").handler { handlePulseSummary(it) }
+        router.post("/activities").handler { handleActivitySummary(it) }
+        router.post("/body").handler { handleBodyConsumptionSummary(it) }
+        router.post("/dailies").handler { handleDailySummary(it) }
+        router.post("/epochs").handler { handleEpochSummary(it) }
+        router.post("/respirations").handler { handleRespirationSummary(it) }
+        router.post("/sleep").handler { handleSleepSummary(it) }
+        router.post("/thirdparty").handler { handleThirdPartySummary(it) }
+        router.post("/pulse").handler { handlePulseSummary(it) }
 
         router.mountSubRouter("/", authRouter.getRouter())
 
+        /*
         vertx.createHttpServer().requestHandler(router).listen(
                 configuration.getProperty("garmin.verticle.port").toInt())
+
+         */
+
+        return router
     }
 
     private fun handleActivitySummary(routingContext : RoutingContext) {

@@ -1,6 +1,9 @@
 # This file is a "template" of which configurations need to be defined for your application
 # Copy this file to this folder as "application.properties" for development
 
+# Web
+webserver.port = 8443
+
 # Postgres
 postgres.database=name_of_db
 postgres.host=host_of_db

@@ -12,7 +12,6 @@ import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.ext.web.Router
-import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -24,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class FitbitVerticleTest {
 
     private val port = 8181
-    private val validJsonString ="""
+    private val notificationJson ="""
     [{
 	    "collectionType": "activities",
 	    "date": "2020-03-05",
@@ -34,31 +33,43 @@ class FitbitVerticleTest {
     }]"""
 
     @Test
-    fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
+    fun testNotificationEndpoint(vertx: Vertx, testContext: VertxTestContext) {
         val notificationService : ThirdPartyNotificationService = mock()
+        val authRouter : AuthorizationRouter = mock()
+        whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
+        val fitbitRouter = FitbitVerticle(vertx, notificationService, authRouter)
+
+        vertx.createHttpServer().requestHandler(fitbitRouter.getRouter()).listen(port, testContext.succeeding {
+            testFunction(vertx, testContext, notificationService)
+        })
+    }
+
+    private fun testFunction(vertx: Vertx, testContext: VertxTestContext, notificationService: ThirdPartyNotificationService) {
+        val expectedNotificationList = getNotificationList()
+        val client: WebClient = WebClient.create(vertx)
+        client.post(port, "localhost", "/notification")
+                .putHeader("Content-Type","application/json")
+                .rxSendBuffer(Buffer.buffer(notificationJson))
+                .subscribe(
+                        { response ->
+                            testContext.verify {
+                                GlobalScope.launch {
+                                    assertThat(response.statusCode()).isEqualTo(204)
+                                    verify(notificationService).getUpdatedData(expectedNotificationList)
+                                    testContext.completeNow()
+                                }
+                            }
+                        },
+                        { error -> testContext.failNow(error) }
+                )
+    }
+
+    private fun getNotificationList() : List<ThirdPartyNotification> {
         val parameterMap = mapOf(Pair("collectionType", "activities"),
                 Pair("date", "2020-03-05"),
                 Pair("ownerId", "User123"),
                 Pair("ownerType", "user"),
                 Pair("subscriptionId", "2345"))
-        val expectedNotificationList = listOf(ThirdPartyNotification(parameterMap, "collectionType", "ownerId"))
-        val authRouter : AuthorizationRouter = mock()
-        whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-
-        vertx.deployVerticle(FitbitVerticle(notificationService, authRouter), testContext.succeeding {
-            val client: WebClient = WebClient.create(vertx)
-            client.post(port, "localhost", "/fitbit/notification")
-                    .putHeader("Content-Type","application/json")
-                    .rxSendBuffer(Buffer.buffer(validJsonString))
-                    .subscribe { response ->
-                        testContext.verify {
-                            GlobalScope.launch {
-                                verify(notificationService).getUpdatedData(expectedNotificationList)
-                                assertThat(response.statusCode()).isEqualTo(204)
-                                testContext.completeNow()
-                            }
-                        }
-                    }
-        })
+        return listOf(ThirdPartyNotification(parameterMap, "collectionType", "ownerId"))
     }
 }

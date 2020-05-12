@@ -23,11 +23,11 @@ class OmhServiceImpl(private val userDataService: UserDataService,
         }
 
         userDataService.getUserIdByExtId(dto.extUserId) {
-            userId -> callbackWithUserId(userId, dto.date, dto)
+            userId -> userIdCallback(userId, dto.date, dto)
         }
     }
 
-    fun callbackWithUserId(userId: String, date: LocalDate, dto: OmhDTO) {
+    private fun userIdCallback(userId: String, date: LocalDate, dto: OmhDTO) {
         omhDataService.getOmhDataOnDate(userId, date) {
             oldData -> checkAndSaveNewestData(oldData,dto,userId,date)
         }

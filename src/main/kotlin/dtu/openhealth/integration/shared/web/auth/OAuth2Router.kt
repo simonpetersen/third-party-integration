@@ -25,7 +25,7 @@ abstract class OAuth2Router(private val vertx: Vertx, private val oauth2: OAuth2
     override fun getRouter() : Router {
         val router = Router.router(vertx)
         router.get("/auth/:userId").handler{ handleAuthRedirect(it) }
-        router.get("/login").handler { handleAuthCallback(it) }
+        router.get("/callback").handler { handleAuthCallback(it) }
         router.get("/success").handler { handleSuccessfulAuthentication(it) }
 
         return router

@@ -1,6 +1,5 @@
 package dtu.openhealth.integration.shared.service.impl
 
-import dtu.openhealth.integration.shared.model.OmhData
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.BaseDataService
 import dtu.openhealth.integration.shared.service.UserDataService
@@ -65,12 +64,15 @@ class UserDataServiceImpl(vertx: Vertx) : BaseDataService(vertx), UserDataServic
             if (ar.succeeded()) {
                 getUserIdAndCallback(ar.result(), callback)
             }
+            else {
+                logger.error(ar.cause())
+            }
         }
     }
 
     private fun getUserIdAndCallback(result: RowSet<Row>, callback: (String) -> Unit) {
         if (!result.iterator().hasNext()) {
-            logger.error("No userToken found")
+            logger.error("No UserToken found")
         }
         else {
             val row = result.iterator().next()
