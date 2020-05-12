@@ -1,27 +1,8 @@
 package dtu.openhealth.integration.shared.verticle
 
-import dtu.openhealth.integration.fitbit.FitbitOAuth2Router
-import dtu.openhealth.integration.fitbit.FitbitVerticle
-import dtu.openhealth.integration.fitbit.data.*
-import dtu.openhealth.integration.garmin.GarminVerticle
-import dtu.openhealth.integration.kafka.producer.KafkaProducerService
-import dtu.openhealth.integration.kafka.producer.impl.KafkaProducerServiceImpl
-import dtu.openhealth.integration.shared.model.RestEndpoint
-import dtu.openhealth.integration.shared.service.UserDataService
 import dtu.openhealth.integration.shared.service.impl.*
 import dtu.openhealth.integration.shared.util.PropertiesLoader
-import dtu.openhealth.integration.shared.web.FitbitRestUrl
-import dtu.openhealth.integration.shared.web.HttpOAuth2ConnectorClient
-import dtu.openhealth.integration.shared.web.auth.GarminApi
-import dtu.openhealth.integration.shared.web.auth.OAuth1Router
-import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
-import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
-import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
-import io.vertx.ext.auth.oauth2.OAuth2FlowType
-import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
 import io.vertx.reactivex.core.AbstractVerticle
-import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
-import io.vertx.reactivex.ext.web.client.WebClient
 
 class  MainVerticle : AbstractVerticle() {
 

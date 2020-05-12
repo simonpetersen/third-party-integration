@@ -1,12 +1,12 @@
 package dtu.openhealth.integration.shared.verticle
 
 import dtu.openhealth.integration.fitbit.FitbitOAuth2Router
-import dtu.openhealth.integration.fitbit.FitbitVerticle
+import dtu.openhealth.integration.fitbit.FitbitRouter
 import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
 import dtu.openhealth.integration.fitbit.data.FitbitHeartRateSummary
 import dtu.openhealth.integration.fitbit.data.FitbitProfile
 import dtu.openhealth.integration.fitbit.data.FitbitSleepLogSummary
-import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.kafka.producer.KafkaProducerService
 import dtu.openhealth.integration.kafka.producer.impl.KafkaProducerServiceImpl
 import dtu.openhealth.integration.shared.model.RestEndpoint
@@ -33,7 +33,6 @@ import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
 import io.vertx.reactivex.ext.web.client.WebClient
-import java.util.logging.Logger
 
 class WebServerVerticle(private val userDataService: UserDataService) : AbstractVerticle() {
 
@@ -42,8 +41,8 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
 
     override fun start() {
         val kafkaProducerService = KafkaProducerServiceImpl(vertx)
-        val garminRouter = initGarminVerticle(vertx, kafkaProducerService)
-        val fitbitRouter = initFitbitVerticle(vertx, kafkaProducerService)
+        val garminRouter = initGarminRouter(vertx, kafkaProducerService)
+        val fitbitRouter = initFitbitRouter(vertx, kafkaProducerService)
 
         val mainRouter = Router.router(vertx)
         mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
@@ -70,7 +69,7 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
 
     }
 
-    private fun initGarminVerticle(vertx: Vertx, kafkaProducerService: KafkaProducerService): GarminVerticle {
+    private fun initGarminRouter(vertx: Vertx, kafkaProducerService: KafkaProducerService): GarminRouter {
         val consumerKey = configuration.getProperty("garmin.consumer.key")
         val consumerSecret = configuration.getProperty("garmin.consumer.secret")
         val parameters = OAuth1RouterParameters(configuration.getProperty("garmin.callback.url"), "",
@@ -79,10 +78,10 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
 
         val garminDataService = ThirdPartyPushServiceImpl(kafkaProducerService)
 
-        return GarminVerticle(vertx, garminDataService, authRouter)
+        return GarminRouter(vertx, garminDataService, authRouter)
     }
 
-    private fun initFitbitVerticle(vertx: Vertx, kafkaProducerService: KafkaProducerService): FitbitVerticle {
+    private fun initFitbitRouter(vertx: Vertx, kafkaProducerService: KafkaProducerService): FitbitRouter {
         val clientId = configuration.getProperty("fitbit.client.id")
         val clientSecret = configuration.getProperty("fitbit.client.secret")
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx)))
@@ -117,6 +116,6 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
                 configuration.getProperty("fitbit.oauth2.scope"))
         val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userDataService)
 
-        return FitbitVerticle(vertx, notificationService, authRouter)
+        return FitbitRouter(vertx, notificationService, authRouter)
     }
 }

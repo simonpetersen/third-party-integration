@@ -3,7 +3,7 @@ package dtu.openhealth.integration.fitbit.verticle
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import dtu.openhealth.integration.fitbit.FitbitVerticle
+import dtu.openhealth.integration.fitbit.FitbitRouter
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(VertxExtension::class)
-class FitbitVerticleTest {
+class FitbitRouterTest {
 
     private val port = 8181
     private val notificationJson ="""
@@ -37,7 +37,7 @@ class FitbitVerticleTest {
         val notificationService : ThirdPartyNotificationService = mock()
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
-        val fitbitRouter = FitbitVerticle(vertx, notificationService, authRouter)
+        val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter)
 
         vertx.createHttpServer().requestHandler(fitbitRouter.getRouter()).listen(port, testContext.succeeding {
             testFunction(vertx, testContext, notificationService)

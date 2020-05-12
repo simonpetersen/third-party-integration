@@ -12,11 +12,11 @@ import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 
-class GarminVerticle(private val vertx: Vertx,
-                     pushService: ThirdPartyPushService,
-                     private val authRouter: AuthorizationRouter) : BasePushEndpointRouter(pushService) {
+class GarminRouter(private val vertx: Vertx,
+                   pushService: ThirdPartyPushService,
+                   private val authRouter: AuthorizationRouter) : BasePushEndpointRouter(pushService) {
 
-    private val logger = LoggerFactory.getLogger(GarminVerticle::class.java)
+    private val logger = LoggerFactory.getLogger(GarminRouter::class.java)
     private val configuration =  PropertiesLoader.loadProperties()
 
     fun getRouter() : Router {
@@ -32,12 +32,6 @@ class GarminVerticle(private val vertx: Vertx,
         router.post("/pulse").handler { handlePulseSummary(it) }
 
         router.mountSubRouter("/", authRouter.getRouter())
-
-        /*
-        vertx.createHttpServer().requestHandler(router).listen(
-                configuration.getProperty("garmin.verticle.port").toInt())
-
-         */
 
         return router
     }

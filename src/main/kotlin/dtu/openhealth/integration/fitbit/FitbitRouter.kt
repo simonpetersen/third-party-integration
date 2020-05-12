@@ -12,9 +12,9 @@ import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 
 
-class FitbitVerticle(private val vertx: Vertx,
-                     notificationService: ThirdPartyNotificationService,
-                     private val authRouter: AuthorizationRouter)
+class FitbitRouter(private val vertx: Vertx,
+                   notificationService: ThirdPartyNotificationService,
+                   private val authRouter: AuthorizationRouter)
     : BaseNotificationEndpointRouter(vertx, notificationService) {
 
     private val configuration = PropertiesLoader.loadProperties()
@@ -26,12 +26,6 @@ class FitbitVerticle(private val vertx: Vertx,
         router.get("/notification/webhook").handler { handleVerification(it) }
 
         router.mountSubRouter("/", authRouter.getRouter())
-
-        /*
-        vertx.createHttpServer().requestHandler(router).listen(
-                configuration.getProperty("fitbit.verticle.port").toInt())
-
-         */
 
         return router
     }
