@@ -13,14 +13,14 @@ import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 
 
-class FitbitVerticle(
+class FitbitRouter(
         private val vertx: Vertx,
         notificationService: ThirdPartyNotificationService,
         private val authRouter: AuthorizationRouter,
         private val verificationCode: String
 ): BaseNotificationEndpointRouter(vertx, notificationService) {
 
-    private val logger = LoggerFactory.getLogger(FitbitVerticle::class.java)
+    private val logger = LoggerFactory.getLogger(FitbitRouter::class.java)
 
     fun getRouter() : Router
     {

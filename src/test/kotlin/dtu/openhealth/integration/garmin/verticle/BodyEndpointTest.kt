@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.garmin.verticle
 
 import com.nhaarman.mockitokotlin2.*
-import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.BodyCompositionSummaryGarmin
 import dtu.openhealth.integration.shared.service.ThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
@@ -66,7 +66,7 @@ class BodyEndpointTest {
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
-        val garminRouter = GarminVerticle(vertx, thirdPartyPushService, authRouter)
+        val garminRouter = GarminRouter(vertx, thirdPartyPushService, authRouter)
         vertx.createHttpServer().requestHandler(garminRouter.getRouter()).listen(port, testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/body")
@@ -91,7 +91,7 @@ class BodyEndpointTest {
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
-        val garminRouter = GarminVerticle(vertx, thirdPartyPushService, authRouter)
+        val garminRouter = GarminRouter(vertx, thirdPartyPushService, authRouter)
         vertx.createHttpServer().requestHandler(garminRouter.getRouter()).listen(port, testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/body")

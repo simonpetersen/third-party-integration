@@ -1,12 +1,12 @@
 package dtu.openhealth.integration.shared.verticle
 
 import dtu.openhealth.integration.fitbit.FitbitOAuth2Router
-import dtu.openhealth.integration.fitbit.FitbitVerticle
+import dtu.openhealth.integration.fitbit.FitbitRouter
 import dtu.openhealth.integration.fitbit.data.FitbitActivitiesSummary
 import dtu.openhealth.integration.fitbit.data.FitbitHeartRateSummary
 import dtu.openhealth.integration.fitbit.data.FitbitProfile
 import dtu.openhealth.integration.fitbit.data.FitbitSleepLogSummary
-import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.kafka.producer.KafkaProducerService
 import dtu.openhealth.integration.kafka.producer.impl.KafkaProducerServiceImpl
 import dtu.openhealth.integration.shared.model.RestEndpoint
@@ -23,6 +23,9 @@ import dtu.openhealth.integration.shared.web.auth.OAuth1Router
 import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
+import io.vertx.core.http.HttpServerOptions
+import io.vertx.core.logging.LoggerFactory
+import io.vertx.core.net.PemKeyCertOptions
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
@@ -34,22 +37,39 @@ import io.vertx.reactivex.ext.web.client.WebClient
 class WebServerVerticle(private val userDataService: UserDataService) : AbstractVerticle() {
 
     private val configuration = PropertiesLoader.loadProperties()
+    private val logger = LoggerFactory.getLogger(WebServerVerticle::class.java)
 
     override fun start() {
         val kafkaProducerService = KafkaProducerServiceImpl(vertx)
-        val garminRouter = initGarminVerticle(vertx, kafkaProducerService)
-        val fitbitRouter = initFitbitVerticle(vertx, kafkaProducerService)
+        val garminRouter = initGarminRouter(vertx, kafkaProducerService)
+        val fitbitRouter = initFitbitRouter(vertx, kafkaProducerService)
 
         val mainRouter = Router.router(vertx)
         mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
         mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
 
         val port = configuration.getProperty("webserver.port").toInt()
-        vertx.createHttpServer().requestHandler(mainRouter).listen(port)
+
+        val httpServerOptions = HttpServerOptions()
+                .setPort(port)
+                .setSsl(true)
+                .setPemKeyCertOptions(PemKeyCertOptions()
+                        .addCertPath(configuration.getProperty("ssl.certificate.chain.file"))
+                        .addKeyPath(configuration.getProperty("ssl.certificate.key.file")))
+
+        vertx.createHttpServer(httpServerOptions)
+                .requestHandler(mainRouter)
+                .listen { ar ->
+                    if (ar.succeeded()) {
+                        logger.info("Web server verticle successfuly started on port: ${ar.result().actualPort()}")
+                    } else {
+                        logger.error(ar.cause())
+                    }
+                }
 
     }
 
-    private fun initGarminVerticle(vertx: Vertx, kafkaProducerService: KafkaProducerService): GarminVerticle {
+    private fun initGarminRouter(vertx: Vertx, kafkaProducerService: KafkaProducerService): GarminRouter {
         val consumerKey = configuration.getProperty("garmin.consumer.key")
         val consumerSecret = configuration.getProperty("garmin.consumer.secret")
         val parameters = OAuth1RouterParameters(configuration.getProperty("garmin.callback.url"), "",
@@ -58,12 +78,13 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
 
         val garminDataService = ThirdPartyPushServiceImpl(kafkaProducerService)
 
-        return GarminVerticle(vertx, garminDataService, authRouter)
+        return GarminRouter(vertx, garminDataService, authRouter)
     }
 
-    private fun initFitbitVerticle(vertx: Vertx, kafkaProducerService: KafkaProducerService): FitbitVerticle {
+    private fun initFitbitRouter(vertx: Vertx, kafkaProducerService: KafkaProducerService): FitbitRouter {
         val clientId = configuration.getProperty("fitbit.client.id")
         val clientSecret = configuration.getProperty("fitbit.client.secret")
+        val verificationCode = configuration.getProperty("fitbit.verify.code")
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx)))
         val activityUrl = FitbitRestUrl("/1/user/[ownerId]/activities/date/[date].json")
         val sleepUrl = FitbitRestUrl("/1.2/user/[ownerId]/sleep/date/[date].json")
@@ -96,6 +117,6 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
                 configuration.getProperty("fitbit.oauth2.scope"))
         val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userDataService)
 
-        return FitbitVerticle(vertx, notificationService, authRouter)
+        return FitbitRouter(vertx, notificationService, authRouter, verificationCode)
     }
 }

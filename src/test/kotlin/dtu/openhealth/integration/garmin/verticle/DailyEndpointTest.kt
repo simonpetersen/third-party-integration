@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import dtu.openhealth.integration.garmin.GarminVerticle
+import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.DailySummaryGarmin
 import dtu.openhealth.integration.shared.service.ThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
@@ -80,7 +80,7 @@ class DailyEndpointTest {
         val authRouter : AuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
-        val garminRouter = GarminVerticle(vertx, thirdPartyPushService, authRouter)
+        val garminRouter = GarminRouter(vertx, thirdPartyPushService, authRouter)
         vertx.createHttpServer().requestHandler(garminRouter.getRouter()).listen(port, testContext.succeeding {
             val client: WebClient = WebClient.create(vertx)
             client.post(port, "localhost", "/dailies")
