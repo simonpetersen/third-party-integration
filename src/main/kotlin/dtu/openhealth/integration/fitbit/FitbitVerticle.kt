@@ -6,37 +6,45 @@ import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.verticle.BaseNotificationEndpointRouter
 import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
 import dtu.openhealth.integration.shared.web.auth.OAuth2Router
+import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 
 
-class FitbitVerticle(private val vertx: Vertx,
-                     notificationService: ThirdPartyNotificationService,
-                     private val authRouter: AuthorizationRouter)
-    : BaseNotificationEndpointRouter(vertx, notificationService) {
+class FitbitVerticle(
+        private val vertx: Vertx,
+        notificationService: ThirdPartyNotificationService,
+        private val authRouter: AuthorizationRouter,
+        private val verificationCode: String
+): BaseNotificationEndpointRouter(vertx, notificationService) {
 
-    private val configuration = PropertiesLoader.loadProperties()
+    private val logger = LoggerFactory.getLogger(FitbitVerticle::class.java)
 
-    fun getRouter() : Router {
+    fun getRouter() : Router
+    {
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
         router.post("/notification").handler { handleNotification(it) }
-        router.get("/notification/webhook").handler { handleVerification(it) }
+        router.get("/notification/fitbit/webhook").handler {
+            logger.info("/notification/fitbit/webhook called for verification")
+            handleVerification(it) }
+        router.get("/notification/webhook").handler {
+            logger.info("/notification/webhook called for verification")
+            handleVerification(it) }
+        router.get("/webhook").handler {
+            logger.info("/webhook called for verification")
+            handleVerification(it) }
 
         router.mountSubRouter("/", authRouter.getRouter())
-
-        /*
-        vertx.createHttpServer().requestHandler(router).listen(
-                configuration.getProperty("fitbit.verticle.port").toInt())
-
-         */
 
         return router
     }
 
-    private fun handleNotification(routingContext : RoutingContext) {
+    private fun handleNotification(routingContext : RoutingContext)
+    {
+        logger.info("FitbitRouter handleNotification called. Body: ${routingContext.bodyAsString}")
         val jsonBody = routingContext.bodyAsJsonArray
         val notificationList = jsonBody.list
                 .map { ThirdPartyNotification(it as Map<String, String>, "collectionType", "ownerId") }
@@ -45,11 +53,11 @@ class FitbitVerticle(private val vertx: Vertx,
         routingContext.response().setStatusCode(204).end()
     }
 
-    private fun handleVerification(routingContext: RoutingContext) {
-        val verificationCode = routingContext.request().getParam("verify")
-        val correctVerificationCode = configuration.getProperty("fitbit.verify.code")
+    private fun handleVerification(routingContext: RoutingContext)
+    {
+        val verifyCode = routingContext.request().getParam("verify")
 
-        if (verificationCode != correctVerificationCode) {
+        if (verifyCode != verificationCode) {
             routingContext
                     .response()
                     .setStatusCode(404)

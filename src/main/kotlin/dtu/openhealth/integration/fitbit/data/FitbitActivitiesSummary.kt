@@ -50,6 +50,7 @@ data class FitbitActivity(
         val logId: Long? = null,
         // DateTime
         val hasStartTime: Boolean = false,
+        val lastModified: String? = null,
         @Serializable(with = LocalDateSerializer::class) val startDate: LocalDate,
         @Serializable(with = LocalTimeSerializer::class) val startTime: LocalTime? = null
 ) {
