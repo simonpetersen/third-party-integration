@@ -11,6 +11,9 @@ services:
       - 443
     networks:
       - confluentkafka_shared-network
+    volumes:
+      - /etc/letsencrypt/live/chaks.dk/privkey.pem
+      - /etc/letsencrypt/live/chaks.dk/fullchain.pem
 
 networks:
   confluentkafka_shared-network:
