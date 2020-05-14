@@ -7,9 +7,13 @@ import io.vertx.reactivex.ext.web.client.predicate.ResponsePredicate
 import io.vertx.reactivex.ext.web.codec.BodyCodec
 
 
-class HttpOAuth2ConnectorClient(private val webClient: WebClient, private val port: Int = 443) : HttpConnectorClient {
+class HttpOAuth2ConnectorClient(
+        private val webClient: WebClient,
+        private val port: Int
+): IHttpConnectorClient {
 
-    override fun get(request: ApiRequest, userToken: UserToken): Single<ApiResponse> {
+    override fun get(request: ApiRequest, userToken: UserToken): Single<ApiResponse>
+    {
         return webClient.get(port, request.endpoint.url.host, request.url)
                 .ssl(true)
                 .bearerTokenAuthentication(userToken.token)

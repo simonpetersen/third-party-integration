@@ -17,8 +17,8 @@ import io.vertx.reactivex.ext.web.RoutingContext
 
 abstract class OAuth2Router(private val vertx: Vertx, private val oauth2: OAuth2Auth,
                             private val parameters: OAuth2RouterParameters,
-                            private val userDataService: UserDataService)
-    : AuthorizationRouter {
+                            private val userDataService: UserDataService
+): IAuthorizationRouter {
 
     private val logger = LoggerFactory.getLogger(OAuth2Router::class.java)
 

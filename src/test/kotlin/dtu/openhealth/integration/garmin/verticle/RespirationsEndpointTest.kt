@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.RespirationSummaryGarmin
 import dtu.openhealth.integration.shared.service.ThirdPartyPushService
-import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
+import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
@@ -74,7 +74,7 @@ class RespirationsEndpointTest {
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
         val thirdPartyPushService : ThirdPartyPushService = mock()
-        val authRouter : AuthorizationRouter = mock()
+        val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
         val garminRouter = GarminRouter(vertx, thirdPartyPushService, authRouter)

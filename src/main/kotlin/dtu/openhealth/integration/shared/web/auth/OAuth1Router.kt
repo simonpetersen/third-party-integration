@@ -18,12 +18,13 @@ import org.asynchttpclient.DefaultAsyncHttpClientConfig
 class OAuth1Router(private val vertx: Vertx,
                    private val parameters: OAuth1RouterParameters,
                    private val userDataService: UserDataService,
-                   private val requestTokenSecrets : MutableMap<String, String> = mutableMapOf())
-    : AuthorizationRouter {
+                   private val requestTokenSecrets : MutableMap<String, String> = mutableMapOf()
+): IAuthorizationRouter {
 
     private val logger = LoggerFactory.getLogger(OAuth1Router::class.java)
 
-    override fun getRouter(): Router {
+    override fun getRouter(): Router
+    {
         val router = Router.router(vertx)
 
         router.get("/auth/:userId").handler { handleAuthRedirect(it) }
@@ -32,7 +33,8 @@ class OAuth1Router(private val vertx: Vertx,
         return router
     }
 
-    private fun handleAuthRedirect(routingContext: RoutingContext) {
+    private fun handleAuthRedirect(routingContext: RoutingContext)
+    {
         val userId = routingContext.request().getParam("userId")
         val callbackUri = "${parameters.callbackUri}/$userId"
         val oauthService = buildOAuthService(callbackUri)
@@ -49,7 +51,8 @@ class OAuth1Router(private val vertx: Vertx,
                 .end()
     }
 
-    private fun handleAuthCallback(routingContext: RoutingContext) {
+    private fun handleAuthCallback(routingContext: RoutingContext)
+    {
         val token = routingContext.request().getParam("oauth_token")
         val verifier = routingContext.request().getParam("oauth_verifier")
         val userId = routingContext.request().getParam("userId")
@@ -75,7 +78,8 @@ class OAuth1Router(private val vertx: Vertx,
         }
     }
 
-    private fun buildOAuthService(callbackUri: String? = null) : OAuth10aService {
+    private fun buildOAuthService(callbackUri: String? = null) : OAuth10aService
+    {
         return ServiceBuilder(parameters.consumerKey)
                 .apiSecret(parameters.consumerSecret)
                 .callback(callbackUri)
@@ -83,7 +87,8 @@ class OAuth1Router(private val vertx: Vertx,
                 .build(parameters.api)
     }
 
-    private fun httpClientConfig(): HttpClientConfig {
+    private fun httpClientConfig(): HttpClientConfig
+    {
         return AhcHttpClientConfig(DefaultAsyncHttpClientConfig.Builder()
                 .setMaxConnections(5)
                 .setRequestTimeout(10000)

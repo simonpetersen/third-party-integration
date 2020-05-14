@@ -2,10 +2,8 @@ package dtu.openhealth.integration.fitbit
 
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
-import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.verticle.BaseNotificationEndpointRouter
-import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
-import dtu.openhealth.integration.shared.web.auth.OAuth2Router
+import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.web.Router
@@ -16,7 +14,7 @@ import io.vertx.reactivex.ext.web.handler.BodyHandler
 class FitbitRouter(
         private val vertx: Vertx,
         notificationService: ThirdPartyNotificationService,
-        private val authRouter: AuthorizationRouter,
+        private val authRouter: IAuthorizationRouter,
         private val verificationCode: String
 ): BaseNotificationEndpointRouter(vertx, notificationService) {
 

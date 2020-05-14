@@ -4,7 +4,7 @@ import dtu.openhealth.integration.garmin.data.*
 import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.service.ThirdPartyPushService
 import dtu.openhealth.integration.shared.verticle.BasePushEndpointRouter
-import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
+import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.core.json.JsonArray
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
@@ -14,7 +14,7 @@ import io.vertx.reactivex.ext.web.handler.BodyHandler
 
 class GarminRouter(private val vertx: Vertx,
                    pushService: ThirdPartyPushService,
-                   private val authRouter: AuthorizationRouter) : BasePushEndpointRouter(pushService) {
+                   private val authRouter: IAuthorizationRouter) : BasePushEndpointRouter(pushService) {
 
     private val logger = LoggerFactory.getLogger(GarminRouter::class.java)
     private val configuration =  PropertiesLoader.loadProperties()

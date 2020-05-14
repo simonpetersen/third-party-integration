@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.fitbit.FitbitRouter
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
-import dtu.openhealth.integration.shared.web.auth.AuthorizationRouter
+import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
@@ -38,7 +38,7 @@ class FitbitRouterTest {
     {
         val expectedStatusCode = 204
         val notificationService : ThirdPartyNotificationService = mock()
-        val authRouter : AuthorizationRouter = mock()
+        val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
         val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter, correctVerificationCode)
         vertx.createHttpServer().requestHandler(fitbitRouter.getRouter()).listen(port, testContext.succeeding {
@@ -52,7 +52,7 @@ class FitbitRouterTest {
         val expectedStatusCode = 404
         val incorrectVerificationCode = "abcd1234"
         val notificationService : ThirdPartyNotificationService = mock()
-        val authRouter : AuthorizationRouter = mock()
+        val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
         val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter, correctVerificationCode)
         vertx.createHttpServer().requestHandler(fitbitRouter.getRouter()).listen(port, testContext.succeeding {
@@ -64,7 +64,7 @@ class FitbitRouterTest {
     fun testNotificationEndpoint(vertx: Vertx, testContext: VertxTestContext)
     {
         val notificationService : ThirdPartyNotificationService = mock()
-        val authRouter : AuthorizationRouter = mock()
+        val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
         val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter, correctVerificationCode)
 

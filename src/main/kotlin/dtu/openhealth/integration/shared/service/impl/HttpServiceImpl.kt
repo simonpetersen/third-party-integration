@@ -5,11 +5,11 @@ import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.HttpService
 import dtu.openhealth.integration.shared.web.ApiRequest
 import dtu.openhealth.integration.shared.web.ApiResponse
-import dtu.openhealth.integration.shared.web.HttpConnectorClient
+import dtu.openhealth.integration.shared.web.IHttpConnectorClient
 import io.reactivex.Single
 import io.vertx.core.logging.LoggerFactory
 
-class HttpServiceImpl(private val httpClient: HttpConnectorClient) : HttpService {
+class HttpServiceImpl(private val httpClient: IHttpConnectorClient) : HttpService {
 
     private val logger = LoggerFactory.getLogger(HttpServiceImpl::class.java)
 

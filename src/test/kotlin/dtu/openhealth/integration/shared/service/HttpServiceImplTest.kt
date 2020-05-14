@@ -8,7 +8,7 @@ import dtu.openhealth.integration.shared.service.impl.HttpServiceImpl
 import dtu.openhealth.integration.shared.service.mock.MockRestUrl
 import dtu.openhealth.integration.shared.web.ApiRequest
 import dtu.openhealth.integration.shared.web.ApiResponse
-import dtu.openhealth.integration.shared.web.HttpConnectorClient
+import dtu.openhealth.integration.shared.web.IHttpConnectorClient
 import io.reactivex.Single
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -16,7 +16,6 @@ import io.vertx.reactivex.core.Vertx
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.fail
 
 @ExtendWith(VertxExtension::class)
 class HttpServiceImplTest {
@@ -42,7 +41,7 @@ class HttpServiceImplTest {
 
         // Mock
         val numberOfEndpoints = 2
-        val httpClient: HttpConnectorClient = mock()
+        val httpClient: IHttpConnectorClient = mock()
         val endpoints = listOf(activityEndpoint, sleepEndpoint)
         whenever(httpClient.get(eq(activitiesRequest), eq(user))).thenReturn(Single.just(activitiesResponse))
         whenever(httpClient.get(eq(sleepRequest), eq(user))).thenReturn(Single.just(sleepResponse))
@@ -84,7 +83,7 @@ class HttpServiceImplTest {
         val userToken = UserToken(userId, extUserId, "testToken")
 
         // Mock
-        val httpClient: HttpConnectorClient = mock()
+        val httpClient: IHttpConnectorClient = mock()
         val endpoints = listOf(activitiesTestEndpoint, sleepTestEndpoint)
         whenever(httpClient.get(eq(activitiesRequest), eq(userToken))).thenReturn(Single.just(activitiesResponse))
         whenever(httpClient.get(eq(sleepRequest), eq(userToken))).thenReturn(Single.just(sleepResponse))

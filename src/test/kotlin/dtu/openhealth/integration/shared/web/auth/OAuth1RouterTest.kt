@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(VertxExtension::class)
 class OAuth1RouterTest {
     // Values
-    private val port = 8191
+    private val port = 8198
     private val oauthServicePort = port + 1
     private val userId = "testUser5756"
     private val consumerKey = "22d54322-2d2h-g67c-9876-234rgf264567"
