@@ -25,6 +25,6 @@ class KafkaProducerServiceImpl(vertx: Vertx) : KafkaProducerService {
     }
     override fun sendOmhData(omhDTO: OmhDTO) {
         logger.info("Send data to Kafka stream: $omhDTO")
-        producer.send(KafkaProducerRecord.create(configuration.getProperty("kafka.bootstrap.servers"), omhDTO))
+        producer.send(KafkaProducerRecord.create(configuration.getProperty("kafka.topic"), omhDTO))
     }
 }
