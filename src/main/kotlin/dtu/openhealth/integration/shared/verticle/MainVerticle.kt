@@ -11,6 +11,7 @@ class  MainVerticle : AbstractVerticle() {
     override fun start() {
         val userDataService = UserDataServiceImpl(vertx.delegate)
         vertx.deployVerticle(WebServerVerticle(userDataService))
+        vertx.deployVerticle(OmhConsumerVerticle(userDataService))
     }
 
 }
