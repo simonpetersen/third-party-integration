@@ -37,49 +37,49 @@ class GarminRouter(private val vertx: Vertx,
     }
 
     private fun handleActivitySummary(routingContext : RoutingContext) {
-        logger.info("Posting activity summary data for Garmin")
+        logger.info("Posting activity summary data for Garmin: ${routingContext.bodyAsJson}")
         val activitySummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("activities")
         convertArrayAndSaveData(activitySummaries, ActivitySummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleBodyConsumptionSummary(routingContext : RoutingContext) {
-        logger.info("Posting body consumption data for Garmin")
+        logger.info("Posting body consumption data for Garmin: ${routingContext.bodyAsJson}")
         val bodyCompositionSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("body")
         convertArrayAndSaveData(bodyCompositionSummaries, BodyCompositionSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleDailySummary(routingContext : RoutingContext) {
-        logger.info("Posting daily summary data for Garmin")
+        logger.info("Posting daily summary data for Garmin: ${routingContext.bodyAsJson}")
         val dailySummaries = routingContext.bodyAsJson.getJsonArray("dailies")
         convertArrayAndSaveData(dailySummaries, DailySummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleEpochSummary(routingContext : RoutingContext) {
-        logger.info("Posting epoch summary data for Garmin")
+        logger.info("Posting epoch summary data for Garmin: ${routingContext.bodyAsJson}")
         val epochsSummaries: JsonArray = routingContext.bodyAsJson.getJsonArray("epochs")
         convertArrayAndSaveData(epochsSummaries, EpochSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleRespirationSummary(routingContext : RoutingContext) {
-        logger.info("Posting respiration summary data for Garmin")
+        logger.info("Posting respiration summary data for Garmin: ${routingContext.bodyAsJson}")
         val respirationSummary = routingContext.bodyAsJson.getJsonArray("respirations")
         convertArrayAndSaveData(respirationSummary, RespirationSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleSleepSummary(routingContext : RoutingContext) {
-        logger.info("Posting sleep summary data for Garmin")
+        logger.info("Posting sleep summary data for Garmin: ${routingContext.bodyAsJson}")
         val sleepSummary = routingContext.bodyAsJson.getJsonArray("sleeps")
         convertArrayAndSaveData(sleepSummary, SleepSummaryGarmin.serializer())
         routingContext.response().end()
     }
 
     private fun handleThirdPartySummary(routingContext : RoutingContext) {
-        logger.info("Posting third party summary data for Garmin")
+        logger.info("Posting third party summary data for Garmin: ${routingContext.bodyAsJson}")
         val thirdPartySummaries = routingContext.bodyAsJson.getJsonArray("thirdparty")
         convertArrayAndSaveData(thirdPartySummaries, ThirdPartyDailySummaryGarmin.serializer())
         routingContext.response().end()
@@ -87,7 +87,7 @@ class GarminRouter(private val vertx: Vertx,
 
 
     private fun handlePulseSummary(routingContext : RoutingContext) {
-        logger.info("Posting pulse summary data for Garmin")
+        logger.info("Posting pulse summary data for Garmin: ${routingContext.bodyAsJson}")
         val pulseSummaries = routingContext.bodyAsJson.getJsonArray("pulseOX")
         convertArrayAndSaveData(pulseSummaries, PulseOXSummaryGarmin.serializer())
         routingContext.response().end()
