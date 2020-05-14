@@ -14,6 +14,7 @@ postgres.user=postgres_user
 postgres.password=postgres_password
 
 # Fitbit
+fitbit.api.port=443
 fitbit.oauth2.redirect.uri=http://localhost:8180/login
 fitbit.oauth2.return.uri=http://localhost:8180/success
 fitbit.oauth2.scope=activity nutrition heartrate profile settings sleep weight
