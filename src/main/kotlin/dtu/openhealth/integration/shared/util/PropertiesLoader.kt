@@ -9,7 +9,7 @@ object PropertiesLoader {
         val configuration = Properties()
         val inputStream = PropertiesLoader::class.java
                 .classLoader
-                .getResourceAsStream("application.properties.example")
+                .getResourceAsStream("application.properties")
         configuration.load(inputStream)
         inputStream.close()
         return configuration
