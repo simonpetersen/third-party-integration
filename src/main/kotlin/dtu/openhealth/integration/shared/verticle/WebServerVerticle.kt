@@ -48,12 +48,6 @@ class WebServerVerticle(private val userDataService: UserDataService) : Abstract
         mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
         mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
 
-        mainRouter.get("/*").handler {
-            val errorMsg = "Routing occured path = ${it.request().path()}"
-            logger.error(errorMsg)
-            it.response().end()
-        }
-
         val port = configuration.getProperty("webserver.port").toInt()
         val httpServerOptions = HttpServerOptions()
                 .setPort(port)

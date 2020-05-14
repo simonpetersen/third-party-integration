@@ -25,11 +25,8 @@ class FitbitRouter(
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
         router.post("/notification").handler { handleNotification(it) }
-        router.get("/notification/fitbit/webhook").handler {
-            logger.info("/notification/fitbit/webhook called for verification")
-            handleVerification(it) }
-        router.get("/notification/webhook").handler {
-            logger.info("/notification/webhook called for verification")
+        router.get("/notification").handler {
+            logger.info("/notification called for verification")
             handleVerification(it) }
         router.get("/webhook").handler {
             logger.info("/webhook called for verification")
