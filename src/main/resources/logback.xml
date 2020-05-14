@@ -38,8 +38,8 @@
         </filter>
     </appender-->
 
-    <logger name="org.apache.kafka" level="WARN"/>
-    <logger name="org.apache.kafka.common.metrics" level="WARN"/>
+    <!--logger name="org.apache.kafka" level="WARN"/>
+    <logger name="org.apache.kafka.common.metrics" level="WARN"/>-->
 
     <root level="debug">
         <appender-ref ref="CONSOLE"/>
