@@ -66,7 +66,7 @@ class GarminRouter(private val vertx: Vertx,
 
     private fun handleRespirationSummary(routingContext : RoutingContext) {
         logger.info("Posting respiration summary data for Garmin: ${routingContext.bodyAsJson}")
-        val respirationSummary = routingContext.bodyAsJson.getJsonArray("respirations")
+        val respirationSummary = routingContext.bodyAsJson.getJsonArray("allDayRespiration")
         convertArrayAndSaveData(respirationSummary, RespirationSummaryGarmin.serializer())
         routingContext.response().end()
     }
@@ -88,7 +88,7 @@ class GarminRouter(private val vertx: Vertx,
 
     private fun handlePulseSummary(routingContext : RoutingContext) {
         logger.info("Posting pulse summary data for Garmin: ${routingContext.bodyAsJson}")
-        val pulseSummaries = routingContext.bodyAsJson.getJsonArray("pulseOX")
+        val pulseSummaries = routingContext.bodyAsJson.getJsonArray("pulseox")
         convertArrayAndSaveData(pulseSummaries, PulseOXSummaryGarmin.serializer())
         routingContext.response().end()
     }
