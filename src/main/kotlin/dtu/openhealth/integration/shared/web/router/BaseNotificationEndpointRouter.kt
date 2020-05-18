@@ -7,8 +7,10 @@ import io.vertx.reactivex.core.Vertx
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-open class BaseNotificationEndpointRouter(private val vertx: Vertx,
-                                    private val notificationService: IThirdPartyNotificationService) {
+open class BaseNotificationEndpointRouter(
+        private val vertx: Vertx,
+        private val notificationService: IThirdPartyNotificationService
+) {
 
     protected fun handleNotificationList(notificationList: List<ThirdPartyNotification>) {
         GlobalScope.launch(vertx.delegate.dispatcher()) {

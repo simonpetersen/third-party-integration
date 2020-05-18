@@ -30,7 +30,7 @@ abstract class AOAuth2Router(
         router.get("/auth").handler{ handleAuthRedirectWithoutUserId(it) }
         router.get("/auth/:userId").handler{ handleAuthRedirectWithUserId(it) }
         router.get("/callback").handler { handleAuthCallback(it) }
-        router.get("/success").handler { handleSuccessfulAuthentication(it) }
+        router.get("/result").handler { handleSuccessfulAuthentication(it) }
 
         return router
     }

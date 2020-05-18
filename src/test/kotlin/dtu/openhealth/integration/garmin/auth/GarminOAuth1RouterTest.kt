@@ -33,13 +33,12 @@ class GarminOAuth1RouterTest {
     private val requestTokenSecret = "request_token_secret_dfssdfs_$authCode"
     private val accessToken = "access_token_$authCode"
     private val accessTokenSecret = "access_token_secret_$authCode"
-    private val thirdParty = "testCompany"
 
     // Urls and bodies
     private val callbackUri = "https://localhost:$port/callback"
-    private val returnUri = "http://localhost:$oauthServicePort/return"
+    private val returnUri = "http://localhost:$port/result"
     private val redirectBody = "Redirect to localhost/oauthConfirm"
-    private val returnBody = "Authorization finished"
+    private val returnBody = "Authorization successful"
 
     @Test
     fun testOAuth1RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
@@ -97,7 +96,6 @@ class GarminOAuth1RouterTest {
         oauthServiceRouter.post("/oauth-service/request_token").handler { requestToken(it, requestTokenCheckpoint) }
         oauthServiceRouter.post("/oauth-service/access_token").handler { accessToken(it, accessTokenCheckpoint) }
         oauthServiceRouter.get("/oauthConfirm").handler { oauthConfirm(it, oauthConfirmToken) }
-        oauthServiceRouter.get("/return").handler { returnHandler(it) }
 
         createWebServer(vertx, tc, oauthServiceRouter, oauthServicePort, serverStartedCheckpoint)
         createWebServer(vertx, tc, authRouter, port, serverStartedCheckpoint)
@@ -127,10 +125,6 @@ class GarminOAuth1RouterTest {
         assertThat(url).isEqualTo(expectedUrl)
         checkpoint?.flag()
         routingContext.response().end(redirectBody)
-    }
-
-    private fun returnHandler(routingContext: RoutingContext) {
-        routingContext.response().end(returnBody)
     }
 
     private fun accessToken(routingContext: RoutingContext, checkpoint: Checkpoint?) {

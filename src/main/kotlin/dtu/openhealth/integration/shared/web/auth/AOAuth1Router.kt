@@ -33,6 +33,7 @@ abstract class AOAuth1Router(
         router.get("/auth").handler { handleAuthRedirectWithoutUserId(it) }
         router.get("/auth/:userId").handler { handleAuthRedirectWithUserId(it) }
         router.get("/callback/:userId").handler { handleAuthCallback(it) }
+        router.get("/result").handler { handleResult(it) }
 
         return router
     }
@@ -136,7 +137,6 @@ abstract class AOAuth1Router(
         return ServiceBuilder(parameters.consumerKey)
                 .apiSecret(parameters.consumerSecret)
                 .callback(callbackUri)
-                //.httpClientConfig(httpClientConfig())
                 .httpClient(httpClient())
                 .build(parameters.api)
     }
@@ -153,6 +153,11 @@ abstract class AOAuth1Router(
                 .setPooledConnectionIdleTimeout(1000)
                 .setReadTimeout(1000)
                 .build())
+    }
+
+    private fun handleResult(routingContext: RoutingContext)
+    {
+        routingContext.response().end("Authorization successful")
     }
 
     private fun generateNewId(): String

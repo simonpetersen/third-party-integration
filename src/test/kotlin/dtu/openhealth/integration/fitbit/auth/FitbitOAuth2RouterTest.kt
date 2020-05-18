@@ -30,7 +30,7 @@ class FitbitOAuth2RouterTest {
     private val oauthPort = 8181
     private val testPort = oauthPort + 1
     private val redirectUri = "http://localhost:$oauthPort/login"
-    private val returnUri = "http://localhost:$oauthPort/success"
+    private val returnUri = "http://localhost:$oauthPort/result"
     private val subscriptionPath = "/apiSubscriptions/[subscription-id]"
     private val redirectBody = "Redirect to localhost/oauth2"
     private val authCode = "abcd12345"

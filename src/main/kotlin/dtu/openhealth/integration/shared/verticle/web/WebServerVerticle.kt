@@ -82,9 +82,10 @@ class WebServerVerticle(
         val consumerKey = configuration.getProperty("garmin.consumer.key")
         val consumerSecret = configuration.getProperty("garmin.consumer.secret")
         val callbackUrl = configuration.getProperty("garmin.callback.url")
+        val resultUrl = configuration.getProperty("garmin.result.url")
         val parameters = OAuth1RouterParameters(
                 callbackUrl,
-                "",
+                resultUrl,
                 consumerKey,
                 consumerSecret,
                 GarminApi()
