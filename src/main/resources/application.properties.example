@@ -2,7 +2,7 @@
 # Copy this file to this folder as "application.properties" for development
 
 # Web
-webserver.port=8443
+webserver.port=443
 ssl.certificate.key.file=path/
 ssl.certificate.chain.file=path/
 
