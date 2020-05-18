@@ -12,6 +12,7 @@ class ConfigVault {
     private val logger = LoggerFactory.getLogger(ConfigVault::class.java)
 
     fun getConfigRetriever(vertx: Vertx) : ConfigRetriever {
+        logger.info("Retrieving config")
         val configuration = getConfig()
 
         val store = ConfigStoreOptions()
@@ -20,25 +21,6 @@ class ConfigVault {
 
         return ConfigRetriever.create(vertx,
                 ConfigRetrieverOptions().addStore(store))
-    }
-
-    fun loadConfig(vertx: Vertx) {
-        val configuration = getConfig()
-
-        val store = ConfigStoreOptions()
-                .setType("vault")
-                .setConfig(configuration)
-
-        val retriever = ConfigRetriever.create(vertx,
-                ConfigRetrieverOptions().addStore(store))
-
-        retriever.getConfig { ar ->
-            if (ar.succeeded()) {
-                logger.info("Configuration succussfully retrieved from the vault: ${ar.result()}")
-            } else {
-                logger.error(ar.cause())
-            }
-        }
     }
 
     private fun getConfig() : JsonObject {

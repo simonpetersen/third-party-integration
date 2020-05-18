@@ -22,7 +22,6 @@ class FitbitPullVerticle(
         private val kafkaProducerService: IKafkaProducerService
 ): BasePullVerticle() {
 
-    //private val configuration = PropertiesLoader.loadProperties()
     private val logger = LoggerFactory.getLogger(FitbitPullVerticle::class.java)
 
     override fun start()
@@ -40,6 +39,8 @@ class FitbitPullVerticle(
                 if (fitbitPullEnabled == null || !fitbitPullEnabled) {
                     logger.info("Fitbit pull service disabled in configuration")
                 }else{
+                    logger.info("Fitbit pull service enabled. " +
+                            "Starting service with $fitbitIntervalMinutes minutes intervals")
                     val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))
                     val endpointList = getFitbitEndpoints()
 

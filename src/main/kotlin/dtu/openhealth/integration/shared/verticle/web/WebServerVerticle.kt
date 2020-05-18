@@ -41,7 +41,6 @@ class WebServerVerticle(
         private val kafkaProducerService: IKafkaProducerService
 ): AbstractVerticle() {
 
-    //private val configuration = PropertiesLoader.loadProperties()
     private val logger = LoggerFactory.getLogger(WebServerVerticle::class.java)
 
     override fun start()
@@ -86,6 +85,7 @@ class WebServerVerticle(
 
     private fun initGarminRouter(kafkaProducerService: IKafkaProducerService, config: JsonObject): GarminRouter
     {
+        logger.info("Initializing Garmin Router")
         val consumerKey = config.getString("garmin.consumer.key")
         val consumerSecret = config.getString("garmin.consumer.secret")
         val callbackUrl = config.getString("garmin.callback.url")
@@ -105,6 +105,7 @@ class WebServerVerticle(
 
     private fun initFitbitRouter(kafkaProducerService: IKafkaProducerService, config: JsonObject): FitbitRouter
     {
+        logger.info("Initializing Fitbit Router")
         // Configuration parameters
         val clientId = config.getString("fitbit.client.id")
         val clientSecret = config.getString("fitbit.client.secret")

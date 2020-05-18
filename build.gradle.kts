@@ -78,36 +78,4 @@ tasks {
 
 
 tasks.withType<AbstractArchiveTask> {setProperty("archiveFileName", "integration.jar")}
-/*
-tasks.create<Jar>("fatJar") {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-    manifest {
-        attributes(mapOf("Main-Class" to "dtu.openhealth.integration.IntegrationApplicationKt"))
-    }
-    val sourceMain = sourceSets.main.get()
-    from(sourceMain.output)
 
-    configurations.runtimeClasspath.get().filter {
-        it.name.endsWith(".jar")
-    }.forEach { jar ->
-        from(zipTree(jar))
-    }
-}
-
-tasks.withType<Jar> {
-    manifest {
-        attributes(
-                "Main-Class" to "dtu.openhealth.integration.IntegrationApplicationKt"
-        )
-    }
-
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
-    from(configurations.compileClasspath.map { config -> config.map { if (it.isDirectory) it else zipTree(it) } })
-}
-
- */

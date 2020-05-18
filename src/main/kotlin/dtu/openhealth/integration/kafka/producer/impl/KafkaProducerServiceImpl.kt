@@ -3,18 +3,15 @@ package dtu.openhealth.integration.kafka.producer.impl
 import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.ConfigVault
-import dtu.openhealth.integration.shared.util.PropertiesLoader
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.kafka.client.producer.KafkaProducer
 import io.vertx.reactivex.kafka.client.producer.KafkaProducerRecord
 import io.vertx.reactivex.core.Vertx
-import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
 import java.util.HashMap
 
 class KafkaProducerServiceImpl(vertx: Vertx) : IKafkaProducerService {
 
     private val logger = LoggerFactory.getLogger(KafkaProducerServiceImpl::class.java)
-    //private val configuration = PropertiesLoader.loadProperties()
 
     private var topic = ""
     private var producer: KafkaProducer<String, OmhDTO>? = null

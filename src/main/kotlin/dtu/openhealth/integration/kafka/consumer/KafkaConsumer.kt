@@ -11,7 +11,6 @@ import java.util.HashMap
 class KafkaConsumer(vertx: Vertx, private val omhService: OmhService) {
 
     private val logger = LoggerFactory.getLogger(KafkaConsumer::class.java)
-    //private val configuration = PropertiesLoader.loadProperties()
 
     private var topic = ""
     private var consumer: KafkaConsumer<String, OmhDTO>? = null

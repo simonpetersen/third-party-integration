@@ -13,7 +13,6 @@ import io.vertx.sqlclient.RowSet
 import org.slf4j.LoggerFactory
 
 abstract class BaseDataService(vertx: Vertx) {
-    //private val configuration = PropertiesLoader.loadProperties()
     private val logger = LoggerFactory.getLogger(BaseDataService::class.java)
 
     private var connectOptions : PgConnectOptions? = null

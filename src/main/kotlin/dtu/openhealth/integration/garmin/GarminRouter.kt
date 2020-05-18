@@ -1,7 +1,6 @@
 package dtu.openhealth.integration.garmin
 
 import dtu.openhealth.integration.garmin.data.*
-import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.router.BasePushEndpointRouter
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
