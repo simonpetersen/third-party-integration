@@ -15,6 +15,7 @@ import dtu.openhealth.integration.shared.service.tokenrefresh.AOAuth2TokenRefres
 import dtu.openhealth.integration.shared.service.push.ThirdPartyPushServiceImpl
 import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.fitbit.FitbitRestUrl
+import dtu.openhealth.integration.fitbit.data.FitbitConstants
 import dtu.openhealth.integration.fitbit.service.tokenrefresh.FitbitTokenRefreshServiceImpl
 import dtu.openhealth.integration.garmin.auth.GarminOAuth1Router
 import dtu.openhealth.integration.shared.service.notification.ThirdPartyNotificationServiceImpl
@@ -28,6 +29,8 @@ import io.vertx.core.logging.LoggerFactory
 import io.vertx.core.net.PemKeyCertOptions
 import io.vertx.ext.auth.oauth2.OAuth2ClientOptions
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
+import io.vertx.kotlin.core.http.httpServerOptionsOf
+import io.vertx.kotlin.core.net.pemKeyCertOptionsOf
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
 import io.vertx.reactivex.core.AbstractVerticle
@@ -45,20 +48,22 @@ class WebServerVerticle(
 
     override fun start()
     {
-        val garminRouter = initGarminRouter(vertx, kafkaProducerService)
-        val fitbitRouter = initFitbitRouter(vertx, kafkaProducerService)
+        val garminRouter = initGarminRouter(kafkaProducerService)
+        val fitbitRouter = initFitbitRouter(kafkaProducerService)
 
         val mainRouter = Router.router(vertx)
         mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
         mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
 
         val port = configuration.getProperty("webserver.port").toInt()
-        val httpServerOptions = HttpServerOptions()
-                .setPort(port)
-                .setSsl(true)
-                .setPemKeyCertOptions(PemKeyCertOptions()
-                        .addCertPath(configuration.getProperty("ssl.certificate.chain.file"))
-                        .addKeyPath(configuration.getProperty("ssl.certificate.key.file")))
+        val httpServerOptions = httpServerOptionsOf(
+                port = port,
+                ssl = true,
+                pemKeyCertOptions = pemKeyCertOptionsOf(
+                        certPath = configuration.getProperty("ssl.certificate.chain.file"),
+                        keyPath = configuration.getProperty("ssl.certificate.key.file")
+                )
+        )
 
         vertx.createHttpServer(httpServerOptions)
                 .requestHandler(mainRouter)
@@ -72,19 +77,25 @@ class WebServerVerticle(
 
     }
 
-    private fun initGarminRouter(vertx: Vertx, kafkaProducerService: IKafkaProducerService): GarminRouter
+    private fun initGarminRouter(kafkaProducerService: IKafkaProducerService): GarminRouter
     {
         val consumerKey = configuration.getProperty("garmin.consumer.key")
         val consumerSecret = configuration.getProperty("garmin.consumer.secret")
-        val parameters = OAuth1RouterParameters(configuration.getProperty("garmin.callback.url"), "",
-                consumerKey, consumerSecret, GarminApi())
+        val callbackUrl = configuration.getProperty("garmin.callback.url")
+        val parameters = OAuth1RouterParameters(
+                callbackUrl,
+                "",
+                consumerKey,
+                consumerSecret,
+                GarminApi()
+        )
         val authRouter = GarminOAuth1Router(vertx, parameters, userTokenDataService)
         val garminDataService = ThirdPartyPushServiceImpl(kafkaProducerService)
 
         return GarminRouter(vertx, garminDataService, authRouter)
     }
 
-    private fun initFitbitRouter(vertx: Vertx, kafkaProducerService: IKafkaProducerService): FitbitRouter
+    private fun initFitbitRouter(kafkaProducerService: IKafkaProducerService): FitbitRouter
     {
         // Configuration parameters
         val clientId = configuration.getProperty("fitbit.client.id")
@@ -106,7 +117,10 @@ class WebServerVerticle(
         val parameters = OAuth2RouterParameters(
                 configuration.getProperty("fitbit.oauth2.redirect.uri"),
                 configuration.getProperty("fitbit.oauth2.return.uri"),
-                configuration.getProperty("fitbit.oauth2.scope")
+                configuration.getProperty("fitbit.oauth2.scope"),
+                FitbitConstants.Host,
+                configuration.getProperty("fitbit.oauth2.subscription.uri"),
+                fitbitApiPort
         )
         val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userTokenDataService)
 

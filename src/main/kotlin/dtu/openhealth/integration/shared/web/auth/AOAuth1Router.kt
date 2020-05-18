@@ -29,7 +29,8 @@ abstract class AOAuth1Router(
     {
         val router = Router.router(vertx)
 
-        router.get("/auth/:userId").handler { handleAuthRedirect(it) }
+        router.get("/auth").handler { handleAuthRedirectWithoutUserId(it) }
+        router.get("/auth/:userId").handler { handleAuthRedirectWithUserId(it) }
         router.get("/callback/:userId").handler { handleAuthCallback(it) }
 
         return router
@@ -37,15 +38,25 @@ abstract class AOAuth1Router(
 
     abstract fun getUserToken(userId: String, accessToken: String, tokenSecret: String): UserToken
 
-    private fun handleAuthRedirect(routingContext: RoutingContext)
+    private fun handleAuthRedirectWithUserId(routingContext: RoutingContext)
     {
         val userId = routingContext.request().getParam("userId")
-        val id = userId ?: generateNewId()
-        val callbackUri = "${parameters.callbackUri}/$id"
+        handleAuthRedirect(userId, routingContext)
+    }
+
+    private fun handleAuthRedirectWithoutUserId(routingContext: RoutingContext)
+    {
+        val userId = generateNewId()
+        handleAuthRedirect(userId, routingContext)
+    }
+
+    private fun handleAuthRedirect(userId: String, routingContext: RoutingContext)
+    {
+        val callbackUri = "${parameters.callbackUri}/$userId"
         val oauthService = buildOAuthService(callbackUri)
 
         val requestToken = oauthService.requestToken
-        requestTokenSecrets[id] = requestToken.tokenSecret
+        requestTokenSecrets[userId] = requestToken.tokenSecret
 
         val authorizationUrl = oauthService.getAuthorizationUrl(requestToken)
         val authUrl = "$authorizationUrl&oauth_callback=$callbackUri"

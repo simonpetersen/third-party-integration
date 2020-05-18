@@ -18,6 +18,7 @@ fitbit.api.port=443
 fitbit.oauth2.redirect.uri=http://localhost:8180/login
 fitbit.oauth2.return.uri=http://localhost:8180/success
 fitbit.oauth2.scope=activity heartrate profile sleep weight
+fitbit.oauth2.subscription.uri=1/user/-/apiSubscriptions/[subscription-id].json
 fitbit.client.id=123
 fitbit.client.secret=afefw
 fitbit.verify.code=fljdslkfas

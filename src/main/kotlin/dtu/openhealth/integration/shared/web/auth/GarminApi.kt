@@ -5,7 +5,6 @@ import com.github.scribejava.core.builder.api.DefaultApi10a
 class GarminApi : DefaultApi10a() {
 
     private val baseApiPath = "https://connectapi.garmin.com"
-    private val authorizationPath = "/oauthConfirm"
     private val requestTokenPath = "/oauth-service/oauth/request_token"
     private val accessTokenPath = "/oauth-service/oauth/access_token"
 
@@ -14,7 +13,7 @@ class GarminApi : DefaultApi10a() {
     }
 
     override fun getAuthorizationBaseUrl(): String {
-        return "$baseApiPath$authorizationPath"
+        return "https://connect.garmin.com/oauthConfirm"
     }
 
     override fun getAccessTokenEndpoint(): String {

@@ -6,5 +6,7 @@ class FitbitConstants {
         const val UserParameterTag = "ownerId"
         const val DateParameterTag = "date"
         const val Fitbit = "FITBIT"
+        const val SubscriptionId = "subscription-id"
+        const val Host = "api.fitbit.com"
     }
 }

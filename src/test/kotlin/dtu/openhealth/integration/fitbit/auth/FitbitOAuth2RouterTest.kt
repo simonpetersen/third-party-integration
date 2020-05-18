@@ -19,6 +19,7 @@ import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.client.WebClient
 import io.vertx.reactivex.ext.web.handler.BodyHandler
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -30,6 +31,7 @@ class FitbitOAuth2RouterTest {
     private val testPort = oauthPort + 1
     private val redirectUri = "http://localhost:$oauthPort/login"
     private val returnUri = "http://localhost:$oauthPort/success"
+    private val subscriptionPath = "/apiSubscriptions/[subscription-id]"
     private val redirectBody = "Redirect to localhost/oauth2"
     private val authCode = "abcd12345"
     private val accessToken = "access_token_$authCode"
@@ -93,16 +95,26 @@ class FitbitOAuth2RouterTest {
 
     private fun prepareWebServerAndRunTest(vertx: Vertx, tc: VertxTestContext, userDataService : IUserTokenDataService,
                                            testFunction: (Vertx, VertxTestContext) -> Unit) {
-        val tokenPostCheckpoint = tc.checkpoint()
+        val tokenPostCp = tc.checkpoint()
+        val subscriptionCreationCp = tc.checkpoint()
         val oauth2 = OAuth2Auth.create(vertx, oauth2Options)
-        val parameters = OAuth2RouterParameters(redirectUri, returnUri, "activity")
+        val parameters = OAuth2RouterParameters(
+                redirectUri,
+                returnUri,
+                "activity",
+                "localhost",
+                subscriptionPath,
+                testPort,
+                ssl = false
+        )
         val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userDataService).getRouter()
         vertx.createHttpServer().requestHandler(authRouter).listen(oauthPort)
 
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
         router.get("/oauth2").handler { authorizeHandler(it) }
-        router.post("/oauth2/token").handler { oauth2Token(it, tokenPostCheckpoint) }
+        router.post("/oauth2/token").handler { oauth2Token(it, tokenPostCp) }
+        router.post("/apiSubscriptions/:subscriptionId").handler { subscriptionCreation(it, subscriptionCreationCp) }
         vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(testPort, tc.succeeding {
@@ -133,5 +145,14 @@ class FitbitOAuth2RouterTest {
         routingContext.response()
                 .putHeader("content-type", "application/json")
                 .end(tokenInfo.toString())
+    }
+
+    private fun subscriptionCreation(routingContext: RoutingContext, checkpoint: Checkpoint)
+    {
+        val id = routingContext.request().getParam("subscriptionId")
+        assertNotNull(id)
+        val subscriptionId = id.toInt()
+        assertThat(subscriptionId).isGreaterThan(0)
+        checkpoint.flag()
     }
 }

@@ -24,9 +24,11 @@ abstract class AOAuth2Router(
 
     private val logger = LoggerFactory.getLogger(AOAuth2Router::class.java)
 
-    override fun getRouter() : Router {
+    override fun getRouter() : Router
+    {
         val router = Router.router(vertx)
-        router.get("/auth/:userId").handler{ handleAuthRedirect(it) }
+        router.get("/auth").handler{ handleAuthRedirectWithoutUserId(it) }
+        router.get("/auth/:userId").handler{ handleAuthRedirectWithUserId(it) }
         router.get("/callback").handler { handleAuthCallback(it) }
         router.get("/success").handler { handleSuccessfulAuthentication(it) }
 
@@ -35,14 +37,25 @@ abstract class AOAuth2Router(
 
     abstract fun createUser(userId: String, jsonObject: JsonObject): UserToken
 
-    private fun handleAuthRedirect(routingContext: RoutingContext) {
+    private fun handleAuthRedirectWithUserId(routingContext: RoutingContext)
+    {
         val userId = routingContext.request().getParam("userId")
-        val id = userId ?: generateNewId()
+        handleAuthRedirect(userId, routingContext)
+    }
+
+    private fun handleAuthRedirectWithoutUserId(routingContext: RoutingContext)
+    {
+        val userId = generateNewId()
+        handleAuthRedirect(userId, routingContext)
+    }
+
+    private fun handleAuthRedirect(userId: String, routingContext: RoutingContext)
+    {
         val authorizationUri = oauth2.authorizeURL(json {
             obj(
                     "redirect_uri" to parameters.redirectUri,
                     "scope" to parameters.scope,
-                    "state" to id
+                    "state" to userId
             )
         })
 
@@ -53,7 +66,8 @@ abstract class AOAuth2Router(
                 .end()
     }
 
-    private fun handleAuthCallback(routingContext: RoutingContext) {
+    private fun handleAuthCallback(routingContext: RoutingContext)
+    {
         val code = routingContext.request().getParam("code")
         val userId = routingContext.request().getParam("state")
 
@@ -70,11 +84,13 @@ abstract class AOAuth2Router(
         }
     }
 
-    private fun handleSuccessfulAuthentication(routingContext: RoutingContext) {
+    private fun handleSuccessfulAuthentication(routingContext: RoutingContext)
+    {
         routingContext.response().end("User authenticated.")
     }
 
-    private fun authorizationCompleted(ar : AsyncResult<User>, userId: String, routingContext: RoutingContext) {
+    private fun authorizationCompleted(ar : AsyncResult<User>, userId: String, routingContext: RoutingContext)
+    {
         if (ar.succeeded()) {
             val jsonToken = ar.result().principal()
             val user = createUser(userId, jsonToken)
