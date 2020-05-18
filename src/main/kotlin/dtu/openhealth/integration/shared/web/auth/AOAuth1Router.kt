@@ -52,6 +52,21 @@ abstract class AOAuth1Router(
 
     private fun handleAuthRedirect(userId: String, routingContext: RoutingContext)
     {
+        try
+        {
+            redirectToAuthPage(userId, routingContext)
+        }
+        catch (e: Exception)
+        {
+            val errorMsg = "Error when obtaining OAuth1 request token."
+            logger.error(errorMsg, e)
+            routingContext.response().end(errorMsg)
+        }
+
+    }
+
+    private fun redirectToAuthPage(userId: String, routingContext: RoutingContext)
+    {
         val callbackUri = "${parameters.callbackUri}/$userId"
         val oauthService = buildOAuthService(callbackUri)
 
@@ -69,29 +84,50 @@ abstract class AOAuth1Router(
 
     private fun handleAuthCallback(routingContext: RoutingContext)
     {
-        val token = routingContext.request().getParam("oauth_token")
-        val verifier = routingContext.request().getParam("oauth_verifier")
         val userId = routingContext.request().getParam("userId")
-
         val requestTokenSecret = requestTokenSecrets[userId]
-        if (requestTokenSecret != null) {
-            val requestTokenOwn = OAuth1RequestToken(token, requestTokenSecret)
-            val oauthService = buildOAuthService()
-            val accessToken = oauthService.getAccessToken(requestTokenOwn, verifier)
-            requestTokenSecrets.remove(userId)
 
-            val userToken = getUserToken(userId, accessToken.token, accessToken.tokenSecret)
-            userTokenDataService.insertUser(userToken)
-
-            routingContext.response()
-                    .putHeader("Location", parameters.returnUri)
-                    .setStatusCode(302)
-                    .end()
+        if (requestTokenSecret != null)
+        {
+            getAccessToken(requestTokenSecret, userId, routingContext)
         }
-        else {
+        else
+        {
             logger.error("No requestTokenSecret found for userId $userId")
             routingContext.response().end("No request token secret found")
         }
+    }
+
+    private fun getAccessToken(tokenSecret: String, userId: String, routingContext: RoutingContext)
+    {
+        try
+        {
+            callApiGetAccessToken(tokenSecret, userId, routingContext)
+        }
+        catch (e: Exception)
+        {
+            val errorMsg = "Error when obtaining OAuth1 access token."
+            logger.error(errorMsg, e)
+            routingContext.response().end(errorMsg)
+        }
+    }
+
+    private fun callApiGetAccessToken(tokenSecret: String, userId: String, routingContext: RoutingContext)
+    {
+        val token = routingContext.request().getParam("oauth_token")
+        val verifier = routingContext.request().getParam("oauth_verifier")
+        val requestToken = OAuth1RequestToken(token, tokenSecret)
+        val oauthService = buildOAuthService()
+        val accessToken = oauthService.getAccessToken(requestToken, verifier)
+        requestTokenSecrets.remove(userId)
+
+        val userToken = getUserToken(userId, accessToken.token, accessToken.tokenSecret)
+        userTokenDataService.insertUser(userToken)
+
+        routingContext.response()
+                .putHeader("Location", parameters.returnUri)
+                .setStatusCode(302)
+                .end()
     }
 
     private fun buildOAuthService(callbackUri: String? = null) : OAuth10aService
