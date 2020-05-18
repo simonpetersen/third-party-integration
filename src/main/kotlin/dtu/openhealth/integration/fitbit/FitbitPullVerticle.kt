@@ -33,9 +33,9 @@ class FitbitPullVerticle(
                 val config = ar.result()
                 val clientId = config.getString("fitbit.client.id")
                 val clientSecret = config.getString("fitbit.client.secret")
-                val fitbitApiPort = config.getInteger("fitbit.api.port")
-                val fitbitIntervalMinutes = config.getInteger("fitbit.pull.interval.minutes")
-                val fitbitPullEnabled = config.getBoolean("fitbit.pull.enabled")
+                val fitbitApiPort = config.getString("fitbit.api.port").toInt()
+                val fitbitIntervalMinutes = config.getString("fitbit.pull.interval.minutes").toInt()
+                val fitbitPullEnabled = config.getString("fitbit.pull.enabled")?.toBoolean()
 
                 if (fitbitPullEnabled == null || !fitbitPullEnabled) {
                     logger.info("Fitbit pull service disabled in configuration")

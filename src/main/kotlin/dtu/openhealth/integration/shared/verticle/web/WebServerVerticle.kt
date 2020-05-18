@@ -32,6 +32,7 @@ import io.vertx.kotlin.core.net.pemKeyCertOptionsOf
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
 import io.vertx.reactivex.core.AbstractVerticle
+import io.vertx.reactivex.core.Promise
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
 import io.vertx.reactivex.ext.web.client.WebClient
 
@@ -57,7 +58,7 @@ class WebServerVerticle(
                 mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
                 mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
 
-                val port = config.getInteger("webserver.port")
+                val port = config.getString("webserver.port").toInt()
                 val httpServerOptions = httpServerOptionsOf(
                         port = port,
                         ssl = true,
@@ -76,8 +77,6 @@ class WebServerVerticle(
                                 logger.error(async.cause())
                             }
                         }
-
-
             }else{
                 logger.error("${ar.cause()}")
             }
@@ -110,7 +109,7 @@ class WebServerVerticle(
         val clientId = config.getString("fitbit.client.id")
         val clientSecret = config.getString("fitbit.client.secret")
         val verificationCode = config.getString("fitbit.verify.code")
-        val fitbitApiPort = config.getInteger("fitbit.api.port")
+        val fitbitApiPort = config.getString("fitbit.api.port").toInt()
 
         // Initialization
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))

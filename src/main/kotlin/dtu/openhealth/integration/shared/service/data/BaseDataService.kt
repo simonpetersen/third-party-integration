@@ -29,7 +29,7 @@ abstract class BaseDataService(vertx: Vertx) {
                     database = config.getString("postgres.database"),
                     host = config.getString("postgres.host"),
                     password = config.getString("postgres.password"),
-                    port = config.getInteger("postgres.port"),
+                    port = config.getString("postgres.port").toInt(),
                     user = config.getString("postgres.user")
                 )
                 client = PgPool.pool(vertx.delegate, connectOptions, poolOptions)
