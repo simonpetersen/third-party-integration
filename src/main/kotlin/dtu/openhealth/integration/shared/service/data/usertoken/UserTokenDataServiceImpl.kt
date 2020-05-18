@@ -3,8 +3,8 @@ package dtu.openhealth.integration.shared.service.data.usertoken
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.data.BaseDataService
 import io.vertx.kotlin.coroutines.await
-import io.vertx.core.Vertx
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.reactivex.core.Vertx
 import io.vertx.sqlclient.Row
 import io.vertx.sqlclient.RowSet
 

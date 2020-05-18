@@ -11,22 +11,20 @@ import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.http.HttpServiceImpl
-import dtu.openhealth.integration.shared.service.tokenrefresh.AOAuth2TokenRefreshServiceImpl
 import dtu.openhealth.integration.shared.service.push.ThirdPartyPushServiceImpl
-import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.fitbit.FitbitRestUrl
 import dtu.openhealth.integration.fitbit.data.FitbitConstants
 import dtu.openhealth.integration.fitbit.service.tokenrefresh.FitbitTokenRefreshServiceImpl
 import dtu.openhealth.integration.garmin.auth.GarminOAuth1Router
 import dtu.openhealth.integration.shared.service.notification.ThirdPartyNotificationServiceImpl
+import dtu.openhealth.integration.shared.util.ConfigVault
 import dtu.openhealth.integration.shared.web.http.HttpOAuth2ConnectorClient
 import dtu.openhealth.integration.shared.web.auth.GarminApi
 import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
-import io.vertx.core.http.HttpServerOptions
+import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
-import io.vertx.core.net.PemKeyCertOptions
 import io.vertx.ext.auth.oauth2.OAuth2ClientOptions
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
 import io.vertx.kotlin.core.http.httpServerOptionsOf
@@ -34,7 +32,6 @@ import io.vertx.kotlin.core.net.pemKeyCertOptionsOf
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
 import io.vertx.reactivex.core.AbstractVerticle
-import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
 import io.vertx.reactivex.ext.web.client.WebClient
 
@@ -43,46 +40,57 @@ class WebServerVerticle(
         private val kafkaProducerService: IKafkaProducerService
 ): AbstractVerticle() {
 
-    private val configuration = PropertiesLoader.loadProperties()
+    //private val configuration = PropertiesLoader.loadProperties()
     private val logger = LoggerFactory.getLogger(WebServerVerticle::class.java)
 
     override fun start()
     {
-        val garminRouter = initGarminRouter(kafkaProducerService)
-        val fitbitRouter = initFitbitRouter(kafkaProducerService)
+        ConfigVault().getConfigRetriever(vertx).getConfig { ar ->
+            if(ar.succeeded()){
+                logger.info("Configuration retrieved from the vault")
+                val config = ar.result()
 
-        val mainRouter = Router.router(vertx)
-        mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
-        mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
+                val garminRouter = initGarminRouter(kafkaProducerService, config)
+                val fitbitRouter = initFitbitRouter(kafkaProducerService, config)
 
-        val port = configuration.getProperty("webserver.port").toInt()
-        val httpServerOptions = httpServerOptionsOf(
-                port = port,
-                ssl = true,
-                pemKeyCertOptions = pemKeyCertOptionsOf(
-                        certPath = configuration.getProperty("ssl.certificate.chain.file"),
-                        keyPath = configuration.getProperty("ssl.certificate.key.file")
+                val mainRouter = Router.router(vertx)
+                mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
+                mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
+
+                val port = config.getInteger("webserver.port")
+                val httpServerOptions = httpServerOptionsOf(
+                        port = port,
+                        ssl = true,
+                        pemKeyCertOptions = pemKeyCertOptionsOf(
+                                certPath = config.getString("ssl.certificate.chain.file"),
+                                keyPath = config.getString("ssl.certificate.key.file")
+                        )
                 )
-        )
 
-        vertx.createHttpServer(httpServerOptions)
-                .requestHandler(mainRouter)
-                .listen { ar ->
-                    if (ar.succeeded()) {
-                        logger.info("Web server verticle successfuly started on port: ${ar.result().actualPort()}")
-                    } else {
-                        logger.error(ar.cause())
-                    }
-                }
+                vertx.createHttpServer(httpServerOptions)
+                        .requestHandler(mainRouter)
+                        .listen { async ->
+                            if (async.succeeded()) {
+                                logger.info("Web server verticle started on port: ${async.result().actualPort()}")
+                            } else {
+                                logger.error(async.cause())
+                            }
+                        }
+
+
+            }else{
+                logger.error("${ar.cause()}")
+            }
+        }
 
     }
 
-    private fun initGarminRouter(kafkaProducerService: IKafkaProducerService): GarminRouter
+    private fun initGarminRouter(kafkaProducerService: IKafkaProducerService, config: JsonObject): GarminRouter
     {
-        val consumerKey = configuration.getProperty("garmin.consumer.key")
-        val consumerSecret = configuration.getProperty("garmin.consumer.secret")
-        val callbackUrl = configuration.getProperty("garmin.callback.url")
-        val resultUrl = configuration.getProperty("garmin.result.url")
+        val consumerKey = config.getString("garmin.consumer.key")
+        val consumerSecret = config.getString("garmin.consumer.secret")
+        val callbackUrl = config.getString("garmin.callback.url")
+        val resultUrl = config.getString("garmin.result.url")
         val parameters = OAuth1RouterParameters(
                 callbackUrl,
                 resultUrl,
@@ -96,13 +104,13 @@ class WebServerVerticle(
         return GarminRouter(vertx, garminDataService, authRouter)
     }
 
-    private fun initFitbitRouter(kafkaProducerService: IKafkaProducerService): FitbitRouter
+    private fun initFitbitRouter(kafkaProducerService: IKafkaProducerService, config: JsonObject): FitbitRouter
     {
         // Configuration parameters
-        val clientId = configuration.getProperty("fitbit.client.id")
-        val clientSecret = configuration.getProperty("fitbit.client.secret")
-        val verificationCode = configuration.getProperty("fitbit.verify.code")
-        val fitbitApiPort = configuration.getProperty("fitbit.api.port").toInt()
+        val clientId = config.getString("fitbit.client.id")
+        val clientSecret = config.getString("fitbit.client.secret")
+        val verificationCode = config.getString("fitbit.verify.code")
+        val fitbitApiPort = config.getInteger("fitbit.api.port")
 
         // Initialization
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))
@@ -116,11 +124,11 @@ class WebServerVerticle(
         val oauth2Options = fitbitOAuthClientOptions(clientId, clientSecret)
         val oauth2 = OAuth2Auth.create(vertx, oauth2Options)
         val parameters = OAuth2RouterParameters(
-                configuration.getProperty("fitbit.oauth2.redirect.uri"),
-                configuration.getProperty("fitbit.oauth2.return.uri"),
-                configuration.getProperty("fitbit.oauth2.scope"),
+                config.getString("fitbit.oauth2.redirect.uri"),
+                config.getString("fitbit.oauth2.return.uri"),
+                config.getString("fitbit.oauth2.scope"),
                 FitbitConstants.Host,
-                configuration.getProperty("fitbit.oauth2.subscription.uri"),
+                config.getString("fitbit.oauth2.subscription.uri"),
                 fitbitApiPort
         )
         val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userTokenDataService)

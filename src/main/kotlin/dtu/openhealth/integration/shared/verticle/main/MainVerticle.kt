@@ -11,7 +11,7 @@ class MainVerticle : AbstractVerticle() {
 
     override fun start()
     {
-        val userTokenDataService = UserTokenDataServiceImpl(vertx.delegate)
+        val userTokenDataService = UserTokenDataServiceImpl(vertx)
         val kafkaProducerService = KafkaProducerServiceImpl(vertx)
         vertx.deployVerticle(WebServerVerticle(userTokenDataService, kafkaProducerService))
         vertx.deployVerticle(FitbitPullVerticle(userTokenDataService, kafkaProducerService))

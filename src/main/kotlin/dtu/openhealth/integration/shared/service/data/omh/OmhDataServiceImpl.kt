@@ -3,9 +3,9 @@ package dtu.openhealth.integration.shared.service.data.omh
 import dtu.openhealth.integration.shared.model.OmhData
 import dtu.openhealth.integration.shared.service.data.BaseDataService
 import dtu.openhealth.integration.shared.util.OmhDataType
-import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.reactivex.core.Vertx
 import io.vertx.sqlclient.Row
 import io.vertx.sqlclient.RowSet
 import java.time.LocalDate

@@ -5,7 +5,9 @@ build/
 !**/src/main/**
 !**/src/test/**
 **/src/main/resources/application.properties
+**/src/main/resources/vault-config.json
 **/src/main/.DS_Store
+vault/**
 
 ### STS ###
 .apt_generated

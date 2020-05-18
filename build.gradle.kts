@@ -38,6 +38,8 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:3.9.0")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("com.github.maricn:logback-slack-appender:1.4.0")
+    implementation("io.vertx:vertx-config:3.9.0")
+    implementation("io.vertx:vertx-config-vault:3.9.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("org.assertj:assertj-core:3.11.1")
     testImplementation("io.vertx:vertx-junit5:3.8.5")

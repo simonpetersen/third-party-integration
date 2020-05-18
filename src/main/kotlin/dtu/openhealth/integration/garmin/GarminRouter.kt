@@ -17,7 +17,6 @@ class GarminRouter(private val vertx: Vertx,
                    private val authRouter: IAuthorizationRouter) : BasePushEndpointRouter(pushService) {
 
     private val logger = LoggerFactory.getLogger(GarminRouter::class.java)
-    private val configuration =  PropertiesLoader.loadProperties()
 
     fun getRouter() : Router {
         val router = Router.router(vertx)
