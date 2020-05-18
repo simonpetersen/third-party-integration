@@ -1,9 +1,10 @@
 package dtu.openhealth.integration.shared.web.auth
 
 import com.github.scribejava.core.builder.ServiceBuilder
-import com.github.scribejava.core.httpclient.HttpClientConfig
+import com.github.scribejava.core.httpclient.HttpClient
 import com.github.scribejava.core.model.OAuth1RequestToken
 import com.github.scribejava.core.oauth.OAuth10aService
+import com.github.scribejava.httpclient.ahc.AhcHttpClient
 import com.github.scribejava.httpclient.ahc.AhcHttpClientConfig
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
@@ -58,7 +59,7 @@ abstract class AOAuth1Router(
         }
         catch (e: Exception)
         {
-            val errorMsg = "Error when obtaining OAuth1 request token."
+            val errorMsg = "Error when obtaining OAuth1 request token"
             logger.error(errorMsg, e)
             routingContext.response().end(errorMsg)
         }
@@ -106,7 +107,7 @@ abstract class AOAuth1Router(
         }
         catch (e: Exception)
         {
-            val errorMsg = "Error when obtaining OAuth1 access token."
+            val errorMsg = "Error when obtaining OAuth1 access token"
             logger.error(errorMsg, e)
             routingContext.response().end(errorMsg)
         }
@@ -135,11 +136,16 @@ abstract class AOAuth1Router(
         return ServiceBuilder(parameters.consumerKey)
                 .apiSecret(parameters.consumerSecret)
                 .callback(callbackUri)
-                .httpClientConfig(httpClientConfig())
+                //.httpClientConfig(httpClientConfig())
+                .httpClient(httpClient())
                 .build(parameters.api)
     }
 
-    private fun httpClientConfig(): HttpClientConfig
+    private fun httpClient(): HttpClient {
+        return AhcHttpClient(httpClientConfig())
+    }
+
+    private fun httpClientConfig(): AhcHttpClientConfig
     {
         return AhcHttpClientConfig(DefaultAsyncHttpClientConfig.Builder()
                 .setMaxConnections(5)
