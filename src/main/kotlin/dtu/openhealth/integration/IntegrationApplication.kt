@@ -1,8 +1,7 @@
 package dtu.openhealth.integration
 
 import io.vertx.reactivex.core.Vertx
-import dtu.openhealth.integration.shared.verticle.MainVerticle
-import io.vertx.reactivex.config.ConfigRetriever
+import dtu.openhealth.integration.shared.verticle.main.MainVerticle
 
 
 class IntegrationApplication

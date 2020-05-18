@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.DailySummaryGarmin
-import dtu.openhealth.integration.shared.service.ThirdPartyPushService
+import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -76,7 +76,7 @@ class DailyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val thirdPartyPushService : IThirdPartyPushService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 

@@ -2,7 +2,7 @@ package dtu.openhealth.integration.kafka.consumer
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.PropertiesLoader
-import dtu.openhealth.integration.shared.service.OmhService
+import dtu.openhealth.integration.shared.service.omh.OmhService
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer

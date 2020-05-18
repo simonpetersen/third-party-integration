@@ -5,5 +5,6 @@ class FitbitConstants {
         const val MetricType = "METRIC"
         const val UserParameterTag = "ownerId"
         const val DateParameterTag = "date"
+        const val Fitbit = "FITBIT"
     }
 }

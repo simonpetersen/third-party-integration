@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.PulseOXSummaryGarmin
-import dtu.openhealth.integration.shared.service.ThirdPartyPushService
+import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -24,7 +24,7 @@ class PulseEndpointTest {
     private val port = 8184
     private val validJsonString = """
     {
-        "pulseOX":
+        "pulseox":
         [
             {
                 "userId": "4aacafe82427c251df9c9592d0c06768", 
@@ -47,7 +47,7 @@ class PulseEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val thirdPartyPushService : IThirdPartyPushService = mock()
         val authRouter: IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 

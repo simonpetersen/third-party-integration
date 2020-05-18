@@ -3,7 +3,7 @@ package dtu.openhealth.integration.garmin.verticle
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.RespirationSummaryGarmin
-import dtu.openhealth.integration.shared.service.ThirdPartyPushService
+import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -21,7 +21,7 @@ class RespirationsEndpointTest {
     private val port = 8184
     private val validJsonString ="""
     {
-        "respirations":
+        "allDayRespiration":
         [
             {
                 "userId": "4aacafe82427c251df9c9592d0c06768", 
@@ -73,7 +73,7 @@ class RespirationsEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val thirdPartyPushService : IThirdPartyPushService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 

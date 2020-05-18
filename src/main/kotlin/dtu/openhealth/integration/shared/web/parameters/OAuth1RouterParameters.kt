@@ -7,4 +7,5 @@ data class OAuth1RouterParameters(
         val returnUri : String,
         val consumerKey: String,
         val consumerSecret: String,
-        val api: DefaultApi10a)
+        val api: DefaultApi10a
+)

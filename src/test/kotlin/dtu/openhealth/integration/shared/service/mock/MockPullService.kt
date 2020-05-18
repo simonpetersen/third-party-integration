@@ -1,21 +1,25 @@
 package dtu.openhealth.integration.shared.service.mock
 
+import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.UserToken
-import dtu.openhealth.integration.shared.service.HttpService
-import dtu.openhealth.integration.shared.service.ThirdPartyPullService
+import dtu.openhealth.integration.shared.service.http.IHttpService
+import dtu.openhealth.integration.shared.service.pull.AThirdPartyPullService
+import dtu.openhealth.integration.shared.service.tokenrefresh.ITokenRefreshService
 
 class MockPullService(
-        httpService: HttpService,
+        httpService: IHttpService,
         endpointList: List<RestEndpoint>,
+        kafkaProducerService: IKafkaProducerService,
+        tokenRefreshService: ITokenRefreshService,
         private val userTokens: List<UserToken>
-): ThirdPartyPullService(httpService, endpointList) {
+): AThirdPartyPullService(httpService, kafkaProducerService, endpointList, tokenRefreshService) {
 
-    override fun getUserList(): List<UserToken> {
+    override suspend fun getUserList(): List<UserToken> {
         return userTokens
     }
 
-    override fun getUserParameters(userToken: UserToken): Map<String, String> {
-        return mapOf()
+    override fun getUserParameterList(userToken: UserToken): List<Map<String, String>> {
+        return listOf(emptyMap())
     }
 }

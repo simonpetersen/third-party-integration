@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.fitbit.FitbitRouter
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
-import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
+import dtu.openhealth.integration.shared.service.notification.IThirdPartyNotificationService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -37,7 +37,7 @@ class FitbitRouterTest {
     fun testWebhookCorrectVerificationCode(vertx: Vertx, testContext: VertxTestContext)
     {
         val expectedStatusCode = 204
-        val notificationService : ThirdPartyNotificationService = mock()
+        val notificationService : IThirdPartyNotificationService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
         val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter, correctVerificationCode)
@@ -51,7 +51,7 @@ class FitbitRouterTest {
     {
         val expectedStatusCode = 404
         val incorrectVerificationCode = "abcd1234"
-        val notificationService : ThirdPartyNotificationService = mock()
+        val notificationService : IThirdPartyNotificationService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
         val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter, correctVerificationCode)
@@ -63,7 +63,7 @@ class FitbitRouterTest {
     @Test
     fun testNotificationEndpoint(vertx: Vertx, testContext: VertxTestContext)
     {
-        val notificationService : ThirdPartyNotificationService = mock()
+        val notificationService : IThirdPartyNotificationService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
         val fitbitRouter = FitbitRouter(vertx, notificationService, authRouter, correctVerificationCode)
@@ -77,7 +77,7 @@ class FitbitRouterTest {
                                          verificationCode: String, expectedStatusCode: Int)
     {
         val client: WebClient = WebClient.create(vertx)
-        client.get(port, "localhost", "/notification/webhook?verify=$verificationCode")
+        client.get(port, "localhost", "/notification?verify=$verificationCode")
                 .rxSend()
                 .subscribe(
                         { response ->
@@ -91,7 +91,7 @@ class FitbitRouterTest {
                         })
     }
 
-    private fun notificationTestFunction(vertx: Vertx, testContext: VertxTestContext, notificationService: ThirdPartyNotificationService)
+    private fun notificationTestFunction(vertx: Vertx, testContext: VertxTestContext, notificationService: IThirdPartyNotificationService)
     {
         val expectedNotificationList = getNotificationList()
         val client: WebClient = WebClient.create(vertx)

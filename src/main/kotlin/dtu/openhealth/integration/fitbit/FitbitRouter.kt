@@ -1,8 +1,8 @@
 package dtu.openhealth.integration.fitbit
 
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
-import dtu.openhealth.integration.shared.service.ThirdPartyNotificationService
-import dtu.openhealth.integration.shared.verticle.BaseNotificationEndpointRouter
+import dtu.openhealth.integration.shared.service.notification.IThirdPartyNotificationService
+import dtu.openhealth.integration.shared.web.router.BaseNotificationEndpointRouter
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
@@ -13,7 +13,7 @@ import io.vertx.reactivex.ext.web.handler.BodyHandler
 
 class FitbitRouter(
         private val vertx: Vertx,
-        notificationService: ThirdPartyNotificationService,
+        notificationService: IThirdPartyNotificationService,
         private val authRouter: IAuthorizationRouter,
         private val verificationCode: String
 ): BaseNotificationEndpointRouter(vertx, notificationService) {
@@ -25,12 +25,7 @@ class FitbitRouter(
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
         router.post("/notification").handler { handleNotification(it) }
-        router.get("/notification").handler {
-            logger.info("/notification called for verification")
-            handleVerification(it) }
-        router.get("/webhook").handler {
-            logger.info("/webhook called for verification")
-            handleVerification(it) }
+        router.get("/notification").handler { handleVerification(it) }
 
         router.mountSubRouter("/", authRouter.getRouter())
 

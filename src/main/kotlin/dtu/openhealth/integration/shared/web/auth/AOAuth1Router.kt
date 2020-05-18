@@ -1,0 +1,110 @@
+package dtu.openhealth.integration.shared.web.auth
+
+import com.github.scribejava.core.builder.ServiceBuilder
+import com.github.scribejava.core.httpclient.HttpClientConfig
+import com.github.scribejava.core.model.OAuth1RequestToken
+import com.github.scribejava.core.oauth.OAuth10aService
+import com.github.scribejava.httpclient.ahc.AhcHttpClientConfig
+import dtu.openhealth.integration.shared.model.UserToken
+import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
+import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
+import io.vertx.core.logging.LoggerFactory
+import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.ext.web.Router
+import io.vertx.reactivex.ext.web.RoutingContext
+import org.asynchttpclient.DefaultAsyncHttpClientConfig
+import java.util.*
+
+
+abstract class AOAuth1Router(
+        private val vertx: Vertx,
+        private val parameters: OAuth1RouterParameters,
+        private val userTokenDataService: IUserTokenDataService,
+        private val requestTokenSecrets : MutableMap<String, String> = mutableMapOf()
+): IAuthorizationRouter {
+
+    private val logger = LoggerFactory.getLogger(AOAuth1Router::class.java)
+
+    override fun getRouter(): Router
+    {
+        val router = Router.router(vertx)
+
+        router.get("/auth/:userId").handler { handleAuthRedirect(it) }
+        router.get("/callback/:userId").handler { handleAuthCallback(it) }
+
+        return router
+    }
+
+    abstract fun getUserToken(userId: String, accessToken: String, tokenSecret: String): UserToken
+
+    private fun handleAuthRedirect(routingContext: RoutingContext)
+    {
+        val userId = routingContext.request().getParam("userId")
+        val id = userId ?: generateNewId()
+        val callbackUri = "${parameters.callbackUri}/$id"
+        val oauthService = buildOAuthService(callbackUri)
+
+        val requestToken = oauthService.requestToken
+        requestTokenSecrets[id] = requestToken.tokenSecret
+
+        val authorizationUrl = oauthService.getAuthorizationUrl(requestToken)
+        val authUrl = "$authorizationUrl&oauth_callback=$callbackUri"
+
+        routingContext.response()
+                .putHeader("Location", authUrl)
+                .setStatusCode(302)
+                .end()
+    }
+
+    private fun handleAuthCallback(routingContext: RoutingContext)
+    {
+        val token = routingContext.request().getParam("oauth_token")
+        val verifier = routingContext.request().getParam("oauth_verifier")
+        val userId = routingContext.request().getParam("userId")
+
+        val requestTokenSecret = requestTokenSecrets[userId]
+        if (requestTokenSecret != null) {
+            val requestTokenOwn = OAuth1RequestToken(token, requestTokenSecret)
+            val oauthService = buildOAuthService()
+            val accessToken = oauthService.getAccessToken(requestTokenOwn, verifier)
+            requestTokenSecrets.remove(userId)
+
+            val userToken = getUserToken(userId, accessToken.token, accessToken.tokenSecret)
+            userTokenDataService.insertUser(userToken)
+
+            routingContext.response()
+                    .putHeader("Location", parameters.returnUri)
+                    .setStatusCode(302)
+                    .end()
+        }
+        else {
+            logger.error("No requestTokenSecret found for userId $userId")
+            routingContext.response().end("No request token secret found")
+        }
+    }
+
+    private fun buildOAuthService(callbackUri: String? = null) : OAuth10aService
+    {
+        return ServiceBuilder(parameters.consumerKey)
+                .apiSecret(parameters.consumerSecret)
+                .callback(callbackUri)
+                .httpClientConfig(httpClientConfig())
+                .build(parameters.api)
+    }
+
+    private fun httpClientConfig(): HttpClientConfig
+    {
+        return AhcHttpClientConfig(DefaultAsyncHttpClientConfig.Builder()
+                .setMaxConnections(5)
+                .setRequestTimeout(10000)
+                .setPooledConnectionIdleTimeout(1000)
+                .setReadTimeout(1000)
+                .build())
+    }
+
+    private fun generateNewId(): String
+    {
+        val uniqueID = UUID.randomUUID().toString()
+        return uniqueID.substring(0, 18)
+    }
+}

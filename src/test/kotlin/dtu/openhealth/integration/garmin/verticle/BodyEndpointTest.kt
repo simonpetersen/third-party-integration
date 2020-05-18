@@ -3,7 +3,7 @@ package dtu.openhealth.integration.garmin.verticle
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.BodyCompositionSummaryGarmin
-import dtu.openhealth.integration.shared.service.ThirdPartyPushService
+import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.reactivex.core.Vertx
 import io.vertx.junit5.VertxExtension
@@ -62,7 +62,7 @@ class BodyEndpointTest {
 
     @Test
     fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val thirdPartyPushService : IThirdPartyPushService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
@@ -87,7 +87,7 @@ class BodyEndpointTest {
 
     @Test
     fun testInvalidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
-        val thirdPartyPushService : ThirdPartyPushService = mock()
+        val thirdPartyPushService : IThirdPartyPushService = mock()
         val authRouter : IAuthorizationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
