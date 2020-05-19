@@ -37,6 +37,7 @@ class KafkaConsumer(private val omhService: OmhService) {
     }
 
     private fun consume() {
+        logger.info("Starting the Kafka consumer")
         consumer?.handler { record ->
             logger.info("Getting data from Kafka stream $record")
             omhService.saveNewestOmhData(record.value())
