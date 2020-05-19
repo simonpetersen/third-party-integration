@@ -8,14 +8,14 @@ import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
 import java.util.HashMap
 
-class KafkaConsumer(vertx: Vertx, private val omhService: OmhService) {
+class KafkaConsumer(private val omhService: OmhService) {
 
     private val logger = LoggerFactory.getLogger(KafkaConsumer::class.java)
 
     private var topic = ""
     private var consumer: KafkaConsumer<String, OmhDTO>? = null
 
-    init {
+    fun startConsumer(vertx: Vertx) {
         ConfigVault().getConfigRetriever(vertx).getConfig { ar ->
             if(ar.succeeded()){
                 logger.info("Configuration retrieved from the vault")
@@ -29,13 +29,14 @@ class KafkaConsumer(vertx: Vertx, private val omhService: OmhService) {
                 kafkaConfig["enable.auto.commit"] = config.getString("kafka.enable.auto.commit")
                 topic = config.getString("kafka.topic")
                 consumer = KafkaConsumer.create(vertx, kafkaConfig)
+                consume()
             }else{
                 logger.error(ar.cause())
             }
         }
     }
 
-    fun consume() {
+    private fun consume() {
         consumer?.handler { record ->
             logger.info("Getting data from Kafka stream $record")
             omhService.saveNewestOmhData(record.value())
