@@ -71,7 +71,7 @@ abstract class AOAuth2Router(
         val code = routingContext.request().getParam("code")
         val userId = routingContext.request().getParam("state")
 
-        var tokenConfig = json {
+        val tokenConfig = json {
             obj(
                     "code" to code,
                     "redirect_uri" to parameters.redirectUri,

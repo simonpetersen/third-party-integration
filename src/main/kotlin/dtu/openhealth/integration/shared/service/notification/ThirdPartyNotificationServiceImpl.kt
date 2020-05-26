@@ -1,19 +1,14 @@
 package dtu.openhealth.integration.shared.service.notification
 
 import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
-import dtu.openhealth.integration.shared.model.ThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.ARetrievingService
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.http.IHttpService
-import dtu.openhealth.integration.shared.service.tokenrefresh.ITokenRefreshService
+import dtu.openhealth.integration.shared.service.token.refresh.ITokenRefreshService
 import io.vertx.core.logging.LoggerFactory
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import java.time.LocalDateTime
 
 
 class ThirdPartyNotificationServiceImpl(
@@ -21,7 +16,7 @@ class ThirdPartyNotificationServiceImpl(
         private val endpointMap: Map<String, List<RestEndpoint>>,
         private val userTokenDataService: IUserTokenDataService,
         kafkaProducerService: IKafkaProducerService,
-        private val tokenRefreshService: ITokenRefreshService
+        private val tokenRefreshService: ITokenRefreshService? = null
 ) : IThirdPartyNotificationService, ARetrievingService(httpService, kafkaProducerService) {
 
     private val logger = LoggerFactory.getLogger(ThirdPartyNotificationServiceImpl::class.java)
@@ -52,11 +47,12 @@ class ThirdPartyNotificationServiceImpl(
         }
     }
 
-    private suspend fun callApiForUser(userToken: UserToken, dataType: String, parameters: Map<String, String>)
+    private fun callApiForUser(userToken: UserToken, dataType: String, parameters: Map<String, String>)
     {
-        if (tokenIsExpired(userToken.expireDateTime)) {
-            val updatedUser = tokenRefreshService.refreshToken(userToken)
-            callApi(updatedUser, dataType, parameters)
+        if (tokenRefreshService != null && tokenIsExpired(userToken.expireDateTime)) {
+            tokenRefreshService.refreshToken(userToken) {
+                updatedToken -> callApi(updatedToken, dataType, parameters)
+            }
         }
         else {
             callApi(userToken, dataType, parameters)

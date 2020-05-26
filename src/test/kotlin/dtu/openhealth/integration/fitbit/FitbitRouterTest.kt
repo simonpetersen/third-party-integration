@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.fitbit.verticle
+package dtu.openhealth.integration.fitbit
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify

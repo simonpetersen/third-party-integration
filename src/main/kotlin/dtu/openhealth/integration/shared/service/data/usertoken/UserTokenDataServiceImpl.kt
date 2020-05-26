@@ -53,14 +53,31 @@ class UserTokenDataServiceImpl(
         }
     }
 
-    override suspend fun updateTokens(userToken: UserToken)
+    override fun updateTokens(userToken: UserToken)
     {
         val query = "UPDATE USERTOKENS SET ACCESSTOKEN = '${userToken.token}', " +
                 "REFRESHTOKEN = '${userToken.refreshToken}', " +
                 "EXPIREDATETIME = '${userToken.expireDateTime}' " +
                 "WHERE EXTUSERID = '${userToken.extUserId}' AND USERID = '${userToken.userId}'"
 
-        executeQuery(query).await()
+        executeQuery(query).onComplete { ar ->
+            if (ar.failed()) {
+                val errorMsg = "Error updating $userToken in database"
+                logger.error(errorMsg, ar.cause())
+            }
+        }
+    }
+
+    override fun deleteTokensInList(userIdList: List<String>) {
+        val userList = userIdList.joinToString { "'$it'" }
+        val query = "DELETE FROM USERTOKENS WHERE USERID IN ($userList)"
+
+        executeQuery(query).onComplete { ar ->
+            if (ar.failed()) {
+                val errorMsg = "Error when deleting user list"
+                logger.error(errorMsg, ar.cause())
+            }
+        }
     }
 
     override suspend fun getTokensFromThirdParty(thirdParty: String): List<UserToken> {
@@ -79,6 +96,22 @@ class UserTokenDataServiceImpl(
             }
             else {
                 val errorMsg = "Error getting userId from $extId from database"
+                logger.error(errorMsg, ar.cause())
+            }
+        }
+    }
+
+    override fun getTokensFromIdList(idList: List<String>, callback: (List<UserToken>) -> Unit) {
+        val userList = idList.joinToString { "'$it'" }
+        val query = "SELECT * FROM USERTOKENS WHERE USERID IN ($userList)"
+
+        executeQuery(query).onComplete {ar ->
+            if (ar.succeeded()) {
+                val userTokenList = getUserTokensFromResultSet(ar.result())
+                callback(userTokenList)
+            }
+            else {
+                val errorMsg = "Error when reading user list from ids $idList"
                 logger.error(errorMsg, ar.cause())
             }
         }

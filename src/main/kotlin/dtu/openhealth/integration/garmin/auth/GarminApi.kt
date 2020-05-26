@@ -1,4 +1,4 @@
-package dtu.openhealth.integration.shared.web.auth
+package dtu.openhealth.integration.garmin.auth
 
 import com.github.scribejava.core.builder.api.DefaultApi10a
 

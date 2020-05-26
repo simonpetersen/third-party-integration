@@ -14,7 +14,8 @@ class GarminOAuth1Router(
         requestTokenSecrets : MutableMap<String, String> = mutableMapOf()
 ): AOAuth1Router(vertx, parameters, userTokenDataService, requestTokenSecrets) {
 
-    override fun getUserToken(userId: String, accessToken: String, tokenSecret: String): UserToken {
+    override fun getUserToken(userId: String, accessToken: String, tokenSecret: String): UserToken
+    {
         return UserToken(userId, accessToken, GarminConstants.Garmin, accessToken, tokenSecret = tokenSecret)
     }
 }

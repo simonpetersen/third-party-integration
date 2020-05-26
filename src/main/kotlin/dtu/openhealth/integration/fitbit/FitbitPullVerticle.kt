@@ -5,7 +5,7 @@ import dtu.openhealth.integration.fitbit.data.heartrate.FitbitHeartRateSummary
 import dtu.openhealth.integration.fitbit.data.profile.FitbitProfile
 import dtu.openhealth.integration.fitbit.data.sleep.FitbitSleepLogSummary
 import dtu.openhealth.integration.fitbit.service.pull.FitbitPullService
-import dtu.openhealth.integration.fitbit.service.tokenrefresh.FitbitTokenRefreshServiceImpl
+import dtu.openhealth.integration.fitbit.service.token.refresh.FitbitTokenRefreshServiceImpl
 import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService

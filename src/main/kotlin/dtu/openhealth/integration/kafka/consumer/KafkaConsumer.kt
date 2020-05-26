@@ -3,12 +3,17 @@ package dtu.openhealth.integration.kafka.consumer
 import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.util.PropertiesLoader
 import dtu.openhealth.integration.shared.service.omh.OmhService
+import io.vertx.core.AsyncResult
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
+import io.vertx.reactivex.kafka.client.consumer.KafkaConsumerRecord
 import java.util.HashMap
 
-class KafkaConsumer(vertx: Vertx, private val omhService: OmhService) {
+class KafkaConsumer(
+        vertx: Vertx,
+        private val omhService: OmhService
+) {
 
     private val logger = LoggerFactory.getLogger(KafkaConsumer::class.java)
     private val configuration = PropertiesLoader.loadProperties()
@@ -25,18 +30,26 @@ class KafkaConsumer(vertx: Vertx, private val omhService: OmhService) {
         consumer = KafkaConsumer.create(vertx, config)
     }
 
-    fun consume() {
-        consumer.handler { record ->
-            logger.info("Getting data from Kafka stream $record")
-            omhService.saveNewestOmhData(record.value())
-        }
+    fun consume()
+    {
+        val topic = configuration.getProperty("kafka.topic")
+        consumer.handler { handleRecord(it) }
+        consumer.subscribe(topic) { topicSubscribeHandler(it, topic) }
+    }
 
-        consumer.subscribe(configuration.getProperty("kafka.topic")) { ar ->
-            if (ar.succeeded()) {
-                logger.info("subscribed")
-            } else {
-                logger.error(ar.cause())
-            }
+    private fun handleRecord(record: KafkaConsumerRecord<String,OmhDTO>)
+    {
+        logger.info("Getting data from Kafka stream $record")
+        omhService.saveNewestOmhData(record.value())
+    }
+
+    private fun topicSubscribeHandler(ar: AsyncResult<Void>, topic: String)
+    {
+        if (ar.succeeded()) {
+            logger.info("Successfully subscribed to $topic")
+        } else {
+            val errorMsg = "Error occurred when subscribing to $topic"
+            logger.error(errorMsg, ar.cause())
         }
     }
 }

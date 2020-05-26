@@ -5,7 +5,7 @@ import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.http.IHttpService
 import dtu.openhealth.integration.shared.service.pull.AThirdPartyPullService
-import dtu.openhealth.integration.shared.service.tokenrefresh.ITokenRefreshService
+import dtu.openhealth.integration.shared.service.token.refresh.ITokenRefreshService
 
 class MockPullService(
         httpService: IHttpService,
@@ -19,7 +19,7 @@ class MockPullService(
         return userTokens
     }
 
-    override fun getUserParameterList(userToken: UserToken): List<Map<String, String>> {
+    override fun prepareUserParameterList(userToken: UserToken): List<Map<String, String>> {
         return listOf(emptyMap())
     }
 }

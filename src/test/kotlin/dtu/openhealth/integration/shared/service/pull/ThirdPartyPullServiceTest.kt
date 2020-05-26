@@ -6,7 +6,7 @@ import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.http.IHttpService
 import dtu.openhealth.integration.shared.service.mock.MockPullService
-import dtu.openhealth.integration.shared.service.tokenrefresh.ITokenRefreshService
+import dtu.openhealth.integration.shared.service.token.refresh.ITokenRefreshService
 import io.reactivex.Single
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test

@@ -9,7 +9,9 @@ import io.vertx.reactivex.kafka.client.producer.KafkaProducerRecord
 import io.vertx.reactivex.core.Vertx
 import java.util.HashMap
 
-class KafkaProducerServiceImpl(vertx: Vertx) : IKafkaProducerService {
+class KafkaProducerServiceImpl(
+        vertx: Vertx
+): IKafkaProducerService {
 
     private val logger = LoggerFactory.getLogger(KafkaProducerServiceImpl::class.java)
     private val configuration = PropertiesLoader.loadProperties()
@@ -23,7 +25,8 @@ class KafkaProducerServiceImpl(vertx: Vertx) : IKafkaProducerService {
         config["acks"] = configuration.getProperty("kafka.acks")
         producer = KafkaProducer.create(vertx, config)
     }
-    override fun sendOmhData(omhDTO: OmhDTO) {
+    override fun sendOmhData(omhDTO: OmhDTO)
+    {
         logger.info("Send data to Kafka stream: $omhDTO")
         producer.send(KafkaProducerRecord.create(configuration.getProperty("kafka.topic"), omhDTO))
     }

@@ -94,7 +94,8 @@ class FitbitOAuth2RouterTest {
     }
 
     private fun prepareWebServerAndRunTest(vertx: Vertx, tc: VertxTestContext, userDataService : IUserTokenDataService,
-                                           testFunction: (Vertx, VertxTestContext) -> Unit) {
+                                           testFunction: (
+                                                   Vertx, VertxTestContext) -> Unit) {
         val tokenPostCp = tc.checkpoint()
         val subscriptionCreationCp = tc.checkpoint()
         val oauth2 = OAuth2Auth.create(vertx, oauth2Options)
@@ -149,10 +150,10 @@ class FitbitOAuth2RouterTest {
 
     private fun subscriptionCreation(routingContext: RoutingContext, checkpoint: Checkpoint)
     {
-        val id = routingContext.request().getParam("subscriptionId")
-        assertNotNull(id)
-        val subscriptionId = id.toInt()
-        assertThat(subscriptionId).isGreaterThan(0)
+        val subscriptionId = routingContext.request().getParam("subscriptionId")
+        assertNotNull(subscriptionId)
+        assertThat(subscriptionId).isEqualTo(userId)
         checkpoint.flag()
+        routingContext.response().setStatusCode(201).end()
     }
 }

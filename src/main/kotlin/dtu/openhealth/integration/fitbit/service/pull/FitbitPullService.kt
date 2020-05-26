@@ -7,7 +7,7 @@ import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.http.IHttpService
 import dtu.openhealth.integration.shared.service.pull.AThirdPartyPullService
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
-import dtu.openhealth.integration.shared.service.tokenrefresh.ITokenRefreshService
+import dtu.openhealth.integration.shared.service.token.refresh.ITokenRefreshService
 import java.time.LocalDate
 
 class FitbitPullService(
@@ -23,7 +23,7 @@ class FitbitPullService(
         return userTokenDataService.getTokensFromThirdParty(FitbitConstants.Fitbit)
     }
 
-    override fun getUserParameterList(userToken: UserToken): List<Map<String, String>>
+    override fun prepareUserParameterList(userToken: UserToken): List<Map<String, String>>
     {
         val date = LocalDate.now()
         val parameterList = mutableListOf<Map<String,String>>()

@@ -30,16 +30,15 @@ class FitbitOAuth2Router(
         val expiresIn = jsonObject.getLong("expires_in")
         val expireDateTime = LocalDateTime.now().plusSeconds(expiresIn)
 
-        createSubscription(accessToken)
+        createSubscription(userId, accessToken)
 
         return UserToken(userId, extUserId, FitbitConstants.Fitbit, accessToken, refreshToken, expireDateTime)
     }
 
-    private fun createSubscription(accessToken: String)
+    private fun createSubscription(userId: String, accessToken: String)
     {
         val webClient = WebClient.create(vertx)
-        val subscriptionId = nextInt(0,10000).toString()
-        val uri = parameters.subscriptionUri.replace("[${FitbitConstants.SubscriptionId}]", subscriptionId)
+        val uri = parameters.subscriptionUri.replace("[${FitbitConstants.SubscriptionId}]", userId)
 
         webClient.post(parameters.port, parameters.host, uri)
                 .bearerTokenAuthentication(accessToken)

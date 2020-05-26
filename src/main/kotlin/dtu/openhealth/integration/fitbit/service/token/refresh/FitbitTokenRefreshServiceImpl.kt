@@ -1,9 +1,9 @@
-package dtu.openhealth.integration.fitbit.service.tokenrefresh
+package dtu.openhealth.integration.fitbit.service.token.refresh
 
 import dtu.openhealth.integration.fitbit.data.FitbitConstants
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
-import dtu.openhealth.integration.shared.service.tokenrefresh.AOAuth2TokenRefreshServiceImpl
+import dtu.openhealth.integration.shared.service.token.refresh.AOAuth2TokenRefreshService
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import io.vertx.core.json.JsonObject
 import io.vertx.reactivex.ext.web.client.WebClient
@@ -13,7 +13,7 @@ class FitbitTokenRefreshServiceImpl(
         webClient: WebClient,
         parameters: OAuth2RefreshParameters,
         userTokenDataService: IUserTokenDataService
-): AOAuth2TokenRefreshServiceImpl(webClient, parameters, userTokenDataService) {
+): AOAuth2TokenRefreshService(webClient, parameters, userTokenDataService) {
 
     override fun updatedUserToken(jsonBody: JsonObject, userId: String): UserToken {
         val accessToken = jsonBody.getString("access_token")

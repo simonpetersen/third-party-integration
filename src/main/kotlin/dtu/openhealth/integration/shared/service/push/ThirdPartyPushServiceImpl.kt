@@ -10,7 +10,8 @@ class ThirdPartyPushServiceImpl(
 
     private val logger = LoggerFactory.getLogger(ThirdPartyPushServiceImpl::class.java)
 
-    override fun saveDataToOMH(thirdPartyData: ThirdPartyData) {
+    override fun saveDataToOMH(thirdPartyData: ThirdPartyData)
+    {
         val omhDTO = thirdPartyData.mapToOMH()
         logger.info("Sending data to kafka producer: $omhDTO")
         kafkaProducerService.sendOmhData(omhDTO)

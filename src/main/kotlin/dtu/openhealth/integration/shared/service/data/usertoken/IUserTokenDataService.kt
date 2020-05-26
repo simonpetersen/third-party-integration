@@ -6,7 +6,9 @@ interface IUserTokenDataService {
     suspend fun getUserById(id: String): UserToken?
     suspend fun getUserByExtId(extId: String): UserToken?
     fun insertUser(userToken: UserToken)
-    suspend fun updateTokens(userToken: UserToken)
+    fun updateTokens(userToken: UserToken)
+    fun deleteTokensInList(userIdList: List<String>)
     suspend fun getTokensFromThirdParty(thirdParty: String): List<UserToken>
     fun getUserIdByExtId(extId: String, callback: (String) -> Unit)
+    fun getTokensFromIdList(idList: List<String>, callback: (List<UserToken>) -> Unit)
  }

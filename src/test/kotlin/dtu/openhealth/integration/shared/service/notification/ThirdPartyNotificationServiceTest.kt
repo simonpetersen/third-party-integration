@@ -9,7 +9,7 @@ import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.http.IHttpService
 import dtu.openhealth.integration.shared.service.mock.MockRestUrl
-import dtu.openhealth.integration.shared.service.tokenrefresh.ITokenRefreshService
+import dtu.openhealth.integration.shared.service.token.refresh.ITokenRefreshService
 import io.reactivex.Single
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Test
@@ -41,7 +41,7 @@ class ThirdPartyNotificationServiceTest {
         val endpointMap = getEndpointMap()
         val parameters = mapOf(Pair("dataType", dataType), Pair("userId", extUserId))
         val notification = ThirdPartyNotification(parameters, "dataType", "userId")
-        val user = UserToken(userId, extUserId, thirdParty, accessToken, expireDateTime = tokenExpireDateTime)
+        val userToken = UserToken(userId, extUserId, thirdParty, accessToken, expireDateTime = tokenExpireDateTime)
 
         // Mock
         val httpService: IHttpService = mock()
@@ -50,8 +50,7 @@ class ThirdPartyNotificationServiceTest {
         val tokenRefreshService: ITokenRefreshService = mock()
         val expireDateTime = LocalDateTime.now().plusHours(8)
         val refreshedUser = UserToken(userId, extUserId, thirdParty, accessToken, expireDateTime = expireDateTime)
-        whenever(tokenRefreshService.refreshToken(user)).thenReturn(refreshedUser)
-        whenever(userService.getUserByExtId(extUserId)).thenReturn(user)
+        whenever(userService.getUserByExtId(extUserId)).thenReturn(userToken)
         whenever(httpService.callApiForUser(any(), any(), any())).thenReturn(Single.just(emptyList()))
 
         // Call notificationService
@@ -59,10 +58,14 @@ class ThirdPartyNotificationServiceTest {
         notificationService.getUpdatedData(listOf(notification))
 
         // Verify
-        val expectedEndpointList = endpointMap[dataType] ?: emptyList()
-        val expectedUser = if (tokenRefreshInvocation == 0) user else refreshedUser
-        verify(httpService).callApiForUser(eq(expectedEndpointList), eq(expectedUser), eq(parameters))
-        verify(tokenRefreshService, times(tokenRefreshInvocation)).refreshToken(any())
+        verify(tokenRefreshService, times(tokenRefreshInvocation)).refreshToken(any(), any())
+
+        if (tokenRefreshInvocation == 0)
+        {
+            val expectedEndpointList = endpointMap[dataType] ?: emptyList()
+            val expectedUser = if (tokenRefreshInvocation == 0) userToken else refreshedUser
+            verify(httpService).callApiForUser(eq(expectedEndpointList), eq(expectedUser), eq(parameters))
+        }
     }
 
 
