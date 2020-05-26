@@ -60,15 +60,17 @@ class WebServerVerticle(
                 val garminRouter = initGarminRouter(kafkaProducerService, config)
                 val fitbitRouter = initFitbitRouter(kafkaProducerService, config)
                 val revokeRouter = initRevokeTokensRouter(userTokenDataService, config)
+                logger.info("All routers initialized")
 
                 val mainRouter = Router.router(vertx)
                 mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
                 mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
                 mainRouter.mountSubRouter("/", revokeRouter.getRouter())
+                logger.info("All routers mounted")
 
-                val port = config.getString("webserver.port").toInt()
+                val webServerPort = config.getInteger("webserver.port")
                 val httpServerOptions = httpServerOptionsOf(
-                        port = port,
+                        port = webServerPort,
                         ssl = true,
                         pemKeyCertOptions = pemKeyCertOptionsOf(
                                 certPath = config.getString("ssl.certificate.chain.file"),
@@ -119,7 +121,7 @@ class WebServerVerticle(
         val clientId = config.getString("fitbit.client.id")
         val clientSecret = config.getString("fitbit.client.secret")
         val verificationCode = config.getString("fitbit.verify.code")
-        val fitbitApiPort = config.getString("fitbit.api.port").toInt()
+        val fitbitApiPort = config.getInteger("fitbit.api.port")
 
         // Initialization
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))
@@ -183,6 +185,7 @@ class WebServerVerticle(
 
     private fun initRevokeTokensRouter(userTokenDataService: IUserTokenDataService, config: JsonObject): RevokeTokensRouter
     {
+        logger.info("Initializing Revoke Tokens Router")
         val acceptedStatusCodes = listOf(200,204)
         val revokeServiceMap = mapOf(
                 garminRevokeService(config),
