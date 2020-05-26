@@ -15,6 +15,7 @@ repositories {
     jcenter()
 }
 
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -38,6 +39,8 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin-coroutines:3.9.0")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("com.github.maricn:logback-slack-appender:1.4.0")
+    implementation("io.vertx:vertx-config:3.9.0")
+    implementation("io.vertx:vertx-config-vault:3.9.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("org.assertj:assertj-core:3.11.1")
     testImplementation("io.vertx:vertx-junit5:3.8.5")
@@ -57,19 +60,22 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+tasks {
+    register("fatJar", Jar::class.java) {
+        archiveClassifier.set("all")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest {
+            attributes("Main-Class" to "dtu.openhealth.integration.IntegrationApplicationKt")
+        }
+        from(configurations.runtimeClasspath.get()
+                .onEach { println("add from dependencies: ${it.name}") }
+                .map { if (it.isDirectory) it else zipTree(it) })
+        val sourcesMain = sourceSets.main.get()
+        sourcesMain.allSource.forEach { println("add from sources: ${it.name}") }
+        from(sourcesMain.output)
+    }
+}
+
+
 tasks.withType<AbstractArchiveTask> {setProperty("archiveFileName", "integration.jar")}
 
-tasks.withType<Jar> {
-    manifest {
-        attributes(
-                "Main-Class" to "dtu.openhealth.integration.IntegrationApplicationKt"
-        )
-    }
-
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
-}

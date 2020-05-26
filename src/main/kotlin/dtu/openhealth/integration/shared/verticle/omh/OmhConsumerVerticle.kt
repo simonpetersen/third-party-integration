@@ -12,10 +12,10 @@ class OmhConsumerVerticle(
 
     override fun start()
     {
-        val omhDataService = OmhDataServiceImpl(vertx.delegate)
+        val omhDataService = OmhDataServiceImpl(vertx)
         val omhService = OmhServiceImpl(userTokenDataService, omhDataService)
-        val omhConsumer = KafkaConsumer(vertx, omhService)
+        val omhConsumer = KafkaConsumer(omhService)
 
-        omhConsumer.consume()
+        omhConsumer.startConsumer(vertx)
     }
 }

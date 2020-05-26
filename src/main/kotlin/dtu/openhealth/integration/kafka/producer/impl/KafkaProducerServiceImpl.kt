@@ -2,7 +2,7 @@ package dtu.openhealth.integration.kafka.producer.impl
 
 import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.dto.OmhDTO
-import dtu.openhealth.integration.shared.util.PropertiesLoader
+import dtu.openhealth.integration.shared.util.ConfigVault
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.kafka.client.producer.KafkaProducer
 import io.vertx.reactivex.kafka.client.producer.KafkaProducerRecord
@@ -14,20 +14,30 @@ class KafkaProducerServiceImpl(
 ): IKafkaProducerService {
 
     private val logger = LoggerFactory.getLogger(KafkaProducerServiceImpl::class.java)
-    private val configuration = PropertiesLoader.loadProperties()
 
-    private var producer: KafkaProducer<String, OmhDTO>
+    private var topic = ""
+    private var producer: KafkaProducer<String, OmhDTO>? = null
+
     init {
-        val config: MutableMap<String, String> = HashMap()
-        config["bootstrap.servers"] = configuration.getProperty("kafka.bootstrap.servers")
-        config["key.serializer"] = configuration.getProperty("kafka.string.serializer")
-        config["value.serializer"] = configuration.getProperty("kafka.omh.serializer")
-        config["acks"] = configuration.getProperty("kafka.acks")
-        producer = KafkaProducer.create(vertx, config)
+        ConfigVault().getConfigRetriever(vertx).getConfig { ar ->
+            if(ar.succeeded()){
+                logger.info("Configuration retrieved from the vault")
+                val config = ar.result()
+                val kafkaConfig: MutableMap<String, String> = HashMap()
+                kafkaConfig["bootstrap.servers"] = config.getString("kafka.bootstrap.servers")
+                kafkaConfig["key.serializer"] = config.getString("kafka.string.serializer")
+                kafkaConfig["value.serializer"] = config.getString("kafka.omh.serializer")
+                kafkaConfig["acks"] = config.getString("kafka.acks")
+                topic = config.getString("kafka.topic")
+                producer = KafkaProducer.create(vertx, kafkaConfig)
+            }else{
+                logger.error(ar.cause())
+            }
+        }
     }
-    override fun sendOmhData(omhDTO: OmhDTO)
-    {
-        logger.info("Send data to Kafka stream: $omhDTO")
-        producer.send(KafkaProducerRecord.create(configuration.getProperty("kafka.topic"), omhDTO))
+
+    override fun sendOmhData(omhDTO: OmhDTO) {
+        logger.info("Send data to Kafka topic($topic): $omhDTO")
+        producer?.send(KafkaProducerRecord.create(topic, omhDTO))
     }
 }

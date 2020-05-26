@@ -10,7 +10,7 @@ import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.http.HttpServiceImpl
-import dtu.openhealth.integration.shared.util.PropertiesLoader
+import dtu.openhealth.integration.shared.util.ConfigVault
 import dtu.openhealth.integration.shared.verticle.pull.BasePullVerticle
 import dtu.openhealth.integration.shared.web.http.HttpOAuth2ConnectorClient
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
@@ -22,30 +22,43 @@ class FitbitPullVerticle(
         private val kafkaProducerService: IKafkaProducerService
 ): BasePullVerticle() {
 
-    private val configuration = PropertiesLoader.loadProperties()
     private val logger = LoggerFactory.getLogger(FitbitPullVerticle::class.java)
 
     override fun start()
     {
-        val fitbitPullEnabled = configuration.getProperty("fitbit.pull.enabled")?.toBoolean()
-        if (fitbitPullEnabled == null || !fitbitPullEnabled) {
-            logger.info("Fitbit pull service disabled in configuration")
-            return
+        ConfigVault().getConfigRetriever(vertx).getConfig { ar ->
+            if(ar.succeeded()) {
+                logger.info("Configuration retrieved from the vault")
+                val config = ar.result()
+                val clientId = config.getString("fitbit.client.id")
+                val clientSecret = config.getString("fitbit.client.secret")
+                val fitbitApiPort = config.getString("fitbit.api.port").toInt()
+                val fitbitIntervalMinutes = config.getString("fitbit.pull.interval.minutes").toInt()
+                val fitbitPullEnabled = config.getString("fitbit.pull.enabled")?.toBoolean()
+
+                if (fitbitPullEnabled == null || !fitbitPullEnabled) {
+                    logger.info("Fitbit pull service disabled in configuration")
+                }else{
+                    logger.info("Fitbit pull service enabled. " +
+                            "Starting service with $fitbitIntervalMinutes minutes intervals")
+                    val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))
+                    val endpointList = getFitbitEndpoints()
+
+                    val refreshParameters = fitbitRefreshParameters(clientId, clientSecret, fitbitApiPort)
+                    val tokenRefreshService = FitbitTokenRefreshServiceImpl(
+                            WebClient.create(vertx), refreshParameters, userTokenDataService)
+
+                    val pullService = FitbitPullService(
+                            httpService, endpointList, kafkaProducerService, tokenRefreshService, userTokenDataService)
+
+                    startTimer(pullService, fitbitIntervalMinutes)
+                }
+            }else{
+                logger.error(ar.cause())
+            }
         }
 
-        val clientId = configuration.getProperty("fitbit.client.id")
-        val clientSecret = configuration.getProperty("fitbit.client.secret")
-        val fitbitApiPort = configuration.getProperty("fitbit.api.port").toInt()
-        val fitbitIntervalMinutes = configuration.getProperty("fitbit.pull.interval.minutes").toInt()
-        val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))
-        val endpointList = getFitbitEndpoints()
 
-        val refreshParameters = fitbitRefreshParameters(clientId, clientSecret, fitbitApiPort)
-        val tokenRefreshService = FitbitTokenRefreshServiceImpl(WebClient.create(vertx), refreshParameters, userTokenDataService)
-
-        val pullService = FitbitPullService(httpService, endpointList, kafkaProducerService, tokenRefreshService, userTokenDataService)
-
-        startTimer(pullService, fitbitIntervalMinutes)
     }
 
     private fun getFitbitEndpoints(): List<RestEndpoint>
