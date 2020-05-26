@@ -60,15 +60,13 @@ class WebServerVerticle(
                 val garminRouter = initGarminRouter(kafkaProducerService, config)
                 val fitbitRouter = initFitbitRouter(kafkaProducerService, config)
                 val revokeRouter = initRevokeTokensRouter(userTokenDataService, config)
-                logger.info("All routers initialized")
 
                 val mainRouter = Router.router(vertx)
                 mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
                 mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
                 mainRouter.mountSubRouter("/", revokeRouter.getRouter())
-                logger.info("All routers mounted")
 
-                val webServerPort = config.getInteger("webserver.port")
+                val webServerPort = config.getString("webserver.port").toInt()
                 val httpServerOptions = httpServerOptionsOf(
                         port = webServerPort,
                         ssl = true,
@@ -96,7 +94,6 @@ class WebServerVerticle(
 
     private fun initGarminRouter(kafkaProducerService: IKafkaProducerService, config: JsonObject): GarminRouter
     {
-        logger.info("Initializing Garmin Router")
         val consumerKey = config.getString("garmin.consumer.key")
         val consumerSecret = config.getString("garmin.consumer.secret")
         val callbackUrl = config.getString("garmin.callback.url")
@@ -116,12 +113,11 @@ class WebServerVerticle(
 
     private fun initFitbitRouter(kafkaProducerService: IKafkaProducerService, config: JsonObject): FitbitRouter
     {
-        logger.info("Initializing Fitbit Router")
         // Configuration parameters
         val clientId = config.getString("fitbit.client.id")
         val clientSecret = config.getString("fitbit.client.secret")
         val verificationCode = config.getString("fitbit.verify.code")
-        val fitbitApiPort = config.getInteger("fitbit.api.port")
+        val fitbitApiPort = config.getString("fitbit.api.port").toInt()
 
         // Initialization
         val httpService = HttpServiceImpl(HttpOAuth2ConnectorClient(WebClient.create(vertx), fitbitApiPort))
@@ -185,7 +181,6 @@ class WebServerVerticle(
 
     private fun initRevokeTokensRouter(userTokenDataService: IUserTokenDataService, config: JsonObject): RevokeTokensRouter
     {
-        logger.info("Initializing Revoke Tokens Router")
         val acceptedStatusCodes = listOf(200,204)
         val revokeServiceMap = mapOf(
                 garminRevokeService(config),
@@ -199,7 +194,7 @@ class WebServerVerticle(
     {
         val webClient = WebClient.create(vertx)
         val garminHost = config.getString("garmin.api.host")
-        val garminPort = config.getInteger("garmin.api.port")
+        val garminPort = config.getString("garmin.api.port").toInt()
         val revokeUrl = config.getString("garmin.oauth.revoke.url")
         val consumerKey = config.getString("garmin.consumer.key")
         val consumerSecret = config.getString("garmin.consumer.secret")
@@ -216,7 +211,7 @@ class WebServerVerticle(
         // Parameters
         val clientId = config.getString("fitbit.client.id")
         val clientSecret = config.getString("fitbit.client.secret")
-        val fitbitApiPort = config.getInteger("fitbit.api.port")
+        val fitbitApiPort = config.getString("fitbit.api.port").toInt()
         val subscriptionUrl = config.getString("fitbit.oauth2.subscription.uri")
         val revokeUrl = config.getString("fitbit.oauth2.revoke.uri")
         val parameters = OAuth2RevokeParameters(FitbitConstants.Host, revokeUrl, subscriptionUrl, clientId, clientSecret, fitbitApiPort)
