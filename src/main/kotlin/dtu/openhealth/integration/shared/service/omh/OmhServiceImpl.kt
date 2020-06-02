@@ -4,6 +4,7 @@ import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.model.OmhData
 import dtu.openhealth.integration.shared.service.data.omh.IOmhDataService
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
+import dtu.openhealth.integration.shared.service.omh.publish.IOmhPublishService
 import dtu.openhealth.integration.shared.util.OmhDataType
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
@@ -12,8 +13,9 @@ import java.time.LocalDate
 
 class OmhServiceImpl(
         private val userTokenDataService: IUserTokenDataService,
-        private val omhDataService: IOmhDataService
-): OmhService {
+        private val omhDataService: IOmhDataService,
+        private val omhPublishService: IOmhPublishService? = null
+): IOmhService {
 
     private val logger = LoggerFactory.getLogger(OmhServiceImpl::class.java)
 
@@ -68,7 +70,7 @@ class OmhServiceImpl(
         if (matchingMeasures.isEmpty()) {
             val newOmhData = OmhData(0, userId, dataType, date, jsonObject)
             logger.info("$newOmhData is saved in DB.")
-            omhDataService.insertOmhData(newOmhData)
+            saveNewData(newOmhData)
         }
         else {
             checkAndUpdateSingleOmhData(matchingMeasures, jsonObject)
@@ -80,7 +82,8 @@ class OmhServiceImpl(
         val match = matchingMeasures.first()
         if (match.jsonData != jsonObject) {
             logger.info("OmhData with id = ${match.omhDataId} is updated in DB.")
-            omhDataService.updateOmhData(match.omhDataId, jsonObject)
+            val omhData = OmhData(match.omhDataId, match.userId, match.typeOfData, match.date, jsonObject)
+            updateData(omhData)
         }
     }
 
@@ -104,7 +107,19 @@ class OmhServiceImpl(
             val noMatches = !jsonMatchingMeasures.any { it == jsonMeasure }
             if (noMatches) OmhData(0, userId, dataType, date, jsonMeasure) else null
         }.forEach {
-            omhDataService.insertOmhData(it)
+            saveNewData(it)
         }
+    }
+
+    private fun saveNewData(omhData: OmhData)
+    {
+        omhDataService.insertOmhData(omhData)
+        omhPublishService?.publishOmhData(omhData)
+    }
+
+    private fun updateData(omhData: OmhData)
+    {
+        omhDataService.updateOmhData(omhData.omhDataId, omhData.jsonData)
+        omhPublishService?.publishOmhData(omhData)
     }
 }

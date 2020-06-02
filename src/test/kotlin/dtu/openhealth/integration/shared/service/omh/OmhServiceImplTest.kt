@@ -5,6 +5,7 @@ import dtu.openhealth.integration.shared.dto.OmhDTO
 import dtu.openhealth.integration.shared.model.OmhData
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.data.omh.IOmhDataService
+import dtu.openhealth.integration.shared.service.omh.publish.IOmhPublishService
 import dtu.openhealth.integration.shared.util.OmhDataType
 import io.vertx.core.json.JsonObject
 import org.junit.jupiter.api.Test
@@ -32,12 +33,14 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
 
         val jsonObject = JsonObject.mapFrom(stepCount)
         val expectedOmhData = OmhData(0, userId, OmhDataType.StepCount2, day, jsonObject)
         verify(omhDataService).insertOmhData(eq(expectedOmhData))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhData))
     }
 
     @Test
@@ -50,10 +53,13 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(listOf(omhData), dto, userId, day)
 
-        verify(omhDataService, times(0)).insertOmhData(any())
+        val invocations = 0
+        verify(omhDataService, times(invocations)).insertOmhData(any())
+        verify(omhPublishService, times(invocations)).publishOmhData(any())
     }
 
     @Test
@@ -67,11 +73,14 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(listOf(oldOmhData), dto, userId, day)
 
         val newJsonObject = JsonObject.mapFrom(newStepCount)
+        val expectedOmhData = OmhData(omhDataId, userId, OmhDataType.StepCount2, day, newJsonObject)
         verify(omhDataService).updateOmhData(eq(omhDataId), eq(newJsonObject))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhData))
     }
 
     @Test
@@ -84,16 +93,19 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
 
         val jsonObject1 = JsonObject.mapFrom(activity1)
         val expectedOmhData1 = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonObject1)
         verify(omhDataService).insertOmhData(eq(expectedOmhData1))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhData1))
 
         val jsonObject2 = JsonObject.mapFrom(activity2)
         val expectedOmhData2 = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonObject2)
         verify(omhDataService).insertOmhData(eq(expectedOmhData2))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhData2))
     }
 
     @Test
@@ -109,12 +121,14 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(listOf(omhDataRunning), dto, userId, day)
 
         val jsonBiking = JsonObject.mapFrom(activityBiking)
         val expectedOmhDataBiking = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonBiking)
         verify(omhDataService).insertOmhData(eq(expectedOmhDataBiking))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhDataBiking))
     }
 
     @Test
@@ -132,11 +146,13 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(listOf(omhDataRunning, expectedOmhDataBiking), dto, userId, day)
 
         val invocations = 0
         verify(omhDataService, times(invocations)).insertOmhData(any())
+        verify(omhPublishService, times(invocations)).publishOmhData(any())
     }
 
     @Test
@@ -152,12 +168,14 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(listOf(omhDataRunning), dto, userId, day)
 
         val jsonBiking = JsonObject.mapFrom(activityBiking)
         val expectedOmhDataBiking = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonBiking)
         verify(omhDataService).insertOmhData(eq(expectedOmhDataBiking))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhDataBiking))
     }
 
     @Test
@@ -170,18 +188,21 @@ class OmhServiceImplTest {
 
         val userTokensDataService: IUserTokenDataService = mock()
         val omhDataService: IOmhDataService = mock()
-        val omhService = OmhServiceImpl(userTokensDataService, omhDataService)
+        val omhPublishService: IOmhPublishService = mock()
+        val omhService = OmhServiceImpl(userTokensDataService, omhDataService, omhPublishService)
         omhService.checkAndSaveNewestData(emptyList(), dto, userId, day)
 
         // Verify biking activity is inserted
         val jsonBiking = JsonObject.mapFrom(activityBiking)
         val expectedOmhDataBiking = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonBiking)
         verify(omhDataService).insertOmhData(eq(expectedOmhDataBiking))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhDataBiking))
 
         // Verify running activity is inserted
         val jsonRunning = JsonObject.mapFrom(activityRunning)
         val expectedOmhDataRunning = OmhData(0, userId, OmhDataType.PhysicalActivity, day, jsonRunning)
         verify(omhDataService).insertOmhData(eq(expectedOmhDataRunning))
+        verify(omhPublishService).publishOmhData(eq(expectedOmhDataRunning))
     }
 
     private fun initStepCount(stepCount: Long): StepCount2 {
