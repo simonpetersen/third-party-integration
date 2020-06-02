@@ -1,7 +1,7 @@
 package dtu.openhealth.integration.kafka.consumer
 
 import dtu.openhealth.integration.shared.dto.OmhDTO
-import dtu.openhealth.integration.shared.service.omh.OmhService
+import dtu.openhealth.integration.shared.service.omh.IOmhService
 import dtu.openhealth.integration.shared.util.ConfigVault
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.core.Vertx
@@ -9,7 +9,7 @@ import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
 import java.util.HashMap
 
 class KafkaConsumer(
-        private val omhService: OmhService
+        private val omhService: IOmhService
 ) {
 
     private val logger = LoggerFactory.getLogger(KafkaConsumer::class.java)

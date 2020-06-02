@@ -19,7 +19,8 @@ class ThirdPartyNotificationServiceTest {
 
     private val userId = "testUser"
     private val extUserId = "dhsflkfs2"
-    private val dataType = "data"
+    private val activityDataType = "activity"
+    private val sleepDataType = "sleep"
     private val accessToken = "token123"
     private val thirdParty = "thirdParty"
 
@@ -39,8 +40,10 @@ class ThirdPartyNotificationServiceTest {
 
     private suspend fun runTest(tokenRefreshInvocation: Int, tokenExpireDateTime: LocalDateTime) {
         val endpointMap = getEndpointMap()
-        val parameters = mapOf(Pair("dataType", dataType), Pair("userId", extUserId))
-        val notification = ThirdPartyNotification(parameters, "dataType", "userId")
+        val activityParameters = mapOf(Pair("dataType", activityDataType), Pair("userId", extUserId))
+        val sleepParameters = mapOf(Pair("dataType", sleepDataType), Pair("userId", extUserId))
+        val activityNotification = ThirdPartyNotification(activityParameters, "dataType", "userId")
+        val sleepNotification = ThirdPartyNotification(sleepParameters, "dataType", "userId")
         val userToken = UserToken(userId, extUserId, thirdParty, accessToken, expireDateTime = tokenExpireDateTime)
 
         // Mock
@@ -48,33 +51,34 @@ class ThirdPartyNotificationServiceTest {
         val userService: IUserTokenDataService = mock()
         val kafkaProducerService: IKafkaProducerService = mock()
         val tokenRefreshService: ITokenRefreshService = mock()
-        val expireDateTime = LocalDateTime.now().plusHours(8)
-        val refreshedUser = UserToken(userId, extUserId, thirdParty, accessToken, expireDateTime = expireDateTime)
         whenever(userService.getUserByExtId(extUserId)).thenReturn(userToken)
         whenever(httpService.callApiForUser(any(), any(), any())).thenReturn(Single.just(emptyList()))
 
         // Call notificationService
         val notificationService = ThirdPartyNotificationServiceImpl(httpService, endpointMap, userService, kafkaProducerService, tokenRefreshService)
-        notificationService.getUpdatedData(listOf(notification))
+        notificationService.getUpdatedData(listOf(activityNotification, sleepNotification))
 
-        // Verify
+        // Verify tokenRefresh
         verify(tokenRefreshService, times(tokenRefreshInvocation)).refreshToken(any(), any())
 
         if (tokenRefreshInvocation == 0)
         {
-            val expectedEndpointList = endpointMap[dataType] ?: emptyList()
-            val expectedUser = if (tokenRefreshInvocation == 0) userToken else refreshedUser
-            verify(httpService).callApiForUser(eq(expectedEndpointList), eq(expectedUser), eq(parameters))
+            // Verify activity call
+            val activityEndpointList = endpointMap[activityDataType] ?: emptyList()
+            verify(httpService).callApiForUser(eq(activityEndpointList), eq(userToken), eq(activityParameters))
+
+            // Verify sleep call
+            val sleepEndpointList = endpointMap[sleepDataType] ?: emptyList()
+            verify(httpService).callApiForUser(eq(sleepEndpointList), eq(userToken), eq(sleepParameters))
         }
     }
 
 
     private fun getEndpointMap() : Map<String, List<RestEndpoint>> {
-        val testUrl1 = "/data/activities"
-        val testUrl2 = "/data/sleep"
-        val endpoint1 = RestEndpoint(MockRestUrl(testUrl1), ThirdPartyData.serializer())
-        val endpoint2 = RestEndpoint(MockRestUrl(testUrl2), ThirdPartyData.serializer())
-        val endpointList = listOf(endpoint1, endpoint2)
-        return mapOf(Pair(dataType, endpointList))
+        val activityTestUrl = "/data/activities"
+        val sleepTestUrl = "/data/sleep"
+        val activityEndpoint = RestEndpoint(MockRestUrl(activityTestUrl), ThirdPartyData.serializer())
+        val sleepEndpoint = RestEndpoint(MockRestUrl(sleepTestUrl), ThirdPartyData.serializer())
+        return mapOf(Pair(activityDataType, listOf(activityEndpoint)), Pair(sleepDataType, listOf(sleepEndpoint)))
     }
 }

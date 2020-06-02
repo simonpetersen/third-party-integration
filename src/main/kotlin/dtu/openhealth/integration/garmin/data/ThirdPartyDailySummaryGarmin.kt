@@ -28,23 +28,24 @@ data class ThirdPartyDailySummaryGarmin(
         val source: String? = null
 ): GarminData() {
     override fun mapToOMH(parameters: Map<String,String>): OmhDTO {
+        val timeInterval = getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds)
         val stepCount = steps?.let {
             StepCount2.Builder(
-                    it.toBigDecimal(), getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    it.toBigDecimal(), timeInterval)
                     .build()
         }
 
         val caloriesBurned = bmrKilocalories?.let {
             CaloriesBurned2.Builder(
                     KcalUnitValue(KcalUnit.KILOCALORIE, (it + activeKilocalories!!).toBigDecimal()),
-                    getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    timeInterval)
                     .build()
         }
 
         val heartRate = averageHeartRateInBeatsPerMinute?.let {
             HeartRate.Builder(
                     TypedUnitValue(HeartRateUnit.BEATS_PER_MINUTE, averageHeartRateInBeatsPerMinute.toBigDecimal()))
-                    .setEffectiveTimeFrame(getTimeInterval(startTimeInSeconds, startTimeOffsetInSeconds, durationInSeconds))
+                    .setEffectiveTimeFrame(timeInterval)
                     .build()
         }
 

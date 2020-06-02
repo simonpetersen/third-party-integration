@@ -23,39 +23,42 @@ class ThirdPartyNotificationServiceImpl(
 
     override suspend fun getUpdatedData(notificationList: List<ThirdPartyNotification>)
     {
-        for (notification in notificationList) {
-            val extUserId = notification.parameters[notification.userParam]
-            val dataType = notification.parameters[notification.dataTypeParam]
-            if (extUserId != null && dataType != null) {
-                getUserAndCallApi(extUserId, dataType, notification.parameters)
-            }
-            else {
-                val errorMsg = "${notification.userParam} or ${notification.dataTypeParam} not found in ${notification.parameters}."
-                logger.error(errorMsg)
-            }
-        }
+        val notificationMap = mapNotificationsByExtUserId(notificationList)
+        notificationMap.entries.forEach { handleNotificationList(it.key, it.value)}
     }
 
-    private suspend fun getUserAndCallApi(extUserId: String, dataType: String, parameters: Map<String, String>)
+    private suspend fun handleNotificationList(extUserId: String, notifications: List<ThirdPartyNotification>)
     {
         val userToken = userTokenDataService.getUserByExtId(extUserId)
         if (userToken != null) {
-            callApiForUser(userToken, dataType, parameters)
+            callApiForUserList(userToken, notifications)
         }
         else {
             logger.error("User $extUserId was not found.")
         }
     }
 
-    private fun callApiForUser(userToken: UserToken, dataType: String, parameters: Map<String, String>)
+    private fun callApiForUserList(userToken: UserToken, notifications: List<ThirdPartyNotification>)
     {
         if (tokenRefreshService != null && tokenIsExpired(userToken.expireDateTime)) {
             tokenRefreshService.refreshToken(userToken) {
-                updatedToken -> callApi(updatedToken, dataType, parameters)
+                updatedToken -> notifications.forEach { getDataTypeAndCallApi(updatedToken, it) }
             }
         }
         else {
-            callApi(userToken, dataType, parameters)
+            notifications.forEach { getDataTypeAndCallApi(userToken, it) }
+        }
+    }
+
+    private fun getDataTypeAndCallApi(userToken: UserToken, notification: ThirdPartyNotification)
+    {
+        val dataType = notification.parameters[notification.dataTypeParam]
+        if (dataType != null) {
+            callApi(userToken, dataType, notification.parameters)
+        }
+        else {
+            val errorMsg = "No dataType found for $notification"
+            logger.error(errorMsg)
         }
     }
 
@@ -67,6 +70,35 @@ class ThirdPartyNotificationServiceImpl(
         }
         else {
             logger.error("No endpoints configured for $dataType and $userToken. Parameters = $parameters")
+        }
+    }
+
+    private fun mapNotificationsByExtUserId(notificationList: List<ThirdPartyNotification>): Map<String, List<ThirdPartyNotification>>
+    {
+        val map = mutableMapOf<String, MutableList<ThirdPartyNotification>>()
+        notificationList.forEach { mapNotification(it, map) }
+        return map
+    }
+
+    private fun mapNotification(notification: ThirdPartyNotification, map: MutableMap<String, MutableList<ThirdPartyNotification>>)
+    {
+        val extUserId = notification.parameters[notification.userParam]
+        if (extUserId != null) {
+            addNotificationToMap(extUserId, notification, map)
+        }
+        else {
+            val errorMsg = "ExtUserId not found in $notification."
+            logger.error(errorMsg)
+        }
+    }
+
+    private fun addNotificationToMap(extUserId: String, notification: ThirdPartyNotification, map: MutableMap<String, MutableList<ThirdPartyNotification>>)
+    {
+        if (map.containsKey(extUserId)) {
+            map[extUserId]?.add(notification)
+        }
+        else {
+            map[extUserId] = mutableListOf(notification)
         }
     }
 }
