@@ -68,6 +68,7 @@ class WebServerVerticle(
                 mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
                 mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
                 mainRouter.mountSubRouter("/", revokeRouter.getRouter())
+                mainRouter.get("/").handler { rootHandler(it) }
 
                 // Register failure handler
                 mainRouter.post("/*").failureHandler { handlePostFailure(it) }
@@ -263,5 +264,11 @@ class WebServerVerticle(
         }
 
         routingContext.response().setStatusCode(statusCode).end()
+    }
+
+    private fun rootHandler(routingContext: RoutingContext)
+    {
+        val bodyMsg = "Third-Party Integration Test Server"
+        routingContext.response().end(bodyMsg)
     }
 }
