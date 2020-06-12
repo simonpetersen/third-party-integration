@@ -52,7 +52,7 @@ data class EpochSummaryGarmin(
             "SEDENTARY" -> {
                 PhysicalActivity.SelfReportedIntensity.LIGHT
             }
-            "Active" -> {
+            "ACTIVE" -> {
                 PhysicalActivity.SelfReportedIntensity.MODERATE
             }
             "HIGHLY_ACTIVE" -> {
