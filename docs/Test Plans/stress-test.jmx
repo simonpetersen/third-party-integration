@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Garmin Activity" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Client Worker Threads" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">500</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">45</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">60</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Activities" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;activities&quot;: [ &#xd;
+	{&#xd;
+		&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+		&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+		&quot;summaryId&quot; : &quot;13896334&quot;,&#xd;
+		&quot;durationInSeconds&quot; : 5312,&#xd;
+		&quot;startTimeInSeconds&quot; : 1593788400,&#xd;
+  	&quot;startTimeOffsetInSeconds&quot; : 3600,&#xd;
+  	&quot;activityType&quot; : &quot;WALKING&quot;,&#xd;
+  	&quot;averageHeartRateInBeatsPerMinute&quot; : 82,&#xd;
+  	&quot;averageRunCadenceInStepsPerMinute&quot; : 33.0,&#xd;
+  	&quot;averageSpeedInMetersPerSecond&quot; : 0.00642003,&#xd;
+  	&quot;averagePaceInMinutesPerKilometer&quot; : 18.169905,&#xd;
+  	&quot;activeKilocalories&quot; : 158,&#xd;
+  	&quot;distanceInMeters&quot; : 4712.27,&#xd;
+  	&quot;maxHeartRateInBeatsPerMinute&quot; : 121,&#xd;
+  	&quot;maxPaceInMinutesPerKilometer&quot; : 3.3396823,&#xd;
+  	&quot;maxRunCadenceInStepsPerMinute&quot; : 120.0,&#xd;
+  	&quot;maxSpeedInMetersPerSecond&quot; : 4.2767835,&#xd;
+  	&quot;steps&quot; : 1623,&#xd;
+  	&quot;totalElevationGainInMeters&quot; : 20.96&#xd;
+  }]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/activities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Body" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;body&quot;: [&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot;13896336&quot;, &#xd;
+			&quot;measurementTimeInSeconds&quot;: 1593788400, &#xd;
+			&quot;measurementTimeOffsetInSeconds&quot;: 3600, &#xd;
+			&quot;muscleMassInGrams&quot;: 25478, &#xd;
+			&quot;boneMassInGrams&quot;: 2437, &#xd;
+			&quot;bodyWaterInPercent&quot;: 59.4, &#xd;
+			&quot;bodyFatInPercent&quot;: 17.1, &#xd;
+			&quot;bodyMassIndex&quot;: 23.2, &#xd;
+			&quot;weightInGrams&quot;: 75450&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/body</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Dailies" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;dailies&quot;: [&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot; 13896335&quot;, &#xd;
+			&quot;activityType&quot;: &quot;WALKING&quot;, &#xd;
+			&quot;activeKilocalories&quot;: 304, &#xd;
+			&quot;bmrKilocalories&quot;: 1225, &#xd;
+			&quot;consumedCalories&quot;: 1926,&#xd;
+			&quot;steps&quot;: 3305,&#xd;
+			&quot;distanceInMeters&quot;: 2470.1, &#xd;
+			&quot;durationInSeconds&quot;: 86400, &#xd;
+			&quot;activeTimeInSeconds&quot;: 7, &#xd;
+			&quot;startTimeInSeconds&quot;: 1593788400, &#xd;
+			&quot;startTimeOffsetInSeconds&quot;: 3600, &#xd;
+			&quot;moderateIntensityDurationInSeconds&quot;: 83160, &#xd;
+			&quot;vigorousIntensityDurationInSeconds&quot;: 3240, &#xd;
+			&quot;floorsClimbed&quot;: 5, &#xd;
+			&quot;minHeartRateInBeatsPerMinute&quot;: 62, &#xd;
+			&quot;averageHeartRateInBeatsPerMinute&quot;: 67, &#xd;
+			&quot;maxHeartRateInBeatsPerMinute&quot;: 122, &#xd;
+			&quot;restingHeartRateInBeatsPerMinute&quot;: 64, &#xd;
+			&quot;timeOffsetHeartRateSamples&quot;: {&#xd;
+     			&quot;15&quot;: 77,&#xd;
+     			&quot;30&quot;: 72,&#xd;
+     			&quot;3180&quot;: 71,&#xd;
+     			&quot;3195&quot;: 67,&#xd;
+     			&quot;3210&quot;: 62,&#xd;
+     			&quot;3225&quot;: 65,&#xd;
+     			&quot;3240&quot;: 71,&#xd;
+     			&quot;3255&quot;: 81&#xd;
+ 			},&#xd;
+ 			&quot;averageStressLevel&quot;: 37, &#xd;
+ 			&quot;maxStressLevel&quot;: 95, &#xd;
+ 			&quot;stressDurationInSeconds&quot;: 19080, &#xd;
+ 			&quot;restStressDurationInSeconds&quot;: 2700, &#xd;
+ 			&quot;activityStressDurationInSeconds&quot;: 7260, &#xd;
+ 			&quot;lowStressDurationInSeconds&quot;: 7800, &#xd;
+ 			&quot;mediumStressDurationInSeconds&quot;: 8280, &#xd;
+ 			&quot;highStressDurationInSeconds&quot;: 3000, &#xd;
+ 			&quot;stressQualifier&quot;: &quot;stressful_awake&quot;, &#xd;
+ 			&quot;stepsGoal&quot;: 5000, &#xd;
+ 			&quot;netKilocaloriesGoal&quot;: 2170, &#xd;
+ 			&quot;intensityDurationGoalInSeconds&quot;: 1800, &#xd;
+ 			&quot;floorsClimbedGoal&quot;: 20&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/dailies</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Epochs" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;epochs&quot;:&#xd;
+	[&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot;13896332&quot;, &#xd;
+			&quot;activityType&quot;: &quot;SEDENTARY&quot;, &#xd;
+			&quot;activeKilocalories&quot;: 0, &#xd;
+			&quot;steps&quot;: 67, &#xd;
+			&quot;distanceInMeters&quot;: 61.0, &#xd;
+			&quot;durationInSeconds&quot;: 900, &#xd;
+			&quot;activeTimeInSeconds&quot;: 600, &#xd;
+			&quot;met&quot;: 1.0,&#xd;
+			&quot;intensity&quot;: &quot;SEDENTARY&quot;,&#xd;
+			&quot;startTimeInSeconds&quot;: 1593788400,&#xd;
+			&quot;startTimeOffsetInSeconds&quot;: 3600&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/epochs</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Pulse" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;pulseox&quot;: &#xd;
+	[&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot;13896338&quot;, &#xd;
+			&quot;calendarDate&quot;: &quot;2018-08-27&quot;, &#xd;
+			&quot;startTimeInSeconds&quot;: 1593788400, &#xd;
+			&quot;durationInSeconds&quot;: 86400,&#xd;
+			&quot;startTimeOffsetInSeconds&quot;: 3600, &#xd;
+			&quot;timeOffsetSpo2Values&quot;: {&#xd;
+				&quot;0&quot;: 98,&#xd;
+				&quot;3600&quot;: 95,&#xd;
+				&quot;7200&quot;: 93,&#xd;
+				&quot;10800&quot;: 98 &#xd;
+			}&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/pulse</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Respirations" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;allDayRespiration&quot;: &#xd;
+	[&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot;13896339&quot;, &#xd;
+			&quot;startTimeInSeconds&quot;: 1593788400, &#xd;
+			&quot;durationInSeconds&quot;: 900, &#xd;
+			&quot;startTimeOffsetInSeconds&quot;: 3600, &#xd;
+			&quot;timeOffsetEpochToBreaths&quot;: {&#xd;
+				&quot;0&quot;: 14.63, &#xd;
+				&quot;60&quot;: 14.4, &#xd;
+				&quot;120&quot;: 14.38, &#xd;
+				&quot;180&quot;: 14.38, &#xd;
+				&quot;300&quot;: 17.1, &#xd;
+				&quot;540&quot;: 16.61, &#xd;
+				&quot;600&quot;: 16.14, &#xd;
+				&quot;660&quot;: 14.59, &#xd;
+				&quot;720&quot;: 14.65, &#xd;
+				&quot;780&quot;: 15.09, &#xd;
+				&quot;840&quot;: 14.88 &#xd;
+			}&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/respirations</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Sleep" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;sleeps&quot;: [&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot;13896337&quot;, &#xd;
+			&quot;calendarDate&quot;: &quot;2016-01-10&quot;, &#xd;
+			&quot;durationInSeconds&quot;: 15264, &#xd;
+			&quot;startTimeInSeconds&quot;: 1593788400, &#xd;
+			&quot;startTimeOffsetInSeconds&quot;: 3600, &#xd;
+			&quot;unmeasurableSleepDurationInSeconds&quot;: 0, &#xd;
+			&quot;deepSleepDurationInSeconds&quot;: 11231, &#xd;
+			&quot;lightSleepDurationInSeconds&quot;: 3541, &#xd;
+			&quot;remSleepInSeconds&quot;: 0, &#xd;
+			&quot;awakeDurationInSeconds&quot;: 492, &#xd;
+			&quot;sleepLevelsMap&quot;: {&#xd;
+				&quot;deep&quot;: &#xd;
+				[ &#xd;
+					{&#xd;
+						&quot;startTimeInSeconds&quot;: 1452419581,&#xd;
+						&quot;endTimeInSeconds&quot;: 1452478724&#xd;
+           			}&#xd;
+				], &#xd;
+				&quot;light&quot;: &#xd;
+				[&#xd;
+					{&#xd;
+                		&quot;startTimeInSeconds&quot;: 1452478725,&#xd;
+                		&quot;endTimeInSeconds&quot;: 1452479725&#xd;
+           			}, &#xd;
+           			{&#xd;
+                		&quot;startTimeInSeconds&quot;: 1452481725,&#xd;
+                		&quot;endTimeInSeconds&quot;: 1452484266&#xd;
+					} &#xd;
+				]&#xd;
+			},&#xd;
+			&quot;validation&quot;: &quot;DEVICE&quot;&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/sleep</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Third Party" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;thirdparty&quot;: &#xd;
+	[&#xd;
+		{&#xd;
+			&quot;userId&quot;: &quot;someUser&quot;,&#xd;
+			&quot;userAccessToken&quot;: &quot;testGarminToken1&quot;,&#xd;
+			&quot;summaryId&quot;: &quot;13896333&quot;, &#xd;
+			&quot;activityType&quot;: &quot;WALKING&quot;, &#xd;
+			&quot;activeKilocalories&quot;: 1708, &#xd;
+			&quot;bmrKilocalories&quot;: 1200, &#xd;
+			&quot;steps&quot;: 13986, &#xd;
+			&quot;distanceInMeters&quot;: 17091.0, &#xd;
+			&quot;durationInSeconds&quot;: 86400, &#xd;
+			&quot;activeTimeInSeconds&quot;: 8340, &#xd;
+			&quot;startTimeInSeconds&quot;: 1593788400, &#xd;
+			&quot;startTimeOffsetInSeconds&quot;: 3600, &#xd;
+			&quot;floorsClimbed&quot;: 42,&#xd;
+			&quot;source&quot;: &quot;FITBIT&quot;&#xd;
+		}&#xd;
+	]&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">chaks.dk</stringProp>
+          <stringProp name="HTTPSampler.port">443</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/garmin/thirdparty</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="RespTimeGraphVisualizer" testclass="ResultCollector" testname="Response Time Graph" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="RespTimeGraph.interval">2000</stringProp>
+          <stringProp name="RespTimeGraph.graphtitle">Response Time</stringProp>
+          <intProp name="RespTimeGraph.linestrockwidth">2</intProp>
+          <intProp name="RespTimeGraph.lineshapepoint">4</intProp>
+          <stringProp name="RespTimeGraph.xaxistimeformat">ss</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

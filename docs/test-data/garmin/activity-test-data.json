@@ -1,0 +1,24 @@
+{
+	"activities": [ 
+	{
+		"userId": "someUser",
+		"userAccessToken": "testGarminToken1",
+		"summaryId" : "13896334",
+		"durationInSeconds" : 5312,
+		"startTimeInSeconds" : 1593788400,
+  	"startTimeOffsetInSeconds" : 3600,
+  	"activityType" : "WALKING",
+  	"averageHeartRateInBeatsPerMinute" : 82,
+  	"averageRunCadenceInStepsPerMinute" : 33.0,
+  	"averageSpeedInMetersPerSecond" : 0.00642003,
+  	"averagePaceInMinutesPerKilometer" : 18.169905,
+  	"activeKilocalories" : 158,
+  	"distanceInMeters" : 4712.27,
+  	"maxHeartRateInBeatsPerMinute" : 121,
+  	"maxPaceInMinutesPerKilometer" : 3.3396823,
+  	"maxRunCadenceInStepsPerMinute" : 120.0,
+  	"maxSpeedInMetersPerSecond" : 4.2767835,
+  	"steps" : 1623,
+  	"totalElevationGainInMeters" : 20.96
+  }]
+}

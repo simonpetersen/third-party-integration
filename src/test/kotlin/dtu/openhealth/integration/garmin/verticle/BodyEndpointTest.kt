@@ -2,7 +2,7 @@ package dtu.openhealth.integration.garmin.verticle
 
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminRouter
-import dtu.openhealth.integration.garmin.data.BodyCompositionSummaryGarmin
+import dtu.openhealth.integration.garmin.data.body.BodyCompositionSummaryGarmin
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.reactivex.core.Vertx

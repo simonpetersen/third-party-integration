@@ -2,7 +2,7 @@ package dtu.openhealth.integration.garmin.verticle
 
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.garmin.GarminRouter
-import dtu.openhealth.integration.garmin.data.ThirdPartyDailySummaryGarmin
+import dtu.openhealth.integration.garmin.data.thirdparty.ThirdPartyDailySummaryGarmin
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension

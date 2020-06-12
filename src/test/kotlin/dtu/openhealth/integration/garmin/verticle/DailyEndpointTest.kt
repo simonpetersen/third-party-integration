@@ -5,7 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.garmin.GarminRouter
-import dtu.openhealth.integration.garmin.data.DailySummaryGarmin
+import dtu.openhealth.integration.garmin.data.summary.DailySummaryGarmin
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
 import io.vertx.junit5.VertxExtension

@@ -1,0 +1,39 @@
+{
+	"sleeps": [
+		{
+			"userId": "someUser",
+			"userAccessToken": "testGarminToken1",
+			"summaryId": "13896337", 
+			"calendarDate": "2016-01-10", 
+			"durationInSeconds": 15264, 
+			"startTimeInSeconds": 1593788400, 
+			"startTimeOffsetInSeconds": 3600, 
+			"unmeasurableSleepDurationInSeconds": 0, 
+			"deepSleepDurationInSeconds": 11231, 
+			"lightSleepDurationInSeconds": 3541, 
+			"remSleepInSeconds": 0, 
+			"awakeDurationInSeconds": 492, 
+			"sleepLevelsMap": {
+				"deep": 
+				[ 
+					{
+						"startTimeInSeconds": 1452419581,
+						"endTimeInSeconds": 1452478724
+           			}
+				], 
+				"light": 
+				[
+					{
+                		"startTimeInSeconds": 1452478725,
+                		"endTimeInSeconds": 1452479725
+           			}, 
+           			{
+                		"startTimeInSeconds": 1452481725,
+                		"endTimeInSeconds": 1452484266
+					} 
+				]
+			},
+			"validation": "DEVICE"
+		}
+	]
+}

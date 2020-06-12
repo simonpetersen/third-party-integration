@@ -1,3 +1,3 @@
 package dtu.openhealth.integration.shared.util.exception
 
-class InvalidActivityNameException(private val exceptionMessage: String) : Exception(exceptionMessage)
+class InvalidActivityNameException(exceptionMessage: String) : Exception(exceptionMessage)

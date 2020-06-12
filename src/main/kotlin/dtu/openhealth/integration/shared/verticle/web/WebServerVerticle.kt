@@ -26,6 +26,8 @@ import dtu.openhealth.integration.shared.service.token.revoke.ITokenRevokeServic
 import dtu.openhealth.integration.shared.service.token.revoke.OAuth1TokenRevokeService
 import dtu.openhealth.integration.shared.service.token.revoke.data.OAuth1RevokeParameters
 import dtu.openhealth.integration.shared.service.token.revoke.data.OAuth2RevokeParameters
+import dtu.openhealth.integration.shared.util.exception.InvalidActivityNameException
+import dtu.openhealth.integration.shared.util.exception.NoMappingFoundException
 import dtu.openhealth.integration.shared.web.parameters.OAuth1RouterParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RefreshParameters
 import dtu.openhealth.integration.shared.web.parameters.OAuth2RouterParameters
@@ -41,6 +43,7 @@ import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
 import io.vertx.reactivex.core.AbstractVerticle
 import io.vertx.reactivex.core.Promise
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
+import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.client.WebClient
 
 class WebServerVerticle(
@@ -53,7 +56,7 @@ class WebServerVerticle(
     override fun start()
     {
         ConfigVault().getConfigRetriever(vertx).getConfig { ar ->
-            if(ar.succeeded()){
+            if (ar.succeeded()) {
                 logger.info("Configuration retrieved from the vault")
                 val config = ar.result()
 
@@ -65,6 +68,11 @@ class WebServerVerticle(
                 mainRouter.mountSubRouter("/garmin", garminRouter.getRouter())
                 mainRouter.mountSubRouter("/fitbit", fitbitRouter.getRouter())
                 mainRouter.mountSubRouter("/", revokeRouter.getRouter())
+
+                // Register failure handler
+                mainRouter.post("/*").failureHandler { handlePostFailure(it) }
+                mainRouter.get("/*").failureHandler { handleGetFailure(it) }
+                mainRouter.delete("/*").failureHandler { handleDeleteFailure(it) }
 
                 val webServerPort = config.getString("webserver.port").toInt()
                 val httpServerOptions = httpServerOptionsOf(
@@ -85,8 +93,9 @@ class WebServerVerticle(
                                 logger.error(async.cause())
                             }
                         }
-            }else{
-                logger.error("${ar.cause()}")
+            } else {
+                val errorMsg = "Error reading config in WebServerVerticle"
+                logger.error(errorMsg, ar.cause())
             }
         }
 
@@ -222,5 +231,37 @@ class WebServerVerticle(
 
         val tokenRevokeService = FitbitTokenRevokeService(webClient, parameters, tokenRefreshService)
         return Pair(FitbitConstants.Fitbit, tokenRevokeService)
+    }
+
+    private fun handleGetFailure(routingContext: RoutingContext)
+    {
+        val errorMsg = "Error when handling GET request"
+        handleFailure(routingContext, errorMsg)
+    }
+
+    private fun handlePostFailure(routingContext: RoutingContext)
+    {
+        val errorMsg = "Error when handling POST request"
+        handleFailure(routingContext, errorMsg)
+    }
+
+    private fun handleDeleteFailure(routingContext: RoutingContext)
+    {
+        val errorMsg = "Error when handling DELETE request"
+        handleFailure(routingContext, errorMsg)
+    }
+
+    private fun handleFailure(routingContext: RoutingContext, errorMsg: String)
+    {
+        val exception = routingContext.failure()
+        logger.error(errorMsg, exception)
+
+        val statusCode = when (exception) {
+            is InvalidActivityNameException -> 400
+            is NoMappingFoundException -> 400
+            else -> 500
+        }
+
+        routingContext.response().setStatusCode(statusCode).end()
     }
 }

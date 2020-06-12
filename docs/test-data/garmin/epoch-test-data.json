@@ -1,0 +1,20 @@
+{
+	"epochs":
+	[
+		{
+			"userId": "someUser",
+			"userAccessToken": "testGarminToken1",
+			"summaryId": "13896332", 
+			"activityType": "SEDENTARY", 
+			"activeKilocalories": 0, 
+			"steps": 67, 
+			"distanceInMeters": 61.0, 
+			"durationInSeconds": 900, 
+			"activeTimeInSeconds": 600, 
+			"met": 1.0,
+			"intensity": "SEDENTARY",
+			"startTimeInSeconds": 1593788400,
+			"startTimeOffsetInSeconds": 3600
+		}
+	]
+}

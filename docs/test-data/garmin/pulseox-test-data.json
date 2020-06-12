@@ -1,0 +1,20 @@
+{
+	"pulseox": 
+	[
+		{
+			"userId": "someUser",
+			"userAccessToken": "testGarminToken1",
+			"summaryId": "13896338", 
+			"calendarDate": "2018-08-27", 
+			"startTimeInSeconds": 1593788400, 
+			"durationInSeconds": 86400,
+			"startTimeOffsetInSeconds": 3600, 
+			"timeOffsetSpo2Values": {
+				"0": 98,
+				"3600": 95,
+				"7200": 93,
+				"10800": 98 
+			}
+		}
+	]
+}

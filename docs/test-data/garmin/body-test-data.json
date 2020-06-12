@@ -1,0 +1,17 @@
+{
+	"body": [
+		{
+			"userId": "someUser",
+			"userAccessToken": "testGarminToken1",
+			"summaryId": "13896336", 
+			"measurementTimeInSeconds": 1593788400, 
+			"measurementTimeOffsetInSeconds": 3600, 
+			"muscleMassInGrams": 25478, 
+			"boneMassInGrams": 2437, 
+			"bodyWaterInPercent": 59.4, 
+			"bodyFatInPercent": 17.1, 
+			"bodyMassIndex": 23.2, 
+			"weightInGrams": 75450
+		}
+	]
+}

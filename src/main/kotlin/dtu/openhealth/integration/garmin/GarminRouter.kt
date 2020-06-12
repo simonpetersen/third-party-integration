@@ -1,6 +1,13 @@
 package dtu.openhealth.integration.garmin
 
-import dtu.openhealth.integration.garmin.data.*
+import dtu.openhealth.integration.garmin.data.activity.ActivitySummaryGarmin
+import dtu.openhealth.integration.garmin.data.body.BodyCompositionSummaryGarmin
+import dtu.openhealth.integration.garmin.data.pulse.PulseOXSummaryGarmin
+import dtu.openhealth.integration.garmin.data.respiration.RespirationSummaryGarmin
+import dtu.openhealth.integration.garmin.data.sleep.SleepSummaryGarmin
+import dtu.openhealth.integration.garmin.data.summary.DailySummaryGarmin
+import dtu.openhealth.integration.garmin.data.summary.EpochSummaryGarmin
+import dtu.openhealth.integration.garmin.data.thirdparty.ThirdPartyDailySummaryGarmin
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import dtu.openhealth.integration.shared.web.router.BasePushEndpointRouter
 import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
@@ -14,7 +21,7 @@ import io.vertx.reactivex.ext.web.handler.BodyHandler
 class GarminRouter(
         private val vertx: Vertx,
         pushService: IThirdPartyPushService,
-        private val authRouter: IAuthorizationRouter
+        private val authRouter: IAuthorizationRouter? = null
 ): BasePushEndpointRouter(pushService) {
 
     private val logger = LoggerFactory.getLogger(GarminRouter::class.java)
@@ -32,7 +39,9 @@ class GarminRouter(
         router.post("/thirdparty").handler { handleThirdPartySummary(it) }
         router.post("/pulse").handler { handlePulseSummary(it) }
 
-        router.mountSubRouter("/", authRouter.getRouter())
+        if (authRouter != null) {
+            router.mountSubRouter("/", authRouter.getRouter())
+        }
 
         return router
     }
@@ -56,7 +65,7 @@ class GarminRouter(
     private fun handleDailySummary(routingContext : RoutingContext)
     {
         logger.info("Posting daily summary data for Garmin: ${routingContext.bodyAsJson}")
-        val dailySummaries = routingContext.bodyAsJson.getJsonArray("dailies")
+                    val dailySummaries = routingContext.bodyAsJson.getJsonArray("dailies")
         convertArrayAndSaveData(dailySummaries, DailySummaryGarmin.serializer())
         routingContext.response().end()
     }

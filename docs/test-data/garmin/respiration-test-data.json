@@ -1,0 +1,26 @@
+{
+	"allDayRespiration": 
+	[
+		{
+			"userId": "someUser",
+			"userAccessToken": "testGarminToken1",
+			"summaryId": "13896339", 
+			"startTimeInSeconds": 1593788400, 
+			"durationInSeconds": 900, 
+			"startTimeOffsetInSeconds": 3600, 
+			"timeOffsetEpochToBreaths": {
+				"0": 14.63, 
+				"60": 14.4, 
+				"120": 14.38, 
+				"180": 14.38, 
+				"300": 17.1, 
+				"540": 16.61, 
+				"600": 16.14, 
+				"660": 14.59, 
+				"720": 14.65, 
+				"780": 15.09, 
+				"840": 14.88 
+			}
+		}
+	]
+}

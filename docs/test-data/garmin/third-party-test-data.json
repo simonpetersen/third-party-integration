@@ -1,0 +1,21 @@
+{
+	"thirdparty": 
+	[
+		{
+			"userId": "someUser",
+			"userAccessToken": "testGarminToken1",
+			"summaryId": "13896333", 
+			"activityType": "WALKING", 
+			"activeKilocalories": 1708, 
+			"bmrKilocalories": 1200, 
+			"steps": 13986, 
+			"distanceInMeters": 17091.0, 
+			"durationInSeconds": 86400, 
+			"activeTimeInSeconds": 8340, 
+			"startTimeInSeconds": 1593788400, 
+			"startTimeOffsetInSeconds": 3600, 
+			"floorsClimbed": 42,
+			"source": "FITBIT"
+		}
+	]
+}

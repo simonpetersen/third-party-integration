@@ -1,0 +1,8 @@
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/activity-test-data.json https://chaks.dk/garmin/activities
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/dailies-test-data.json https://chaks.dk/garmin/dailies
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/epoch-test-data.json https://chaks.dk/garmin/epochs
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/body-test-data.json https://chaks.dk/garmin/body
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/pulseox-test-data.json https://chaks.dk/garmin/pulse
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/respiration-test-data.json https://chaks.dk/garmin/respirations
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/sleep-test-data.json https://chaks.dk/garmin/sleep
+ab -n 10000 -c 100 -T application/json -p test-data/garmin/third-party-test-data.json https://chaks.dk/garmin/thirdparty
