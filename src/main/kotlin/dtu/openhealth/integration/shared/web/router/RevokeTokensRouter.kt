@@ -43,7 +43,6 @@ class RevokeTokensRouter(
     {
         val responseList = userTokens.mapNotNull { revokeToken(it) }
         val responseSingle = Single.zip(responseList) {
-            logger.info("Filtering the revoke responses")
             it.filterIsInstance<RevokeResponse>()
         }
 
@@ -71,7 +70,6 @@ class RevokeTokensRouter(
 
     private fun handleRevokeResponseList(responseList: List<RevokeResponse>, routingContext: RoutingContext)
     {
-        logger.info("Handling revoke response list")
         val failedRevocations = responseList
                 .filter { !acceptedStatusCodes.contains(it.statusCode) }
         failedRevocations.forEach {

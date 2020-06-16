@@ -26,8 +26,7 @@ class OAuth1TokenRevokeService(
     {
         logger.info("Revoking token for user: ${userToken.userId}")
         val authHeader = generateAuthHeader(userToken)
-        logger.info("Auth header generated: $authHeader")
-        val revokeResponse = webClient.delete(parameters.port, parameters.host, parameters.revokeUrl)
+        return webClient.delete(parameters.port, parameters.host, parameters.revokeUrl)
                 .ssl(parameters.ssl)
                 .putHeader(GarminConstants.Auth, authHeader)
                 .rxSend()
@@ -37,28 +36,16 @@ class OAuth1TokenRevokeService(
                             "statusCode: ${it.statusCode()}. ")
                     RevokeResponse(userToken.userId, it.statusCode(), it.bodyAsString())
                 }
-        logger.info("Returning revoke response")
-        return revokeResponse
     }
 
     private fun generateAuthHeader(userToken: UserToken): String?
     {
-        logger.info("Generating auth header for user: $userToken")
         val fullRevokeUrl = "https://${parameters.host}${parameters.revokeUrl}"
-        logger.info("fullRevokeUrl: $fullRevokeUrl")
         val accessToken = OAuth1AccessToken(userToken.token, userToken.tokenSecret)
-        logger.info("Token secret: ${accessToken.tokenSecret}")
-        logger.info("Token: ${accessToken.token}")
         val request = OAuthRequest(Verb.DELETE, fullRevokeUrl)
-        logger.info("OAuthRequest: $request")
         oauthService.signRequest(accessToken, request)
-        logger.info("oauthService signed request")
 
-        val returnRequest = request.headers[GarminConstants.Auth]
-
-        logger.info("returnRequest: $returnRequest")
-
-        return returnRequest
+        return request.headers[GarminConstants.Auth]
     }
 
     private fun buildOAuthService() : OAuth10aService
