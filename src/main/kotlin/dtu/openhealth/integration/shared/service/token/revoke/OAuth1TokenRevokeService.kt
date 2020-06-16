@@ -26,11 +26,13 @@ class OAuth1TokenRevokeService(
     {
         logger.info("Revoking token for user: ${userToken.userId}")
         val authHeader = generateAuthHeader(userToken)
-        return webClient.delete(parameters.port, parameters.host, parameters.revokeUrl)
+        val revokeResponse = webClient.delete(parameters.port, parameters.host, parameters.revokeUrl)
                 .ssl(parameters.ssl)
                 .putHeader(GarminConstants.Auth, authHeader)
                 .rxSend()
                 .map { RevokeResponse(userToken.userId, it.statusCode(), it.bodyAsString()) }
+        logger.info("Revoke response: $revokeResponse")
+        return revokeResponse
     }
 
     private fun generateAuthHeader(userToken: UserToken): String?
