@@ -148,7 +148,8 @@ class UserTokenDataServiceImpl(
         val token = row.getString("accesstoken")
         val refreshToken = row.getString("refreshtoken")
         val expireDateTime = row.getLocalDateTime("expiredatetime")
+        val tokenSecret = row.getString("tokensecret")
 
-        return UserToken(userId, extUserId, thirdParty, token, refreshToken, expireDateTime)
+        return UserToken(userId, extUserId, thirdParty, token, refreshToken, expireDateTime, tokenSecret)
     }
 }
