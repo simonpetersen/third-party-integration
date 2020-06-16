@@ -44,11 +44,20 @@ class OAuth1TokenRevokeService(
     private fun generateAuthHeader(userToken: UserToken): String?
     {
         val fullRevokeUrl = "https://${parameters.host}${parameters.revokeUrl}"
+        logger.info("fullRevokeUrl: $fullRevokeUrl")
         val accessToken = OAuth1AccessToken(userToken.token, userToken.tokenSecret)
+        logger.info("Token secret: ${accessToken.tokenSecret}")
+        logger.info("Token: ${accessToken.token}")
         val request = OAuthRequest(Verb.DELETE, fullRevokeUrl)
+        logger.info("OAuthRequest: $request")
         oauthService.signRequest(accessToken, request)
+        logger.info("oauthService signed request")
 
-        return request.headers[GarminConstants.Auth]
+        val returnRequest = request.headers[GarminConstants.Auth]
+
+        logger.info("returnRequest: $returnRequest")
+
+        return returnRequest
     }
 
     private fun buildOAuthService() : OAuth10aService
