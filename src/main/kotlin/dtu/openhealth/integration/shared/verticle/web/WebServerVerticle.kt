@@ -42,7 +42,6 @@ import io.vertx.kotlin.core.net.pemKeyCertOptionsOf
 import io.vertx.reactivex.ext.web.Router
 import io.vertx.kotlin.ext.auth.oauth2.oAuth2ClientOptionsOf
 import io.vertx.reactivex.core.AbstractVerticle
-import io.vertx.reactivex.core.Promise
 import io.vertx.reactivex.ext.auth.oauth2.OAuth2Auth
 import io.vertx.reactivex.ext.web.RoutingContext
 import io.vertx.reactivex.ext.web.client.WebClient

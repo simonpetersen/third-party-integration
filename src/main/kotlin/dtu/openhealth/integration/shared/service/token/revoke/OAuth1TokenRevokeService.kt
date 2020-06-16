@@ -10,8 +10,7 @@ import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.token.revoke.data.OAuth1RevokeParameters
 import dtu.openhealth.integration.shared.service.token.revoke.data.RevokeResponse
 import io.reactivex.Single
-import io.vertx.reactivex.core.buffer.Buffer
-import io.vertx.reactivex.ext.web.client.HttpResponse
+import io.vertx.core.logging.LoggerFactory
 import io.vertx.reactivex.ext.web.client.WebClient
 
 
@@ -21,9 +20,11 @@ class OAuth1TokenRevokeService(
 ): ITokenRevokeService {
 
     private val oauthService = buildOAuthService()
+    private val logger = LoggerFactory.getLogger(OAuth1TokenRevokeService::class.java)
 
     override fun revokeToken(userToken: UserToken): Single<RevokeResponse>
     {
+        logger.info("Revoking token for user: ${userToken.userId}")
         val authHeader = generateAuthHeader(userToken)
         return webClient.delete(parameters.port, parameters.host, parameters.revokeUrl)
                 .ssl(parameters.ssl)
