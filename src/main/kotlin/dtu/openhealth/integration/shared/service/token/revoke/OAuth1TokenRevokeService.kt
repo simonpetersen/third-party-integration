@@ -43,6 +43,7 @@ class OAuth1TokenRevokeService(
 
     private fun generateAuthHeader(userToken: UserToken): String?
     {
+        logger.info("Generating auth header for user: $userToken")
         val fullRevokeUrl = "https://${parameters.host}${parameters.revokeUrl}"
         logger.info("fullRevokeUrl: $fullRevokeUrl")
         val accessToken = OAuth1AccessToken(userToken.token, userToken.tokenSecret)
