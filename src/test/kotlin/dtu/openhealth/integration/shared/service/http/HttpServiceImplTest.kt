@@ -1,10 +1,9 @@
 package dtu.openhealth.integration.shared.service.http
 
 import com.nhaarman.mockitokotlin2.*
-import dtu.openhealth.integration.shared.model.ThirdPartyData
+import dtu.openhealth.integration.shared.model.AThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.UserToken
-import dtu.openhealth.integration.shared.service.http.HttpServiceImpl
 import dtu.openhealth.integration.shared.service.mock.MockRestUrl
 import dtu.openhealth.integration.shared.web.ApiRequest
 import dtu.openhealth.integration.shared.web.ApiResponse
@@ -26,17 +25,17 @@ class HttpServiceImplTest {
     fun testCallApiForUser(vertx: Vertx, testContext: VertxTestContext) {
         // Test activity endpoint
         val activitiesTestUri = "/data/activities"
-        val activityEndpoint = RestEndpoint(MockRestUrl(activitiesTestUri), ThirdPartyData.serializer())
+        val activityEndpoint = RestEndpoint(MockRestUrl(activitiesTestUri), AThirdPartyData.serializer())
         val activitiesRequest = ApiRequest(activityEndpoint, activitiesTestUri, emptyMap())
         val activitiesResponseJson = "{activities: {userId: $extUserId}}"
-        val activitiesResponse = ApiResponse(activitiesResponseJson, ThirdPartyData.serializer(), emptyMap())
+        val activitiesResponse = ApiResponse(activitiesResponseJson, AThirdPartyData.serializer(), emptyMap())
 
         // Test sleep endpoint
         val sleepTestUri = "/data/sleep"
-        val sleepEndpoint = RestEndpoint(MockRestUrl(sleepTestUri), ThirdPartyData.serializer())
+        val sleepEndpoint = RestEndpoint(MockRestUrl(sleepTestUri), AThirdPartyData.serializer())
         val sleepRequest = ApiRequest(sleepEndpoint, sleepTestUri, emptyMap())
         val sleepResponseJson = "{sleep: {userId: $extUserId}}"
-        val sleepResponse = ApiResponse(sleepResponseJson, ThirdPartyData.serializer(), emptyMap())
+        val sleepResponse = ApiResponse(sleepResponseJson, AThirdPartyData.serializer(), emptyMap())
         val user = UserToken(userId, extUserId, "thirdParty", "testToken")
 
         // Mock
@@ -69,17 +68,17 @@ class HttpServiceImplTest {
         val parameters = mapOf(Pair("userId", extUserId))
         val baseActivitiesTestUri = "/data/[userId]/activities"
         val activitiesTestUri = "/data/$extUserId/activities"
-        val activitiesTestEndpoint = RestEndpoint(MockRestUrl(baseActivitiesTestUri), ThirdPartyData.serializer())
+        val activitiesTestEndpoint = RestEndpoint(MockRestUrl(baseActivitiesTestUri), AThirdPartyData.serializer())
         val activitiesRequest = ApiRequest(activitiesTestEndpoint, activitiesTestUri, parameters)
         val activitiesResponseJson = "{activities: {userId: $extUserId}}"
-        val activitiesResponse = ApiResponse(activitiesResponseJson, ThirdPartyData.serializer(), emptyMap())
+        val activitiesResponse = ApiResponse(activitiesResponseJson, AThirdPartyData.serializer(), emptyMap())
 
         val baseSleepTestUri = "/data/[userId]/sleep"
         val sleepTestUri = "/data/$extUserId/sleep"
-        val sleepTestEndpoint = RestEndpoint(MockRestUrl(baseSleepTestUri), ThirdPartyData.serializer())
+        val sleepTestEndpoint = RestEndpoint(MockRestUrl(baseSleepTestUri), AThirdPartyData.serializer())
         val sleepRequest = ApiRequest(sleepTestEndpoint, sleepTestUri, parameters)
         val sleepResponseJson = "{sleep: {userId: $extUserId}}"
-        val sleepResponse = ApiResponse(sleepResponseJson, ThirdPartyData.serializer(), emptyMap())
+        val sleepResponse = ApiResponse(sleepResponseJson, AThirdPartyData.serializer(), emptyMap())
         val userToken = UserToken(userId, extUserId, "thirdParty","testToken")
 
         // Mock

@@ -5,7 +5,10 @@ import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.token.refresh.ITokenRefreshService
 import dtu.openhealth.integration.shared.service.token.revoke.AOAuth2TokenRevokeService
 import dtu.openhealth.integration.shared.service.token.revoke.data.OAuth2RevokeParameters
+import io.vertx.core.AsyncResult
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
 import java.time.LocalDateTime
 
@@ -34,22 +37,25 @@ class FitbitTokenRevokeService(
         webClient.delete(parameters.port, parameters.host, uri)
                 .ssl(parameters.ssl)
                 .bearerTokenAuthentication(userToken.token)
-                .send { ar ->
-                    if (ar.succeeded()) {
-                        if (ar.result().statusCode() == 204) {
-                            val infoMsg = "Fitbit subscription successfully deleted for $userToken"
-                            logger.info(infoMsg)
-                        }
-                        else {
-                            val errorMsg = "Error when deleting subscription for $userToken. Status = ${ar.result().statusCode()}. Response = ${ar.result().bodyAsString()}"
-                            logger.error(errorMsg)
-                        }
-                    }
-                    else {
-                        val errorMsg = "Error when deleting subscription for $userToken"
-                        logger.error(errorMsg, ar.cause())
-                    }
-                }
+                .send { handleAsyncResult(it, userToken) }
+    }
+
+    private fun handleAsyncResult(ar: AsyncResult<HttpResponse<Buffer>>, userToken: UserToken)
+    {
+        if (ar.succeeded()) {
+            if (ar.result().statusCode() == 204) {
+                val infoMsg = "Fitbit subscription successfully deleted for $userToken"
+                logger.info(infoMsg)
+            }
+            else {
+                val errorMsg = "Error when deleting subscription for $userToken. Status = ${ar.result().statusCode()}. Response = ${ar.result().bodyAsString()}"
+                logger.error(errorMsg)
+            }
+        }
+        else {
+            val errorMsg = "Error when deleting subscription for $userToken"
+            logger.error(errorMsg, ar.cause())
+        }
     }
 
     private fun tokenIsExpired(expireDateTime: LocalDateTime?): Boolean

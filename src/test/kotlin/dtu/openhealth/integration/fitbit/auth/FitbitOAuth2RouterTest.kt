@@ -83,7 +83,7 @@ class FitbitOAuth2RouterTest {
                             val response = ar.result()
                             assertThat(response.statusCode()).isEqualTo(200)
                             assertThat(response.body().toString()).isEqualTo("User authenticated.")
-                            verify(userDataService).insertUser(any())
+                            verify(userDataService).insertUserToken(any())
                         }
                         checkpoint.flag()
                     }

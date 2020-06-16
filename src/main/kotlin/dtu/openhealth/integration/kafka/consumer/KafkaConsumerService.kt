@@ -8,7 +8,7 @@ import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.kafka.client.consumer.KafkaConsumer
 import java.util.HashMap
 
-class KafkaConsumer(
+class KafkaConsumerService(
         private val omhService: IOmhService
 ) {
 

@@ -2,6 +2,7 @@ package dtu.openhealth.integration.shared.web.router
 
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.shared.model.UserToken
+import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.token.revoke.ITokenRevokeService
 import dtu.openhealth.integration.shared.service.token.revoke.data.RevokeResponse
 import io.reactivex.Single
@@ -9,6 +10,7 @@ import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
 import io.vertx.reactivex.core.buffer.Buffer
+import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -49,7 +51,8 @@ class RevokeTokensRouterTest {
         })
     }
 
-    private fun callCancelStudyEndpoint(vertx: Vertx, testContext: VertxTestContext,
+    private fun callCancelStudyEndpoint(vertx: Vertx,
+                                        testContext: VertxTestContext,
                                         userTokenDataService: MockUserTokenDataService,
                                         tokenRevokeService: ITokenRevokeService)
     {
@@ -57,19 +60,24 @@ class RevokeTokensRouterTest {
         webClient.delete(port, "localhost", "/study")
                 .rxSendBuffer(Buffer.buffer(userIdJsonList))
                 .subscribe(
-                        { res ->
-                            testContext.verify {
-                                assertThat(res.statusCode()).isEqualTo(200)
-                                verify(tokenRevokeService).revokeToken(eq(userToken1))
-                                verify(tokenRevokeService).revokeToken(eq(userToken2))
-                                val userTokenList = userTokenDataService.userTokens()
-                                assertThat(userTokenList.size).isEqualTo(2)
-                            }
-                            testContext.completeNow()
-                        },
-                        { error ->
-                            testContext.failNow(error)
-                        })
+                        { postSuccessful(it, testContext, userTokenDataService, tokenRevokeService) },
+                        { testContext.failNow(it) }
+                )
+    }
+
+    private fun postSuccessful(result: HttpResponse<Buffer>,
+                               testContext: VertxTestContext,
+                               userTokenDataService: MockUserTokenDataService,
+                               tokenRevokeService: ITokenRevokeService)
+    {
+        testContext.verify {
+            assertThat(result.statusCode()).isEqualTo(200)
+            verify(tokenRevokeService).revokeToken(eq(userToken1))
+            verify(tokenRevokeService).revokeToken(eq(userToken2))
+            val userTokenList = userTokenDataService.userTokens()
+            assertThat(userTokenList.size).isEqualTo(2)
+        }
+        testContext.completeNow()
     }
 
     private fun singleRevokeResponse(userId: String, statusCode: Int): Single<RevokeResponse>

@@ -94,7 +94,7 @@ abstract class AOAuth2Router(
         if (ar.succeeded()) {
             val jsonToken = ar.result().principal()
             val user = createUser(userId, jsonToken)
-            userTokenDataService.insertUser(user)
+            userTokenDataService.insertUserToken(user)
 
             routingContext.response()
                     .putHeader("Location", parameters.returnUri)

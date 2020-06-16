@@ -3,8 +3,6 @@ package dtu.openhealth.integration.shared.web.auth
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.httpclient.HttpClient
 import com.github.scribejava.core.model.OAuth1RequestToken
-import com.github.scribejava.core.model.OAuthRequest
-import com.github.scribejava.core.model.Verb
 import com.github.scribejava.core.oauth.OAuth10aService
 import com.github.scribejava.httpclient.ahc.AhcHttpClient
 import com.github.scribejava.httpclient.ahc.AhcHttpClientConfig
@@ -126,7 +124,7 @@ abstract class AOAuth1Router(
         requestTokenSecrets.remove(userId)
 
         val userToken = getUserToken(userId, accessToken.token, accessToken.tokenSecret)
-        userTokenDataService.insertUser(userToken)
+        userTokenDataService.insertUserToken(userToken)
 
         routingContext.response()
                 .putHeader("Location", parameters.returnUri)

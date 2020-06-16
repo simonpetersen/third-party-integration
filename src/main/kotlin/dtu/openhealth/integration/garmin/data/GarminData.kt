@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.garmin.data
 
-import dtu.openhealth.integration.shared.model.ThirdPartyData
+import dtu.openhealth.integration.shared.model.AThirdPartyData
 import kotlinx.serialization.Serializable
 import org.openmhealth.schema.domain.omh.DurationUnit
 import org.openmhealth.schema.domain.omh.DurationUnitValue
@@ -8,7 +8,7 @@ import org.openmhealth.schema.domain.omh.TimeInterval
 import java.time.*
 
 @Serializable
-abstract class GarminData: ThirdPartyData() {
+abstract class GarminData: AThirdPartyData() {
 
     protected fun getTimeInterval(startTime: Int?, offSet: Int?, durationInSeconds: Int?): TimeInterval {
         return TimeInterval.ofStartDateTimeAndDuration(

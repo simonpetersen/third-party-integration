@@ -104,7 +104,7 @@ data class FitbitProfileTopBadge (
         val badgeGradientStartColor: String,
         val badgeType: String,
         val category: String,
-        val cheers: JsonArray,
+        val cheers: JsonArray? = null,
         val dateTime: String,
         val description: String,
         val earnedMessage: String,

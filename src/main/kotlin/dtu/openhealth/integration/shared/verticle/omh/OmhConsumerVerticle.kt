@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.shared.verticle.omh
 
-import dtu.openhealth.integration.kafka.consumer.KafkaConsumer
+import dtu.openhealth.integration.kafka.consumer.KafkaConsumerService
 import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.data.omh.OmhDataServiceImpl
 import dtu.openhealth.integration.shared.service.omh.OmhServiceImpl
@@ -14,7 +14,7 @@ class OmhConsumerVerticle(
     {
         val omhDataService = OmhDataServiceImpl(vertx)
         val omhService = OmhServiceImpl(userTokenDataService, omhDataService)
-        val omhConsumer = KafkaConsumer(omhService)
+        val omhConsumer = KafkaConsumerService(omhService)
 
         omhConsumer.startConsumer(vertx)
     }

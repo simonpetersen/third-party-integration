@@ -14,6 +14,7 @@ import dtu.openhealth.integration.shared.service.http.HttpServiceImpl
 import dtu.openhealth.integration.shared.service.push.ThirdPartyPushServiceImpl
 import dtu.openhealth.integration.fitbit.FitbitRestUrl
 import dtu.openhealth.integration.fitbit.data.FitbitConstants
+import dtu.openhealth.integration.fitbit.data.weight.FitbitWeightLog
 import dtu.openhealth.integration.fitbit.service.token.refresh.FitbitTokenRefreshServiceImpl
 import dtu.openhealth.integration.fitbit.service.token.revoke.FitbitTokenRevokeService
 import dtu.openhealth.integration.garmin.auth.GarminOAuth1Router
@@ -153,17 +154,20 @@ class WebServerVerticle(
         return FitbitRouter(vertx, notificationService, authRouter, verificationCode)
     }
 
-    private fun fitbitEndpointMap(): Map<String,List<RestEndpoint>> {
+    private fun fitbitEndpointMap(): Map<String,List<RestEndpoint>>
+    {
         val activityUrl = FitbitRestUrl("/1/user/[ownerId]/activities/date/[date].json")
         val sleepUrl = FitbitRestUrl("/1.2/user/[ownerId]/sleep/date/[date].json")
         val heartRateUrl = FitbitRestUrl("/1/user/[ownerId]/activities/heart/date/[date]/1d.json")
         val profileUrl = FitbitRestUrl("/1/user/[ownerId]/profile.json")
+        val weightUrl = FitbitRestUrl("/1/user/[ownerId]/body/log/weight/[date].json")
 
         return mapOf(
                 Pair("activities", listOf(RestEndpoint(activityUrl, FitbitActivitiesSummary.serializer()))),
                 Pair("sleep", listOf(RestEndpoint(sleepUrl, FitbitSleepLogSummary.serializer()))),
                 Pair("heartrate", listOf(RestEndpoint(heartRateUrl, FitbitHeartRateSummary.serializer()))),
-                Pair("profile", listOf(RestEndpoint(profileUrl, FitbitProfile.serializer())))
+                Pair("profile", listOf(RestEndpoint(profileUrl, FitbitProfile.serializer()))),
+                Pair("weight", listOf(RestEndpoint(weightUrl, FitbitWeightLog.serializer())))
         )
     }
 

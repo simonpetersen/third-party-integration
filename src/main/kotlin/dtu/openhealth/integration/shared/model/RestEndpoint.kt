@@ -3,4 +3,4 @@ package dtu.openhealth.integration.shared.model
 import dtu.openhealth.integration.shared.web.RestUrl
 import kotlinx.serialization.KSerializer
 
-data class RestEndpoint(val url: RestUrl, val serializer: KSerializer<out ThirdPartyData>)
+data class RestEndpoint(val url: RestUrl, val serializer: KSerializer<out AThirdPartyData>)

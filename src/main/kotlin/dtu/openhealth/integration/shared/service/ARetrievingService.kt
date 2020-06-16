@@ -2,7 +2,7 @@ package dtu.openhealth.integration.shared.service
 
 import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
 import dtu.openhealth.integration.shared.model.RestEndpoint
-import dtu.openhealth.integration.shared.model.ThirdPartyData
+import dtu.openhealth.integration.shared.model.AThirdPartyData
 import dtu.openhealth.integration.shared.model.UserToken
 import dtu.openhealth.integration.shared.service.http.IHttpService
 import io.vertx.core.logging.LoggerFactory
@@ -38,7 +38,7 @@ abstract class ARetrievingService(
         )
     }
 
-    private fun convertJsonToThirdPartyData(responseJson: String, serializer: KSerializer<out ThirdPartyData>) : ThirdPartyData?
+    private fun convertJsonToThirdPartyData(responseJson: String, serializer: KSerializer<out AThirdPartyData>) : AThirdPartyData?
     {
         return try {
             json.parse(serializer, responseJson)

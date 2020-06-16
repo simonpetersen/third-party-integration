@@ -5,7 +5,7 @@ import dtu.openhealth.integration.shared.model.UserToken
 interface IUserTokenDataService {
     suspend fun getUserById(id: String): UserToken?
     suspend fun getUserByExtId(extId: String): UserToken?
-    fun insertUser(userToken: UserToken)
+    fun insertUserToken(userToken: UserToken)
     fun updateTokens(userToken: UserToken)
     fun deleteTokensInList(userIdList: List<String>)
     suspend fun getTokensFromThirdParty(thirdParty: String): List<UserToken>

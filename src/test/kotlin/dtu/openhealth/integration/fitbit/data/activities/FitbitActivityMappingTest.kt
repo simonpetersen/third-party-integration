@@ -21,7 +21,8 @@ class FitbitActivityMappingTest {
     @Test
     fun testFitbitActivitySummaryMapping_NoActivity() {
         val activitySummary = prepareActivitySummary()
-        val fitbitSummary = FitbitActivitiesSummary(emptyList(), summary = activitySummary)
+        val activityGoals = prepareActivityGoals()
+        val fitbitSummary = FitbitActivitiesSummary(emptyList(), activityGoals, activitySummary)
         val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId),
                 Pair(FitbitConstants.DateParameterTag, activityDateString))
         val omhDTO = fitbitSummary.mapToOMH(parameters)
@@ -36,9 +37,10 @@ class FitbitActivityMappingTest {
     @Test
     fun testFitbitActivitySummaryMapping_RunningActivity() {
         val activitySummary = prepareActivitySummary()
+        val activityGoals = prepareActivityGoals()
         val activity = prepareActivity()
 
-        val fitbitSummary = FitbitActivitiesSummary(listOf(activity), summary = activitySummary)
+        val fitbitSummary = FitbitActivitiesSummary(listOf(activity), activityGoals, activitySummary)
         val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId),
                 Pair(FitbitConstants.DateParameterTag, activityDateString))
         val omhDTO = fitbitSummary.mapToOMH(parameters)
@@ -106,7 +108,8 @@ class FitbitActivityMappingTest {
         assertThat(physicalActivity.effectiveTimeFrame.timeInterval.duration.typedUnit).isEqualTo(DurationUnit.MILLISECOND)
     }
 
-    private fun prepareActivitySummary() : FitbitActivitySummary {
+    private fun prepareActivitySummary() : FitbitActivitySummary
+    {
         return FitbitActivitySummary(
                 activityCalories = 451,
                 caloriesBMR = 1119,
@@ -117,12 +120,24 @@ class FitbitActivityMappingTest {
                 sedentaryMinutes = 745,
                 steps = 2611,
                 veryActiveMinutes = 6,
-                distances = emptyList(),
+                distances = activityDistanceList(),
+                heartRateZones = heartRateZoneList(),
                 restingHeartRate = 49
         )
     }
 
-    private fun prepareActivity() : FitbitActivity {
+    private fun heartRateZoneList(): List<FitbitHeartRateZone>
+    {
+        return listOf(FitbitHeartRateZone(345.34, 145, 125, 16, "running"))
+    }
+
+    private fun activityDistanceList(): List<FitbitActivityDistance>
+    {
+        return listOf(FitbitActivityDistance("running", 4.5))
+    }
+
+    private fun prepareActivity() : FitbitActivity
+    {
         return FitbitActivity(
                 activityId = 1,
                 name = "Outside Running",
@@ -136,7 +151,8 @@ class FitbitActivityMappingTest {
         )
     }
 
-    private fun prepareActivityWithDistance() : FitbitActivity {
+    private fun prepareActivityWithDistance() : FitbitActivity
+    {
         return FitbitActivity(
                 activityId = 1,
                 name = "Outside Running",
@@ -148,6 +164,17 @@ class FitbitActivityMappingTest {
                 startDate = activityDate,
                 startTime = LocalTime.of(8, 10, 0),
                 steps = 3876
+        )
+    }
+
+    private fun prepareActivityGoals(): FitbitActivityGoals
+    {
+        return FitbitActivityGoals(
+                2300,
+                24,
+                6.7,
+                9000,
+                11
         )
     }
 

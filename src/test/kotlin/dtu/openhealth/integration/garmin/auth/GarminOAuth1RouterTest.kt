@@ -145,7 +145,7 @@ class GarminOAuth1RouterTest {
             assertThat(response.bodyAsString()).isEqualTo(returnBody)
             val expectedToken = UserToken(userId, accessToken, GarminConstants.Garmin,
                     accessToken, tokenSecret = accessTokenSecret)
-            verify(userDataService).insertUser(eq(expectedToken))
+            verify(userDataService).insertUserToken(eq(expectedToken))
         }
         checkpoint.flag()
     }

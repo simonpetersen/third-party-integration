@@ -12,12 +12,13 @@ import java.time.ZoneOffset
 
 class FitbitSleepMappingTest {
     private val sleepDate = LocalDate.of(2020,6,27)
-    private val sleepDateString = "2020-06-27"
+    private val sleepDateString = sleepDate.toString()
     private val fitbitUserId = "hjdlafhska"
     private val awakeCount = 32
 
     @Test
-    fun testFitbitSleepMapping() {
+    fun testFitbitSleepMapping()
+    {
         val sleepLog = prepareSleepLog()
         val sleepSummary = FitbitSleepSummary(
                 FitbitSleepStages(deep = 88, light = 266, rem = 92, wake = 61),
@@ -25,8 +26,7 @@ class FitbitSleepMappingTest {
                 totalSleepRecords = 1,
                 totalTimeInBed = 507)
         val fitbitSleepLogSummary = FitbitSleepLogSummary(listOf(sleepLog), sleepSummary)
-        val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId),
-                Pair(FitbitConstants.DateParameterTag, sleepDateString))
+        val parameters = urlParameters()
         val omhDTO = fitbitSleepLogSummary.mapToOMH(parameters)
         assertThat(omhDTO.extUserId).isEqualTo(fitbitUserId)
         assertThat(omhDTO.date).isEqualTo(sleepDate)
@@ -35,7 +35,8 @@ class FitbitSleepMappingTest {
         validateSleepDuration(omhDTO, sleepSummary)
     }
 
-    private fun validateSleepEpisodes(omhDTO: OmhDTO, sleepLog: FitbitSleepLog) {
+    private fun validateSleepEpisodes(omhDTO: OmhDTO, sleepLog: FitbitSleepLog)
+    {
         val sleepEpisodeList = omhDTO.sleepEpisodes
         val expectedElements = 1
         assertThat(sleepEpisodeList?.size).isEqualTo(expectedElements)
@@ -52,7 +53,8 @@ class FitbitSleepMappingTest {
         assertThat(sleepEpisode?.latencyToArising?.value?.longValueExact()).isEqualTo(sleepLog.minutesAfterWakeup)
     }
 
-    private fun validateSleepDuration(omhDTO: OmhDTO, sleepSummary: FitbitSleepSummary) {
+    private fun validateSleepDuration(omhDTO: OmhDTO, sleepSummary: FitbitSleepSummary)
+    {
         val sleepDuration = omhDTO.sleepDuration2
 
         assertThat(sleepDuration?.sleepDuration?.typedUnit).isEqualTo(DurationUnit.MINUTE)
@@ -65,7 +67,8 @@ class FitbitSleepMappingTest {
         assertThat(durationInterval?.timeInterval?.duration?.value?.intValueExact()).isEqualTo(1)
     }
 
-    private fun prepareSleepLog() : FitbitSleepLog {
+    private fun prepareSleepLog() : FitbitSleepLog
+    {
         return FitbitSleepLog(
                 dateOfSleep = sleepDate,
                 duration = 30420000,
@@ -85,8 +88,11 @@ class FitbitSleepMappingTest {
         )
     }
 
-    private fun sleepLevels() : FitbitSleepLevels {
-        return FitbitSleepLevels(emptyList(), emptyList(),
+    private fun sleepLevels() : FitbitSleepLevels
+    {
+        return FitbitSleepLevels(
+                sleepLongData(),
+                sleepShortData(),
                 summary = FitbitSleepLevelsFullSummary(
                         deep = FitbitSleepLevelsSummary(
                                 count = 5,
@@ -105,6 +111,24 @@ class FitbitSleepMappingTest {
                                 minutes = 48,
                                 thirtyDayAvgMinutes = 54)
                 )
+        )
+    }
+
+    private fun sleepLongData(): List<FitbitSleepLongData>
+    {
+        return listOf(FitbitSleepLongData("10-12-1999", "deep", 160))
+    }
+
+    private fun sleepShortData(): List<FitbitSleepShortData>
+    {
+        return listOf(FitbitSleepShortData("10-12-1999", "deep", 160))
+    }
+
+    private fun urlParameters(): Map<String,String>
+    {
+        return mapOf(
+                Pair(FitbitConstants.UserParameterTag, fitbitUserId),
+                Pair(FitbitConstants.DateParameterTag, sleepDateString)
         )
     }
 }

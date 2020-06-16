@@ -9,13 +9,15 @@ import java.time.LocalDate
 
 class FitbitProfileMappingTest {
     private val fitbitUserId = "djflaefl"
-    private val unitType = "METRIC"
+    private val metricUnitType = "METRIC"
+    private val nonMetricUnitType = "OtherUnitType"
     private val weight = 84L
     private val height = 181L
 
     @Test
-    fun testFitbitProfileMapping() {
-        val profile = prepareFitbitProfile()
+    fun testFitbitProfileMapping()
+    {
+        val profile = prepareFitbitProfile(metricUnitType)
         val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId))
         val dto = profile.mapToOMH(parameters)
 
@@ -33,7 +35,29 @@ class FitbitProfileMappingTest {
         assertThat(bodyWeight?.typedUnit).isEqualTo(MassUnit.KILOGRAM)
     }
 
-    private fun prepareFitbitProfile(): FitbitProfile {
+    @Test
+    fun testFitbitProfileMappingNonMetricUnitType()
+    {
+        val profile = prepareFitbitProfile(nonMetricUnitType)
+        val parameters = mapOf(Pair(FitbitConstants.UserParameterTag, fitbitUserId))
+        val dto = profile.mapToOMH(parameters)
+
+        assertThat(dto.extUserId).isEqualTo(fitbitUserId)
+        assertThat(dto.date).isEqualTo(LocalDate.now())
+        assertThat(dto.bodyHeight).isNotNull
+        assertThat(dto.bodyWeight).isNotNull
+
+        val bodyHeight = dto.bodyHeight?.bodyHeight
+        assertThat(bodyHeight?.value).isEqualTo(height.toBigDecimal())
+        assertThat(bodyHeight?.typedUnit).isEqualTo(LengthUnit.INCH)
+
+        val bodyWeight = dto.bodyWeight?.bodyWeight
+        assertThat(bodyWeight?.value).isEqualTo(weight.toBigDecimal())
+        assertThat(bodyWeight?.typedUnit).isEqualTo(MassUnit.POUND)
+    }
+
+    private fun prepareFitbitProfile(unitType: String): FitbitProfile
+    {
         return FitbitProfile(
                 FitbitProfileInfo(
                         age = 28,
@@ -71,11 +95,42 @@ class FitbitProfileMappingTest {
                         strideLengthWalkingType = "default",
                         swimUnit = unitType,
                         timezone = "Europe/Copenhagen",
-                        topBadges = emptyList(),
+                        topBadges = prepareFitbitTopBadge(),
                         waterUnit = unitType,
                         waterUnitName = "ml",
                         weight = weight,
                         weightUnit = unitType
+                )
+        )
+    }
+
+    private fun prepareFitbitTopBadge(): List<FitbitProfileTopBadge>
+    {
+        return listOf(
+                FitbitProfileTopBadge (
+                        badgeGradientEndColor = "badge",
+                        badgeGradientStartColor = "color",
+                        badgeType = "badgeType",
+                        category = "badge",
+                        dateTime = "10-12-1999",
+                        description = "some description",
+                        earnedMessage = "test",
+                        encodedId = "id1",
+                        image50px = "50px",
+                        image75px = "75px",
+                        image100px = "100px",
+                        image125px = "125px",
+                        image300px = "300px",
+                        marketingDescription = "marketingDescription",
+                        mobileDescription = "mobileDescription",
+                        name = "Test Tester",
+                        shareImage640px = "640px",
+                        shareText = "Share away",
+                        shortDescription = "description",
+                        shortName = "badgeName",
+                        timesAchieved = 10,
+                        value = 20,
+                        unit = "METRIC"
                 )
         )
     }

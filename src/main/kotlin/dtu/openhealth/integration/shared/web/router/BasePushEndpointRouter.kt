@@ -1,6 +1,6 @@
 package dtu.openhealth.integration.shared.web.router
 
-import dtu.openhealth.integration.shared.model.ThirdPartyData
+import dtu.openhealth.integration.shared.model.AThirdPartyData
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
@@ -14,7 +14,7 @@ open class BasePushEndpointRouter(private val pushService: IThirdPartyPushServic
     private val logger = LoggerFactory.getLogger(BasePushEndpointRouter::class.java)
     private val json = Json(JsonConfiguration.Stable)
 
-    protected fun convertArrayAndSaveData(jsonArray: JsonArray, serializer: DeserializationStrategy<out ThirdPartyData>) {
+    protected fun convertArrayAndSaveData(jsonArray: JsonArray, serializer: DeserializationStrategy<out AThirdPartyData>) {
         jsonArray.forEach {
             data ->
             if(data is JsonObject) {

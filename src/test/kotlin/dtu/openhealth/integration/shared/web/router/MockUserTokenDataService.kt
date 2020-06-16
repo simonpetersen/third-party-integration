@@ -20,7 +20,7 @@ class MockUserTokenDataService(
         TODO("Not yet implemented")
     }
 
-    override fun insertUser(userToken: UserToken) {
+    override fun insertUserToken(userToken: UserToken) {
         TODO("Not yet implemented")
     }
 

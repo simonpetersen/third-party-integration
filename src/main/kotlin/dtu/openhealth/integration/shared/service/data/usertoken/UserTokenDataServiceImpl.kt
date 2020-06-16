@@ -38,7 +38,7 @@ class UserTokenDataServiceImpl(
         return getUserTokenFromRow(resultSet.iterator().next())
     }
 
-    override fun insertUser(userToken: UserToken)
+    override fun insertUserToken(userToken: UserToken)
     {
         val expireDataTime = if (userToken.expireDateTime != null) "'${userToken.expireDateTime}'" else "null"
         val query = "INSERT INTO USERTOKENS (USERID, EXTUSERID, THIRDPARTY, ACCESSTOKEN, REFRESHTOKEN, EXPIREDATETIME, TOKENSECRET) " +
@@ -92,7 +92,7 @@ class UserTokenDataServiceImpl(
         val query = "SELECT USERID FROM USERTOKENS WHERE EXTUSERID = '$extId'"
         executeQuery(query).onComplete {ar ->
             if (ar.succeeded()) {
-                getUserIdAndCallback(ar.result(), callback)
+                getUserIdAndCallback(ar.result(), extId, callback)
             }
             else {
                 val errorMsg = "Error getting userId from $extId from database"
@@ -117,10 +117,10 @@ class UserTokenDataServiceImpl(
         }
     }
 
-    private fun getUserIdAndCallback(result: RowSet<Row>, callback: (String) -> Unit)
+    private fun getUserIdAndCallback(result: RowSet<Row>, extId: String, callback: (String) -> Unit)
     {
         if (!result.iterator().hasNext()) {
-            logger.error("No UserToken found")
+            logger.error("No UserToken found for external id $extId")
         }
         else {
             val row = result.iterator().next()

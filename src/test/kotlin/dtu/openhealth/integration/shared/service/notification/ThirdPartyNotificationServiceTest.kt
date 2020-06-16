@@ -2,7 +2,7 @@ package dtu.openhealth.integration.shared.service.notification
 
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.kafka.producer.IKafkaProducerService
-import dtu.openhealth.integration.shared.model.ThirdPartyData
+import dtu.openhealth.integration.shared.model.AThirdPartyData
 import dtu.openhealth.integration.shared.model.RestEndpoint
 import dtu.openhealth.integration.shared.model.ThirdPartyNotification
 import dtu.openhealth.integration.shared.model.UserToken
@@ -77,8 +77,8 @@ class ThirdPartyNotificationServiceTest {
     private fun getEndpointMap() : Map<String, List<RestEndpoint>> {
         val activityTestUrl = "/data/activities"
         val sleepTestUrl = "/data/sleep"
-        val activityEndpoint = RestEndpoint(MockRestUrl(activityTestUrl), ThirdPartyData.serializer())
-        val sleepEndpoint = RestEndpoint(MockRestUrl(sleepTestUrl), ThirdPartyData.serializer())
+        val activityEndpoint = RestEndpoint(MockRestUrl(activityTestUrl), AThirdPartyData.serializer())
+        val sleepEndpoint = RestEndpoint(MockRestUrl(sleepTestUrl), AThirdPartyData.serializer())
         return mapOf(Pair(activityDataType, listOf(activityEndpoint)), Pair(sleepDataType, listOf(sleepEndpoint)))
     }
 }
