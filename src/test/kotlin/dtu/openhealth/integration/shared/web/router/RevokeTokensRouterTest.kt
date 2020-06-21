@@ -2,7 +2,6 @@ package dtu.openhealth.integration.shared.web.router
 
 import com.nhaarman.mockitokotlin2.*
 import dtu.openhealth.integration.shared.model.UserToken
-import dtu.openhealth.integration.shared.service.data.usertoken.IUserTokenDataService
 import dtu.openhealth.integration.shared.service.token.revoke.ITokenRevokeService
 import dtu.openhealth.integration.shared.service.token.revoke.data.RevokeResponse
 import io.reactivex.Single
@@ -57,7 +56,7 @@ class RevokeTokensRouterTest {
                                         tokenRevokeService: ITokenRevokeService)
     {
         val webClient = WebClient.create(vertx)
-        webClient.delete(port, "localhost", "/study")
+        webClient.post(port, "localhost", "/study")
                 .rxSendBuffer(Buffer.buffer(userIdJsonList))
                 .subscribe(
                         { postSuccessful(it, testContext, userTokenDataService, tokenRevokeService) },

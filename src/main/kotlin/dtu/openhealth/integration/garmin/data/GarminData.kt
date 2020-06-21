@@ -11,10 +11,14 @@ import java.time.*
 abstract class GarminData: AThirdPartyData() {
 
     protected fun getTimeInterval(startTime: Int?, offSet: Int?, durationInSeconds: Int?): TimeInterval {
+        val time = startTime?.toLong() ?: 0
+        val timeOffset = offSet ?: 0
+        val duration = durationInSeconds ?: 0
+
         return TimeInterval.ofStartDateTimeAndDuration(
-                startTime?.let { OffsetDateTime.of(Instant.ofEpochSecond(it.toLong())
-                        .atZone(ZoneOffset.UTC).toLocalDateTime(), ZoneOffset.ofTotalSeconds(offSet!!)) },
-                DurationUnitValue((DurationUnit.SECOND), durationInSeconds?.toBigDecimal()))
+                OffsetDateTime.of(Instant.ofEpochSecond(time)
+                        .atZone(ZoneOffset.UTC).toLocalDateTime(), ZoneOffset.ofTotalSeconds(timeOffset)),
+                DurationUnitValue((DurationUnit.SECOND), duration.toBigDecimal()))
     }
 
     protected fun getLocalDate(dateTimeInSeconds: Int?, offSet: Int?): LocalDate {
