@@ -44,12 +44,14 @@ class FitbitOAuth2RouterTest {
             tokenPath = "http://localhost:$testPort/oauth2/token")
 
     @Test
-    fun testOAuth2RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
+    fun testOAuth2RouterRedirect(vertx: Vertx, tc: VertxTestContext)
+    {
         val userDataService : IUserTokenDataService = mock()
         prepareWebServerAndRunTest(vertx, tc, userDataService) { vx, vxTc -> oauth2RouterRedirect(vx, vxTc)}
     }
 
-    private fun oauth2RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
+    private fun oauth2RouterRedirect(vertx: Vertx, tc: VertxTestContext)
+    {
         val client = WebClient.create(vertx)
         client.get(oauthPort, "localhost", "/auth/$userId")
                 .send { ar ->
@@ -66,14 +68,16 @@ class FitbitOAuth2RouterTest {
     }
 
     @Test
-    fun testOAuth2RouterCallback(vertx: Vertx, tc: VertxTestContext) {
+    fun testOAuth2RouterCallback(vertx: Vertx, tc: VertxTestContext)
+    {
         val userDataService : IUserTokenDataService = mock()
         prepareWebServerAndRunTest(vertx, tc, userDataService) {
             vx, vxTc -> oauth2RouterCallback(vx, vxTc, userDataService)
         }
     }
 
-    private fun oauth2RouterCallback(vertx: Vertx, tc: VertxTestContext, userDataService: IUserTokenDataService) {
+    private fun oauth2RouterCallback(vertx: Vertx, tc: VertxTestContext, userTokenDataService: IUserTokenDataService)
+    {
         val checkpoint = tc.checkpoint()
         val client = WebClient.create(vertx)
         client.get(oauthPort, "localhost", "/callback?code=$authCode&state=$userId")
@@ -83,7 +87,7 @@ class FitbitOAuth2RouterTest {
                             val response = ar.result()
                             assertThat(response.statusCode()).isEqualTo(200)
                             assertThat(response.body().toString()).isEqualTo("User authenticated.")
-                            verify(userDataService).insertUserToken(any())
+                            verify(userTokenDataService).insertUserToken(any())
                         }
                         checkpoint.flag()
                     }
@@ -93,9 +97,11 @@ class FitbitOAuth2RouterTest {
                 }
     }
 
-    private fun prepareWebServerAndRunTest(vertx: Vertx, tc: VertxTestContext, userDataService : IUserTokenDataService,
-                                           testFunction: (
-                                                   Vertx, VertxTestContext) -> Unit) {
+    private fun prepareWebServerAndRunTest(vertx: Vertx,
+                                           tc: VertxTestContext,
+                                           userTokenDataService : IUserTokenDataService,
+                                           testFunction: (Vertx, VertxTestContext) -> Unit)
+    {
         val tokenPostCp = tc.checkpoint()
         val subscriptionCreationCp = tc.checkpoint()
         val oauth2 = OAuth2Auth.create(vertx, oauth2Options)
@@ -108,12 +114,12 @@ class FitbitOAuth2RouterTest {
                 testPort,
                 ssl = false
         )
-        val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userDataService).getRouter()
+        val authRouter = FitbitOAuth2Router(vertx, oauth2, parameters, userTokenDataService).getRouter()
         vertx.createHttpServer().requestHandler(authRouter).listen(oauthPort)
 
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
-        router.get("/oauth2").handler { authorizeHandler(it) }
+        router.get("/oauth2").handler { authoriseHandler(it) }
         router.post("/oauth2/token").handler { oauth2Token(it, tokenPostCp) }
         router.post("/apiSubscriptions/:subscriptionId").handler { subscriptionCreation(it, subscriptionCreationCp) }
         vertx.createHttpServer()
@@ -123,11 +129,13 @@ class FitbitOAuth2RouterTest {
                 })
     }
 
-    private fun authorizeHandler(routingContext: RoutingContext) {
+    private fun authoriseHandler(routingContext: RoutingContext)
+    {
         routingContext.response().end(redirectBody)
     }
 
-    private fun oauth2Token(routingContext: RoutingContext, checkpoint: Checkpoint) {
+    private fun oauth2Token(routingContext: RoutingContext, checkpoint: Checkpoint)
+    {
         val code = routingContext.request().getParam("code")
         val uri = routingContext.request().getParam("redirect_uri")
         assertThat(code).isEqualTo(authCode)

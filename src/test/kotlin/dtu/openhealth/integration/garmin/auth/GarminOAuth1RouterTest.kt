@@ -41,7 +41,8 @@ class GarminOAuth1RouterTest {
     private val returnBody = "Authorization successful"
 
     @Test
-    fun testOAuth1RouterRedirect(vertx: Vertx, tc: VertxTestContext) {
+    fun testOAuth1RouterRedirect(vertx: Vertx, tc: VertxTestContext)
+    {
         val checkpoint = tc.checkpoint()
         val requestTokenCheckpoint = tc.checkpoint()
         val oauthConfirmToken = tc.checkpoint()
@@ -52,7 +53,7 @@ class GarminOAuth1RouterTest {
         client.get(port, "localhost", "/auth/$userId")
                 .send { ar ->
                     if (ar.succeeded()) {
-                        validateAuthorizationRedirect(tc, ar.result(), checkpoint)
+                        validateAuthorisationRedirect(tc, ar.result(), checkpoint)
                     }
                     else {
                         tc.failNow(ar.cause())
@@ -61,7 +62,8 @@ class GarminOAuth1RouterTest {
     }
 
     @Test
-    fun testOAuth1AccessToken(vertx: Vertx, tc: VertxTestContext) {
+    fun testOAuth1AccessToken(vertx: Vertx, tc: VertxTestContext)
+    {
         val accessTokenCheckpoint = tc.checkpoint()
         val userDataService: IUserTokenDataService = mock()
         initWebServers(vertx, tc, userDataService,null,null, accessTokenCheckpoint)
@@ -83,7 +85,8 @@ class GarminOAuth1RouterTest {
     private fun initWebServers(vertx: Vertx, tc: VertxTestContext, userDataService: IUserTokenDataService,
                                requestTokenCheckpoint: Checkpoint?,
                                oauthConfirmToken: Checkpoint?,
-                               accessTokenCheckpoint: Checkpoint?) {
+                               accessTokenCheckpoint: Checkpoint?)
+    {
         val serverStartedCheckpoint = tc.checkpoint(2)
         val parameters = OAuth1RouterParameters(callbackUri, returnUri,
                 consumerKey, consumerSecret,
@@ -101,14 +104,16 @@ class GarminOAuth1RouterTest {
         createWebServer(vertx, tc, authRouter, port, serverStartedCheckpoint)
     }
 
-    private fun createWebServer(vertx: Vertx, tc: VertxTestContext, router: Router, port: Int, checkpoint: Checkpoint) {
+    private fun createWebServer(vertx: Vertx, tc: VertxTestContext, router: Router, port: Int, checkpoint: Checkpoint)
+    {
         vertx.createHttpServer().requestHandler(router).listen(port) {
             if (it.succeeded()) { checkpoint.flag() }
             else { tc.failNow(it.cause()) }
         }
     }
 
-    private fun requestToken(routingContext: RoutingContext, checkpoint: Checkpoint?) {
+    private fun requestToken(routingContext: RoutingContext, checkpoint: Checkpoint?)
+    {
         val authorizationHeader = routingContext.request().getHeader("Authorization")
         assertThat(authorizationHeader).contains("oauth_consumer_key=\"$consumerKey\"")
         checkpoint?.flag()
@@ -117,7 +122,8 @@ class GarminOAuth1RouterTest {
         routingContext.response().end(requestTokenInfo)
     }
 
-    private fun oauthConfirm(routingContext: RoutingContext, checkpoint: Checkpoint?) {
+    private fun oauthConfirm(routingContext: RoutingContext, checkpoint: Checkpoint?)
+    {
         val code = routingContext.request().getParam("oauth_token")
         val url = routingContext.request().getParam("oauth_callback")
         val expectedUrl = "$callbackUri/$userId"
@@ -127,7 +133,8 @@ class GarminOAuth1RouterTest {
         routingContext.response().end(redirectBody)
     }
 
-    private fun accessToken(routingContext: RoutingContext, checkpoint: Checkpoint?) {
+    private fun accessToken(routingContext: RoutingContext, checkpoint: Checkpoint?)
+    {
         val authorizationHeader = routingContext.request().getHeader("Authorization")
         assertThat(authorizationHeader).contains("oauth_token=\"$requestToken\"")
         assertThat(authorizationHeader).contains("oauth_verifier=\"$oauthVerifier\"")
@@ -139,7 +146,8 @@ class GarminOAuth1RouterTest {
     }
 
     private fun validateAccessTokenObtained(tc: VertxTestContext, userDataService: IUserTokenDataService,
-                                            checkpoint: Checkpoint, response: HttpResponse<Buffer>) {
+                                            checkpoint: Checkpoint, response: HttpResponse<Buffer>)
+    {
         tc.verify {
             assertThat(response.statusCode()).isEqualTo(200)
             assertThat(response.bodyAsString()).isEqualTo(returnBody)
@@ -150,8 +158,9 @@ class GarminOAuth1RouterTest {
         checkpoint.flag()
     }
 
-    private fun validateAuthorizationRedirect(tc: VertxTestContext, response: HttpResponse<Buffer>,
-                                              checkpoint: Checkpoint) {
+    private fun validateAuthorisationRedirect(tc: VertxTestContext, response: HttpResponse<Buffer>,
+                                              checkpoint: Checkpoint)
+    {
         tc.verify {
             assertThat(response.statusCode()).isEqualTo(200)
             assertThat(response.body().toString()).isEqualTo(redirectBody)

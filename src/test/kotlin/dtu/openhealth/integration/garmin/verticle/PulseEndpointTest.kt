@@ -7,7 +7,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import dtu.openhealth.integration.garmin.GarminRouter
 import dtu.openhealth.integration.garmin.data.pulse.PulseOXSummaryGarmin
 import dtu.openhealth.integration.shared.service.push.IThirdPartyPushService
-import dtu.openhealth.integration.shared.web.auth.IAuthorizationRouter
+import dtu.openhealth.integration.shared.web.auth.IAuthorisationRouter
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
 import io.vertx.reactivex.core.Vertx
@@ -46,9 +46,10 @@ class PulseEndpointTest {
 
 
     @Test
-    fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext) {
+    fun testValidRequestBody(vertx: Vertx, testContext: VertxTestContext)
+    {
         val thirdPartyPushService : IThirdPartyPushService = mock()
-        val authRouter: IAuthorizationRouter = mock()
+        val authRouter: IAuthorisationRouter = mock()
         whenever(authRouter.getRouter()).thenReturn(Router.router(vertx))
 
         val garminRouter = GarminRouter(vertx, thirdPartyPushService, authRouter)

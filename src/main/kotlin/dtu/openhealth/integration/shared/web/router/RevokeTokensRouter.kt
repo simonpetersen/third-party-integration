@@ -24,11 +24,11 @@ class RevokeTokensRouter(
     {
         val router = Router.router(vertx)
         router.route().handler(BodyHandler.create())
-        router.delete("/study").handler { handleDeleteUserList(it) }
+        router.post("/revoke").handler { handleRevokeUserList(it) }
         return router
     }
 
-    private fun handleDeleteUserList(routingContext: RoutingContext)
+    private fun handleRevokeUserList(routingContext: RoutingContext)
     {
         val userIdList = routingContext.bodyAsJsonArray
                 .toList()

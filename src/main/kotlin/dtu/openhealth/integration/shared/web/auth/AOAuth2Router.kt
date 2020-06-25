@@ -20,7 +20,7 @@ abstract class AOAuth2Router(
         private val oauth2: OAuth2Auth,
         private val parameters: OAuth2RouterParameters,
         private val userTokenDataService: IUserTokenDataService
-): IAuthorizationRouter {
+): IAuthorisationRouter {
 
     private val logger = LoggerFactory.getLogger(AOAuth2Router::class.java)
 
@@ -80,7 +80,7 @@ abstract class AOAuth2Router(
         }
 
         oauth2.authenticate(tokenConfig) {
-            authorizationCompleted(it, userId, routingContext)
+            authorisationCompleted(it, userId, routingContext)
         }
     }
 
@@ -89,7 +89,7 @@ abstract class AOAuth2Router(
         routingContext.response().end("User authenticated.")
     }
 
-    private fun authorizationCompleted(ar : AsyncResult<User>, userId: String, routingContext: RoutingContext)
+    private fun authorisationCompleted(ar : AsyncResult<User>, userId: String, routingContext: RoutingContext)
     {
         if (ar.succeeded()) {
             val jsonToken = ar.result().principal()

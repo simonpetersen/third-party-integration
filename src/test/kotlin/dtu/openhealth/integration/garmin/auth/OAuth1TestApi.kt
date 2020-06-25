@@ -2,10 +2,12 @@ package dtu.openhealth.integration.garmin.auth
 
 import com.github.scribejava.core.builder.api.DefaultApi10a
 
-class OAuth1TestApi(port: Int) : DefaultApi10a() {
+class OAuth1TestApi(
+        port: Int
+): DefaultApi10a() {
 
     private val baseApiPath = "http://localhost:$port"
-    private val authorizationPath = "/oauthConfirm"
+    private val authorisationPath = "/oauthConfirm"
     private val requestTokenPath = "/oauth-service/request_token"
     private val accessTokenPath = "/oauth-service/access_token"
 
@@ -14,7 +16,7 @@ class OAuth1TestApi(port: Int) : DefaultApi10a() {
     }
 
     override fun getAuthorizationBaseUrl(): String {
-        return "$baseApiPath$authorizationPath"
+        return "$baseApiPath$authorisationPath"
     }
 
     override fun getAccessTokenEndpoint(): String {

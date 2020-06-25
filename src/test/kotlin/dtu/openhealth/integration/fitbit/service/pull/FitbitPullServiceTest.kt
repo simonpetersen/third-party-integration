@@ -56,11 +56,11 @@ class FitbitPullServiceTest {
         vertx.createHttpServer(options)
                 .requestHandler(router)
                 .listen(port, tc.succeeding {
-                    runPullTest(vertx, tc)
+                    runPullTest(vertx)
                 })
     }
 
-    private fun runPullTest(vertx: Vertx, tc: VertxTestContext)
+    private fun runPullTest(vertx: Vertx)
     {
         GlobalScope.launch(vertx.delegate.dispatcher()) {
             val clientOptions = webClientOptionsOf(trustAll = true)

@@ -57,7 +57,7 @@ class RevokeTokensRouterTest {
                                         tokenRevokeService: ITokenRevokeService)
     {
         val webClient = WebClient.create(vertx)
-        webClient.delete(port, "localhost", "/study")
+        webClient.post(port, "localhost", "/revoke")
                 .rxSendBuffer(Buffer.buffer(userIdJsonList))
                 .subscribe(
                         { postSuccessful(it, testContext, userTokenDataService, tokenRevokeService) },

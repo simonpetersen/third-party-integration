@@ -22,7 +22,8 @@ class HttpServiceImplTest {
     private val extUserId = "HEGD-3874"
 
     @Test
-    fun testCallApiForUser(vertx: Vertx, testContext: VertxTestContext) {
+    fun testCallApiForUser(testContext: VertxTestContext)
+    {
         // Test activity endpoint
         val activitiesTestUri = "/data/activities"
         val activityEndpoint = RestEndpoint(MockRestUrl(activitiesTestUri), AThirdPartyData.serializer())
@@ -63,7 +64,8 @@ class HttpServiceImplTest {
     }
 
     @Test
-    fun testCallApiForUserWithParameters(vertx: Vertx, testContext: VertxTestContext) {
+    fun testCallApiForUserWithParameters(testContext: VertxTestContext)
+    {
         val numberOfEndpoints = 2
         val parameters = mapOf(Pair("userId", extUserId))
         val baseActivitiesTestUri = "/data/[userId]/activities"

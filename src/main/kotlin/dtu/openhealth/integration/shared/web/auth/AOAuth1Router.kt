@@ -22,7 +22,7 @@ abstract class AOAuth1Router(
         private val parameters: OAuth1RouterParameters,
         private val userTokenDataService: IUserTokenDataService,
         private val requestTokenSecrets : MutableMap<String, String> = mutableMapOf()
-): IAuthorizationRouter {
+): IAuthorisationRouter {
 
     private val logger = LoggerFactory.getLogger(AOAuth1Router::class.java)
 
