@@ -30,6 +30,7 @@ class RevokeTokensRouter(
 
     private fun handleRevokeUserList(routingContext: RoutingContext)
     {
+        logger.info("Requesting to delete users: ${routingContext.body}")
         val userIdList = routingContext.bodyAsJsonArray
                 .toList()
                 .filterIsInstance<String>()
@@ -81,6 +82,7 @@ class RevokeTokensRouter(
             rev -> failedRevocations.none { failedRev -> failedRev.userId == rev.userId }
         }
                 .map { it.userId }
+        logger.info("Deleting tokens: $successfulRevocationIds")
         userTokenDataService.deleteTokensInList(successfulRevocationIds)
         routingContext.response().end()
     }
