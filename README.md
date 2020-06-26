@@ -1,16 +1,14 @@
-# third-party-integration
+# Third-Party Integration
 
-This README file contains a list of important classes for the application. 
+The top-level functionality is implemented for each third party in its own package, [Fitbit](src/main/kotlin/dtu/openhealth/integration/fitbit) and [Garmin](src/main/kotlin/dtu/openhealth/integration/garmin).
 
-Important classes:
-- dtu.openhealth.integration.shared.verticle.web.WebServerVerticle.kt
-- dtu.openhealth.integration.shared.service.omh.OmhServiceImpl.kt
-- dtu.openhealth.integration.garmin.GarminRouter.kt
-- dtu.openhealth.integration.kafka.consumer.KafkaConsumerService.kt
-- dtu.openhealth.integration.kafka.producer.impl.KafkaProducerServiceImpl.kt
-- dtu.openhealth.integration.fitbit.FitbitPullVerticle.kt
-- dtu.openhealth.integration.shared.web.auth.AOAuth1Router.kt
-- dtu.openhealth.integration.shared.web.auth.AOAuth2Router.kt
-- dtu.openhealth.integration.shared.web.router.RevokeTokensRouter.kt
-- dtu.openhealth.integration.shared.web.router.BaseNotificationEndpointRouter.kt
-- dtu.openhealth.integration.shared.web.router.BasePushEndpointRouter.kt
+The most important classes in these packages:
+- [FitbitRouter](src/main/kotlin/dtu/openhealth/integration/fitbit/auth/FitbitRouter.kt)
+- [FitbitOAuth2Router](src/main/kotlin/dtu/openhealth/integration/fitbit/FitbitOAuth2Router.kt)
+- [FitbitPullVerticle](src/main/kotlin/dtu/openhealth/integration/fitbit/FitbitPullVerticle.kt)
+- [GarminRouter](src/main/kotlin/dtu/openhealth/integration/garmin/GarminRouter.kt)
+- [GarminOAuth1Router](src/main/kotlin/dtu/openhealth/integration/garmin/auth/GarminOAuth1Router.kt)
+
+Other classes of interest:
+- [WebServerVerticle](src/main/kotlin/dtu/openhealth/integration/shared/verticle/web/WebServerVerticle.kt)
+- [OmhConsumerVerticle](src/main/kotlin/dtu/openhealth/integration/shared/verticle/omh/OmhConsumerVerticle.kt)
